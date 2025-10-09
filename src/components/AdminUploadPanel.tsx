@@ -159,12 +159,12 @@ export const AdminUploadPanel = () => {
 
       for (const creatorData of creatorsData) {
         try {
-          // 1. UPSERT en tabla creators (info básica)
+          // 1. UPSERT en tabla creators usando tiktok_username como clave única
           const { data: upsertedCreator, error: upsertError } = await supabase
             .from("creators")
             .upsert({
-              nombre: creatorData.nombre,
               tiktok_username: creatorData.tiktok_username,
+              nombre: creatorData.nombre,
               telefono: creatorData.telefono,
               email: creatorData.email,
               instagram: creatorData.instagram,
@@ -172,7 +172,6 @@ export const AdminUploadPanel = () => {
               manager: creatorData.manager,
               status: creatorData.status,
               graduacion: creatorData.graduacion,
-              // Métricas actuales (para vista rápida)
               diamantes: creatorData.diamantes,
               followers: creatorData.followers,
               views: creatorData.views,
@@ -180,7 +179,7 @@ export const AdminUploadPanel = () => {
               dias_live: creatorData.dias_live,
               horas_live: creatorData.horas_live,
               dias_desde_inicio: creatorData.dias_desde_inicio,
-            }, { onConflict: 'nombre' })
+            }, { onConflict: 'tiktok_username' })
             .select()
             .single();
 
