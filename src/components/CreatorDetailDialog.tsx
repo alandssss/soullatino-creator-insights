@@ -324,7 +324,20 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Teléfono</p>
-                <p className="font-semibold">{creator.telefono || "No especificado"}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">{creator.telefono || "No especificado"}</p>
+                  {creator.telefono && (
+                    <Button 
+                      size="sm" 
+                      variant="default"
+                      onClick={openWhatsApp}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                      WhatsApp
+                    </Button>
+                  )}
+                </div>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Categoría</p>
