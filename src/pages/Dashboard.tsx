@@ -76,7 +76,7 @@ const Dashboard = () => {
   const totalCreators = creators.length;
   const totalDiamonds = creators.reduce((sum, c) => sum + (c.diamantes || 0), 0);
   const totalViews = creators.reduce((sum, c) => sum + (c.views || 0), 0);
-  const avgEngagement = creators.reduce((sum, c) => sum + (c.engagement_rate || 0), 0) / (creators.length || 1);
+  const avgHito = creators.reduce((sum, c) => sum + (c.hito_diamantes || 0), 0) / (creators.length || 1);
 
   if (loading) {
     return (
@@ -172,13 +172,13 @@ const Dashboard = () => {
           <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Matches Promedio
+                Hito Promedio
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                {avgEngagement.toFixed(1)}
+                {(avgHito / 1000).toFixed(0)}K
               </div>
             </CardContent>
           </Card>
@@ -224,7 +224,7 @@ const Dashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
-                    <p className="text-sm text-muted-foreground">{(creator.engagement_rate || 0).toFixed(1)} matches</p>
+                    <p className="text-sm text-muted-foreground">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
                   </div>
                 </div>
               ))}
