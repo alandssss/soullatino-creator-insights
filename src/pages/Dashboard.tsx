@@ -50,8 +50,7 @@ const Dashboard = () => {
     const { data, error } = await supabase
       .from("creators")
       .select("*")
-      .order("diamantes", { ascending: false })
-      .limit(10);
+      .order("diamantes", { ascending: false });
 
     if (error) {
       if (error.code === 'PGRST301') {
