@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      creator_daily_stats: {
+        Row: {
+          created_at: string
+          creator_id: string
+          days_since_joining: number | null
+          diamond_baseline: number | null
+          diamonds_l30d: number | null
+          engagement_rate: number | null
+          followers: number | null
+          id: string
+          ingreso_estimado: number | null
+          live_duration_l30d: number | null
+          snapshot_date: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          days_since_joining?: number | null
+          diamond_baseline?: number | null
+          diamonds_l30d?: number | null
+          engagement_rate?: number | null
+          followers?: number | null
+          id?: string
+          ingreso_estimado?: number | null
+          live_duration_l30d?: number | null
+          snapshot_date?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          days_since_joining?: number | null
+          diamond_baseline?: number | null
+          diamonds_l30d?: number | null
+          engagement_rate?: number | null
+          followers?: number | null
+          id?: string
+          ingreso_estimado?: number | null
+          live_duration_l30d?: number | null
+          snapshot_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_daily_stats_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_interactions: {
         Row: {
           admin_nombre: string | null
