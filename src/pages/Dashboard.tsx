@@ -10,6 +10,7 @@ import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 import { AdminUploadPanel } from "@/components/AdminUploadPanel";
 import { AdminActivityPanel } from "@/components/AdminActivityPanel";
 import { UserManagement } from "@/components/UserManagement";
+import { LowActivityPanel } from "@/components/LowActivityPanel";
 
 type Creator = Tables<"creators">;
 
@@ -182,6 +183,10 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="mb-8">
+          <LowActivityPanel />
         </div>
 
         <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
