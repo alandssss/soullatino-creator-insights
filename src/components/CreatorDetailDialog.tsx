@@ -10,6 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2 } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
+import { z } from "zod";
+
+const interactionSchema = z.object({
+  tipo_interaccion: z.string().trim().min(1, "Tipo de interacción requerido").max(100, "Máximo 100 caracteres"),
+  notas: z.string().trim().min(1, "Notas requeridas").max(2000, "Máximo 2000 caracteres"),
+  admin_nombre: z.string().trim().max(100, "Máximo 100 caracteres").optional(),
+});
 
 type Creator = Tables<"creators">;
 type Interaction = Tables<"creator_interactions">;
@@ -74,7 +81,6 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
         description: "La IA ha generado nuevos consejos personalizados",
       });
     } catch (error) {
-      console.error("Error generating advice:", error);
       toast({
         title: "Error",
         description: "No se pudieron generar los consejos",
@@ -86,35 +92,40 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   };
 
   const addInteraction = async () => {
-    if (!creator || !newInteraction.tipo_interaccion || !newInteraction.notas) {
-      toast({
-        title: "Error",
-        description: "Por favor completa todos los campos",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!creator) return;
 
-    const { error } = await supabase.from("creator_interactions").insert({
-      creator_id: creator.id,
-      tipo_interaccion: newInteraction.tipo_interaccion,
-      notas: newInteraction.notas,
-      admin_nombre: newInteraction.admin_nombre,
-    });
+    try {
+      const validated = interactionSchema.parse(newInteraction);
 
-    if (error) {
-      toast({
-        title: "Error",
-        description: "No se pudo guardar la interacción",
-        variant: "destructive",
+      const { error } = await supabase.from("creator_interactions").insert({
+        creator_id: creator.id,
+        tipo_interaccion: validated.tipo_interaccion,
+        notas: validated.notas,
+        admin_nombre: validated.admin_nombre || "Admin",
       });
-    } else {
+
+      if (error) throw error;
+
       toast({
         title: "Éxito",
         description: "Interacción guardada correctamente",
       });
       setNewInteraction({ tipo_interaccion: "", notas: "", admin_nombre: "" });
       fetchInteractions();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Error de validación",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo guardar la interacción",
+          variant: "destructive",
+        });
+      }
     }
   };
 

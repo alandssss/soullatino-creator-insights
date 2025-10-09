@@ -52,8 +52,7 @@ Genera 3-4 consejos específicos y accionables para mejorar su rendimiento. Cada
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("[Server] AI gateway error:", response.status);
       
       if (response.status === 429) {
         return new Response(
@@ -68,7 +67,10 @@ Genera 3-4 consejos específicos y accionables para mejorar su rendimiento. Cada
         );
       }
       
-      throw new Error(`AI gateway error: ${response.status}`);
+      return new Response(
+        JSON.stringify({ error: "Failed to generate advice" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const data = await response.json();
@@ -78,9 +80,9 @@ Genera 3-4 consejos específicos y accionables para mejorar su rendimiento. Cada
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error in generate-creator-advice function:", error);
+    console.error("[Server] Error in generate-creator-advice:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), 
+      JSON.stringify({ error: "Internal server error" }), 
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

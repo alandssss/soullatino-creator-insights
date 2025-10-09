@@ -42,6 +42,10 @@ const Dashboard = () => {
       .limit(10);
 
     if (error) {
+      if (error.code === 'PGRST301') {
+        navigate("/login");
+        return;
+      }
       toast({
         title: "Error",
         description: "No se pudieron cargar los creadores",
