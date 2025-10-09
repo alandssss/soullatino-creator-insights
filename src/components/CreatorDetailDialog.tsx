@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2 } from "lucide-react";
+import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2, Clock, Award, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { z } from "zod";
 
@@ -36,7 +36,25 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   });
   const [aiAdvice, setAiAdvice] = useState<string>("");
   const [loadingAdvice, setLoadingAdvice] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    checkUserRole();
+  }, []);
+
+  const checkUserRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    setUserRole(data?.role || null);
+  };
 
   useEffect(() => {
     if (creator) {
@@ -130,31 +148,129 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   };
 
   const openWhatsApp = () => {
-    if (creator?.telefono) {
-      const cleanPhone = creator.telefono.replace(/\D/g, "");
-      window.open(`https://wa.me/${cleanPhone}`, "_blank");
+    if (!creator?.telefono) return;
+    
+    const cleanPhone = creator.telefono.replace(/\D/g, "");
+    const summary = generateWhatsAppSummary();
+    const encodedMessage = encodeURIComponent(summary);
+    window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, "_blank");
+  };
+
+  const generateWhatsAppSummary = () => {
+    if (!creator) return "";
+    
+    const growth = getMonthlyGrowth();
+    const milestones = getMilestones().slice(0, 1);
+    
+    let message = `Hola ${creator.nombre}! 👋\n\n`;
+    message += `📊 *Resumen de tu desempeño*\n\n`;
+    message += `💎 Diamantes actuales: ${(creator.diamantes || 0).toLocaleString()}\n`;
+    message += `📈 Engagement: ${(creator.engagement_rate || 0).toFixed(1)}%\n`;
+    message += `📺 Días en Live: ${creator.dias_live || 0}\n`;
+    message += `⏰ Horas en Live: ${creator.horas_live || 0}\n\n`;
+    
+    if (growth.diamantes !== 0) {
+      message += `*Comparación con el mes pasado:*\n`;
+      message += `💎 Diamantes: ${growth.diamantes > 0 ? '+' : ''}${growth.diamantes.toFixed(1)}%\n`;
+      message += `👁️ Vistas: ${growth.views > 0 ? '+' : ''}${growth.views.toFixed(1)}%\n`;
+      message += `📈 Engagement: ${growth.engagement > 0 ? '+' : ''}${growth.engagement.toFixed(1)}%\n\n`;
     }
+    
+    if (milestones.length > 0) {
+      message += `🎯 *Próximo hito:* ${milestones[0].label}\n`;
+      message += `Faltan ${milestones[0].remaining.toLocaleString()} 💎\n\n`;
+    }
+    
+    message += `¡Sigue así! 🚀`;
+    return message;
+  };
+
+  const getMonthlyGrowth = () => {
+    if (!creator) return { diamantes: 0, views: 0, engagement: 0 };
+    
+    const currentDiamantes = creator.diamantes || 0;
+    const lastMonthDiamantes = creator.last_month_diamantes || 0;
+    const currentViews = creator.views || 0;
+    const lastMonthViews = creator.last_month_views || 0;
+    const currentEngagement = creator.engagement_rate || 0;
+    const lastMonthEngagement = creator.last_month_engagement || 0;
+    
+    const diamantesGrowth = lastMonthDiamantes > 0 
+      ? ((currentDiamantes - lastMonthDiamantes) / lastMonthDiamantes) * 100 
+      : 0;
+    const viewsGrowth = lastMonthViews > 0 
+      ? ((currentViews - lastMonthViews) / lastMonthViews) * 100 
+      : 0;
+    const engagementGrowth = lastMonthEngagement > 0 
+      ? ((currentEngagement - lastMonthEngagement) / lastMonthEngagement) * 100 
+      : 0;
+    
+    return {
+      diamantes: diamantesGrowth,
+      views: viewsGrowth,
+      engagement: engagementGrowth,
+    };
   };
 
   const getMilestones = () => {
     if (!creator) return [];
     
     const diamantes = creator.diamantes || 0;
-    const milestones = [
-      { value: 10000, label: "10K Diamantes" },
-      { value: 50000, label: "50K Diamantes" },
-      { value: 100000, label: "100K Diamantes" },
-      { value: 500000, label: "500K Diamantes" },
-      { value: 1000000, label: "1M Diamantes" },
+    const diasLive = creator.dias_live || 0;
+    const horasLive = creator.horas_live || 0;
+    
+    const diamantesMilestones = [
+      { value: 10000, label: "10K Diamantes", type: "diamantes" },
+      { value: 50000, label: "50K Diamantes", type: "diamantes" },
+      { value: 100000, label: "100K Diamantes", type: "diamantes" },
+      { value: 500000, label: "500K Diamantes", type: "diamantes" },
+      { value: 1000000, label: "1M Diamantes", type: "diamantes" },
     ];
 
-    return milestones
+    const diasMilestones = [
+      { value: 30, label: "30 Días en Live", type: "dias" },
+      { value: 60, label: "60 Días en Live", type: "dias" },
+      { value: 90, label: "90 Días en Live", type: "dias" },
+      { value: 180, label: "180 Días en Live", type: "dias" },
+      { value: 365, label: "1 Año en Live", type: "dias" },
+    ];
+
+    const horasMilestones = [
+      { value: 50, label: "50 Horas en Live", type: "horas" },
+      { value: 100, label: "100 Horas en Live", type: "horas" },
+      { value: 250, label: "250 Horas en Live", type: "horas" },
+      { value: 500, label: "500 Horas en Live", type: "horas" },
+      { value: 1000, label: "1000 Horas en Live", type: "horas" },
+    ];
+
+    const nextDiamantesMilestones = diamantesMilestones
       .filter(m => m.value > diamantes)
       .map(m => ({
         ...m,
         remaining: m.value - diamantes,
         progress: (diamantes / m.value) * 100,
+        icon: "💎",
       }));
+
+    const nextDiasMilestones = diasMilestones
+      .filter(m => m.value > diasLive)
+      .map(m => ({
+        ...m,
+        remaining: m.value - diasLive,
+        progress: (diasLive / m.value) * 100,
+        icon: "📅",
+      }));
+
+    const nextHorasMilestones = horasMilestones
+      .filter(m => m.value > horasLive)
+      .map(m => ({
+        ...m,
+        remaining: m.value - horasLive,
+        progress: (horasLive / m.value) * 100,
+        icon: "⏰",
+      }));
+
+    return [...nextDiamantesMilestones.slice(0, 2), ...nextDiasMilestones.slice(0, 1), ...nextHorasMilestones.slice(0, 1)];
   };
 
   if (!creator) return null;
@@ -220,10 +336,14 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           </Card>
 
           <Tabs defaultValue="milestones" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="milestones">
                 <Target className="h-4 w-4 mr-2" />
                 Hitos
+              </TabsTrigger>
+              <TabsTrigger value="growth">
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Crecimiento
               </TabsTrigger>
               <TabsTrigger value="advice">
                 <Sparkles className="h-4 w-4 mr-2" />
@@ -241,12 +361,15 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                   <CardTitle className="text-lg">Próximos Hitos</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {getMilestones().slice(0, 3).map((milestone, idx) => (
+                  {getMilestones().map((milestone, idx) => (
                     <div key={idx} className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold">{milestone.label}</span>
+                        <span className="font-semibold flex items-center gap-2">
+                          <span>{milestone.icon}</span>
+                          {milestone.label}
+                        </span>
                         <span className="text-sm text-muted-foreground">
-                          Faltan {milestone.remaining.toLocaleString()} 💎
+                          Faltan {milestone.remaining.toLocaleString()}
                         </span>
                       </div>
                       <div className="h-2 bg-background rounded-full overflow-hidden">
@@ -257,6 +380,62 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                       </div>
                     </div>
                   ))}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="growth" className="space-y-4">
+              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+                <CardHeader>
+                  <CardTitle className="text-lg">Comparación Mensual</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {(() => {
+                    const growth = getMonthlyGrowth();
+                    const metrics = [
+                      { label: "Diamantes", value: growth.diamantes, current: creator.diamantes || 0, last: creator.last_month_diamantes || 0 },
+                      { label: "Vistas", value: growth.views, current: creator.views || 0, last: creator.last_month_views || 0 },
+                      { label: "Engagement", value: growth.engagement, current: creator.engagement_rate || 0, last: creator.last_month_engagement || 0, isPercentage: true },
+                    ];
+
+                    return metrics.map((metric, idx) => (
+                      <div key={idx} className="p-4 rounded-lg bg-background/50 border border-border/30">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-semibold">{metric.label}</span>
+                          <div className="flex items-center gap-2">
+                            {metric.value > 0 ? (
+                              <ArrowUp className="h-4 w-4 text-green-500" />
+                            ) : metric.value < 0 ? (
+                              <ArrowDown className="h-4 w-4 text-red-500" />
+                            ) : (
+                              <Minus className="h-4 w-4 text-muted-foreground" />
+                            )}
+                            <span className={`font-bold ${metric.value > 0 ? 'text-green-500' : metric.value < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                              {metric.value > 0 ? '+' : ''}{metric.value.toFixed(1)}%
+                            </span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">Actual</p>
+                            <p className="font-semibold">
+                              {metric.isPercentage 
+                                ? `${metric.current.toFixed(1)}%` 
+                                : metric.current.toLocaleString()}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Mes Pasado</p>
+                            <p className="font-semibold">
+                              {metric.isPercentage 
+                                ? `${metric.last.toFixed(1)}%` 
+                                : metric.last.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -301,88 +480,126 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
 
             <TabsContent value="agenda" className="space-y-4">
-              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Nueva Interacción</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="tipo">Tipo de Interacción</Label>
-                    <Input
-                      id="tipo"
-                      placeholder="Ej: Llamada, Reunión, Email"
-                      value={newInteraction.tipo_interaccion}
-                      onChange={(e) =>
-                        setNewInteraction({ ...newInteraction, tipo_interaccion: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="admin">Manager/Admin</Label>
-                    <Input
-                      id="admin"
-                      placeholder="Tu nombre"
-                      value={newInteraction.admin_nombre}
-                      onChange={(e) =>
-                        setNewInteraction({ ...newInteraction, admin_nombre: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="notas">Notas</Label>
-                    <Textarea
-                      id="notas"
-                      placeholder="Detalles de la interacción..."
-                      value={newInteraction.notas}
-                      onChange={(e) =>
-                        setNewInteraction({ ...newInteraction, notas: e.target.value })
-                      }
-                      rows={3}
-                    />
-                  </div>
-                  <Button onClick={addInteraction} className="w-full">
-                    <Phone className="h-4 w-4 mr-2" />
-                    Guardar Interacción
-                  </Button>
-                </CardContent>
-              </Card>
+              {userRole === "admin" && (
+                <>
+                  <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <MessageSquare className="h-5 w-5 text-primary" />
+                        Enviar Resumen por WhatsApp
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        onClick={openWhatsApp} 
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                        disabled={!creator.telefono}
+                      >
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Enviar Resumen al Creador
+                      </Button>
+                      {!creator.telefono && (
+                        <p className="text-sm text-muted-foreground text-center mt-2">
+                          No hay número de teléfono registrado
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
 
-              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Historial de Interacciones</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {interactions.length > 0 ? (
-                    <div className="space-y-3">
-                      {interactions.map((interaction) => (
-                        <div
-                          key={interaction.id}
-                          className="p-3 rounded-lg bg-background/50 border border-border/30"
-                        >
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-semibold text-primary">
-                              {interaction.tipo_interaccion}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(interaction.fecha).toLocaleDateString()}
-                            </span>
-                          </div>
-                          {interaction.admin_nombre && (
-                            <p className="text-sm text-muted-foreground mb-1">
-                              Por: {interaction.admin_nombre}
-                            </p>
-                          )}
-                          <p className="text-sm">{interaction.notas}</p>
+                  <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Nueva Interacción</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="tipo">Tipo de Interacción</Label>
+                        <Input
+                          id="tipo"
+                          placeholder="Ej: Llamada, Reunión, Email"
+                          value={newInteraction.tipo_interaccion}
+                          onChange={(e) =>
+                            setNewInteraction({ ...newInteraction, tipo_interaccion: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="admin">Manager/Admin</Label>
+                        <Input
+                          id="admin"
+                          placeholder="Tu nombre"
+                          value={newInteraction.admin_nombre}
+                          onChange={(e) =>
+                            setNewInteraction({ ...newInteraction, admin_nombre: e.target.value })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="notas">Notas</Label>
+                        <Textarea
+                          id="notas"
+                          placeholder="Detalles de la interacción..."
+                          value={newInteraction.notas}
+                          onChange={(e) =>
+                            setNewInteraction({ ...newInteraction, notas: e.target.value })
+                          }
+                          rows={3}
+                        />
+                      </div>
+                      <Button onClick={addInteraction} className="w-full">
+                        <Phone className="h-4 w-4 mr-2" />
+                        Guardar Interacción
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Historial de Interacciones (Solo Admin)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {interactions.length > 0 ? (
+                        <div className="space-y-3">
+                          {interactions.map((interaction) => (
+                            <div
+                              key={interaction.id}
+                              className="p-3 rounded-lg bg-background/50 border border-border/30"
+                            >
+                              <div className="flex justify-between items-start mb-2">
+                                <span className="font-semibold text-primary">
+                                  {interaction.tipo_interaccion}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(interaction.fecha).toLocaleDateString()}
+                                </span>
+                              </div>
+                              {interaction.admin_nombre && (
+                                <p className="text-sm text-muted-foreground mb-1">
+                                  Por: {interaction.admin_nombre}
+                                </p>
+                              )}
+                              <p className="text-sm">{interaction.notas}</p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-center py-4">
-                      No hay interacciones registradas
+                      ) : (
+                        <p className="text-muted-foreground text-center py-4">
+                          No hay interacciones registradas
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+              
+              {userRole !== "admin" && (
+                <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+                  <CardContent className="py-12">
+                    <p className="text-muted-foreground text-center">
+                      Solo los administradores pueden ver y gestionar las interacciones con los creadores.
                     </p>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         </div>
