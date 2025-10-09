@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, TrendingUp, Eye, Zap, LogOut } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
+import { AdminUploadPanel } from "@/components/AdminUploadPanel";
 
 type Creator = Tables<"creators">;
 
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,6 +32,15 @@ const Dashboard = () => {
       navigate("/login");
     } else {
       setUser(user);
+      
+      // Check user role
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+      
+      setUserRole(roleData?.role || null);
     }
     setLoading(false);
   };
@@ -103,6 +114,12 @@ const Dashboard = () => {
           <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
           <p className="text-muted-foreground">Resumen de métricas de tus creadores</p>
         </div>
+
+        {userRole === "admin" && (
+          <div className="mb-8">
+            <AdminUploadPanel />
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
