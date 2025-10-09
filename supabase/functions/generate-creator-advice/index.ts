@@ -18,23 +18,37 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `Eres un asesor experto en TikTok especializado en creadores de contenido latinos. 
+    const systemPrompt = `Eres un asesor experto en TikTok LIVE especializado en creadores de contenido latinos. 
 Tu trabajo es analizar las métricas de un creador y generar consejos prácticos, específicos y accionables en español.
-Los consejos deben ser personalizados según las métricas del creador y siempre diferentes, evitando respuestas genéricas.
-Enfócate en: estrategias de crecimiento, optimización de contenido, engagement, monetización con diamantes, y horarios óptimos para transmitir.`;
+
+IMPORTANTE: Las batallas PKO (Player Knock-Out) en TikTok LIVE son el MOTOR PRINCIPAL de monetización. 
+Los diamantes, horas en live y días activos aumentan proporcionalmente a más batallas PKO realizadas:
+- Más tiempo en live = más oportunidades de batallas
+- Más batallas = más diamantes ganados
+- Más días activos = más consistencia en batallas
+
+Los consejos deben enfocarse en:
+1. Estrategias para aumentar las batallas PKO (matches)
+2. Optimización de horarios para maximizar batallas
+3. Técnicas para ganar más batallas y aumentar diamantes
+4. Consistencia y frecuencia de transmisiones en vivo
+5. Engagement con la audiencia durante batallas
+
+Genera consejos personalizados según las métricas del creador y siempre diferentes, evitando respuestas genéricas.`;
 
     const userPrompt = `Analiza las siguientes métricas del creador ${creatorData.nombre}:
 - Diamantes: ${creatorData.diamantes || 0}
 - Seguidores: ${creatorData.followers || 0}
 - Vistas totales: ${creatorData.views || 0}
-- Tasa de engagement: ${creatorData.engagement_rate || 0}%
+- Matches/Batallas PKO: ${creatorData.engagement_rate || 0}
 - Días en live: ${creatorData.dias_live || 0}
 - Horas en live: ${creatorData.horas_live || 0}
 - Categoría: ${creatorData.categoria || 'No especificada'}
 - Vistas último mes: ${creatorData.last_month_views || 0}
 - Diamantes último mes: ${creatorData.last_month_diamantes || 0}
 
-Genera 3-4 consejos específicos y accionables para mejorar su rendimiento. Cada consejo debe ser diferente y adaptado a sus métricas actuales.`;
+RECUERDA: Las batallas PKO son la métrica más importante. Más batallas = más horas live = más diamantes.
+Genera 3-4 consejos específicos y accionables para maximizar sus batallas PKO y mejorar su monetización.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

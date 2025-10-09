@@ -172,13 +172,13 @@ const Dashboard = () => {
           <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Engagement Promedio
+                Matches Promedio
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                {avgEngagement.toFixed(1)}%
+                {avgEngagement.toFixed(1)}
               </div>
             </CardContent>
           </Card>
@@ -224,7 +224,7 @@ const Dashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
-                    <p className="text-sm text-muted-foreground">{(creator.engagement_rate || 0).toFixed(1)}% engagement</p>
+                    <p className="text-sm text-muted-foreground">{(creator.engagement_rate || 0).toFixed(1)} matches</p>
                   </div>
                 </div>
               ))}
