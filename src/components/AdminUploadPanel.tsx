@@ -78,17 +78,36 @@ export const AdminUploadPanel = () => {
           return hours + (minutes / 60);
         };
 
+        // Función para parsear porcentajes (ej: "42.88%" -> 42.88)
+        const parsePercentage = (percent: string): number => {
+          if (!percent) return 0;
+          const match = percent.toString().match(/-?\d+\.?\d*/);
+          return match ? parseFloat(match[0]) : 0;
+        };
+
         const tiktokUsername = row["Creator's username"] || "";
-        const diasDesdeInicio = row["Days since joining"] || 0;
-        const diamantes = row["Diamonds"] || 0;
-        const horasLive = parseDuration(row["LIVE duration"] || "");
-        const diasLive = row["Valid go LIVE days"] || 0;
-        const followers = row["New followers"] || 0;
-        const manager = row["Creator Network manager"] || null;
-        const graduacion = row["Graduation status"] || null;
+        
+        // COLUMNAS PRINCIPALES (G, H, I, J)
+        const diasDesdeInicio = row["Days since joining"] || 0;  // Columna G
+        const diamantes = row["Diamonds"] || 0;                   // Columna H
+        const horasLive = parseDuration(row["LIVE duration"] || "");  // Columna I
+        const diasLive = row["Valid go LIVE days"] || 0;          // Columna J
+        
+        // DATOS DEL MES PASADO
         const diamantesLastMonth = row["Diamonds last month"] || 0;
         const horasLiveLastMonth = parseDuration(row["LIVE duration (hours) last month"] || "");
         const diasLiveLastMonth = row["Valid go LIVE days last month"] || 0;
+        const followersLastMonth = row["New followers last month"] || 0;
+        
+        // PORCENTAJES DE CRECIMIENTO/DECRECIMIENTO
+        const diamondsVsLastMonth = parsePercentage(row["Diamonds - Vs. last month"] || "0");
+        const liveDurationVsLastMonth = parsePercentage(row["LIVE duration - Vs. last month"] || "0");
+        const validDaysVsLastMonth = parsePercentage(row["Valid go LIVE days - Vs. last month"] || "0");
+        const followersVsLastMonth = parsePercentage(row["New followers - Vs. last month"] || "0");
+        
+        const followers = row["New followers"] || 0;
+        const manager = row["Creator Network manager"] || null;
+        const graduacion = row["Graduation status"] || null;
         
         return {
           nombre: tiktokUsername,
@@ -102,16 +121,22 @@ export const AdminUploadPanel = () => {
           graduacion: graduacion,
           diamantes: diamantes,
           followers: followers,
-          views: 0, // No disponible en el Excel
-          engagement_rate: 0, // Calcular si es necesario
+          views: 0,
+          engagement_rate: 0,
           dias_live: diasLive,
           horas_live: horasLive,
           dias_desde_inicio: diasDesdeInicio,
           last_month_diamantes: diamantesLastMonth,
-          last_month_views: 0, // No disponible
-          last_month_engagement: 0, // No disponible
+          last_month_views: 0,
+          last_month_engagement: 0,
           horasLiveLastMonth: horasLiveLastMonth,
           diasLiveLastMonth: diasLiveLastMonth,
+          followersLastMonth: followersLastMonth,
+          // Porcentajes de cambio
+          diamondsVsLastMonth: diamondsVsLastMonth,
+          liveDurationVsLastMonth: liveDurationVsLastMonth,
+          validDaysVsLastMonth: validDaysVsLastMonth,
+          followersVsLastMonth: followersVsLastMonth,
         };
       }).filter(creator => creator.nombre && creator.nombre.toString().trim().length > 0);
 
