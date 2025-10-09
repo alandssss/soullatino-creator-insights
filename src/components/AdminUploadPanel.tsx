@@ -87,11 +87,16 @@ export const AdminUploadPanel = () => {
 
         const tiktokUsername = row["Creator's username"] || "";
         
-        // COLUMNAS PRINCIPALES (G, H, I, J)
+        // ============================================
+        // COLUMNAS CRÍTICAS (H, I, J, AB)
+        // ============================================
+        const diamantes = row["Diamonds"] || 0;                         // Columna H
+        const horasLive = parseDuration(row["LIVE duration"] || "");    // Columna I  
+        const diasLive = row["Valid go LIVE days"] || 0;                // Columna J
+        const batallasPKO = row["PKO battles"] || row["PKO Battles"] || row["Batallas PKO"] || 0;  // Columna AB
+        
+        // OTRAS COLUMNAS IMPORTANTES
         const diasDesdeInicio = row["Days since joining"] || 0;  // Columna G
-        const diamantes = row["Diamonds"] || 0;                   // Columna H
-        const horasLive = parseDuration(row["LIVE duration"] || "");  // Columna I
-        const diasLive = row["Valid go LIVE days"] || 0;          // Columna J
         
         // DATOS DEL MES PASADO
         const diamantesLastMonth = row["Diamonds last month"] || 0;
@@ -119,12 +124,14 @@ export const AdminUploadPanel = () => {
           manager: manager,
           status: "activo",
           graduacion: graduacion,
-          diamantes: diamantes,
+          // COLUMNAS CRÍTICAS H, I, J, AB
+          diamantes: diamantes,                    // H
+          horas_live: horasLive,                   // I
+          dias_live: diasLive,                     // J
+          engagement_rate: batallasPKO,            // AB - Batallas PKO (motor de monetización)
+          // OTRAS MÉTRICAS
           followers: followers,
           views: 0,
-          engagement_rate: 0,
-          dias_live: diasLive,
-          horas_live: horasLive,
           dias_desde_inicio: diasDesdeInicio,
           last_month_diamantes: diamantesLastMonth,
           last_month_views: 0,
@@ -286,7 +293,7 @@ export const AdminUploadPanel = () => {
         </Button>
         <div className="text-xs text-muted-foreground space-y-1">
           <p>• El archivo debe ser Excel (.xlsx o .xls)</p>
-          <p>• Columnas esperadas: Nombre, Usuario TikTok, Teléfono, Email, Categoría, Manager, Diamantes, etc.</p>
+          <p>• Columnas críticas: H (Diamantes), I (Duración LIVE), J (Días en LIVE), AB (Batallas PKO)</p>
           <p>• Los creadores existentes se actualizarán automáticamente</p>
         </div>
       </CardContent>
