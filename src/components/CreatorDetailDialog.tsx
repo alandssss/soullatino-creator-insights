@@ -207,6 +207,15 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     // Usar la recomendación IA si existe, sino usar el resumen tradicional
     const message = aiAdvice || generateWhatsAppSummary();
     
+    if (!message || message.trim() === "") {
+      toast({
+        title: "Error",
+        description: "No hay mensaje para enviar. Genera primero una recomendación.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Registrar la actividad en la base de datos
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -219,12 +228,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       });
     }
     
-    const encodedMessage = encodeURIComponent(message);
-    // Usar formato compatible que no se bloquea
-    const whatsappUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
-    
-    console.log("WhatsApp URL:", whatsappUrl);
-    console.log("Message:", message);
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
     
     toast({

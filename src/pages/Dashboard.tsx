@@ -213,7 +213,7 @@ const Dashboard = () => {
                         <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
                         {creator.telefono && (
                           <a
-                            href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '')}`}
+                            href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '').length === 10 ? '52' : ''}${creator.telefono.replace(/[^0-9]/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
