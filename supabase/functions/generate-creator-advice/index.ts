@@ -63,21 +63,15 @@ CREADOR: ${creatorData.nombre}
 
 PROGRESO DEL MES ACTUAL:
 - Diamantes del mes: ${creatorData.diamantes || 0}
+- Días en LIVE del mes: ${creatorData.dias_live || 0}
 - Horas en LIVE del mes: ${creatorData.horas_live || 0}
-- Días válidos del mes: ${creatorData.dias_live || 0}
-- Batallas PKO: ${creatorData.engagement_rate || 0}
-
-DATOS ADICIONALES:
-- Seguidores: ${creatorData.followers || 0}
-- Categoría: ${creatorData.categoria || 'No especificada'}
-- Días desde que empezó: ${creatorData.dias_desde_inicio || 0}
 
 INSTRUCCIONES:
 1. Compara los diamantes actuales (${creatorData.diamantes || 0}) con el hito asignado (${creatorData.hito_diamantes || 50000})
 2. Calcula el porcentaje de avance: (diamantes actuales / hito) × 100
 3. Calcula cuántos diamantes faltan para alcanzar el hito
 4. Determina si ya alcanzó (✅), está cerca (➖), o está lejos (❌) del objetivo
-5. Sugiere acciones concretas: más PKO, más horas LIVE, días adicionales
+5. Sugiere acciones concretas basadas en días y horas en LIVE
 6. Genera la retroalimentación en el formato estructurado obligatorio
 
 Sé específico con números, realista y motivador.`;
