@@ -227,27 +227,16 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     
     const growth = getMonthlyGrowth();
     const milestones = getMilestones().slice(0, 1);
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth() + 1;
     
-    let message = `Hola ${creator.nombre}! 👋\n\n`;
-    message += `📊 *Resumen de tu desempeño*\n\n`;
-    message += `💎 Diamantes totales: ${(creator.diamantes || 0).toLocaleString()}\n`;
-    message += `📺 Días en Live: ${creator.dias_live || 0}\n`;
-    message += `⏰ Horas en Live: ${(creator.horas_live || 0).toFixed(1)}\n`;
-    message += `⚔️ Batallas: ${creator.dias_live || 0}\n\n`;
-    
-    if (growth.diamantes !== 0) {
-      message += `*Comparación con el mes pasado:*\n`;
-      message += `💎 Diamantes: ${growth.diamantes > 0 ? '+' : ''}${growth.diamantes.toFixed(1)}%\n`;
-      message += `👁️ Vistas: ${growth.views > 0 ? '+' : ''}${growth.views.toFixed(1)}%\n`;
-      message += `📈 Engagement: ${growth.engagement > 0 ? '+' : ''}${growth.engagement.toFixed(1)}%\n\n`;
-    }
-    
-    if (milestones.length > 0) {
-      message += `🎯 *Próximo hito:* ${milestones[0].label}\n`;
-      message += `Faltan ${milestones[0].remaining.toLocaleString()} 💎\n\n`;
-    }
-    
-    message += `¡Sigue así! 🚀`;
+    let message = `Hola ${creator.nombre}!\n\n`;
+    message += `Tus métricas al día ${currentDay}/${currentMonth} son:\n`;
+    message += `💎 ${(creator.diamantes || 0).toLocaleString()} diamantes\n`;
+    message += `📺 ${creator.dias_live || 0} días live\n`;
+    message += `⏰ ${(creator.horas_live || 0).toFixed(1)} horas\n\n`;
+    message += `Tienes un momento para que hablemos de ello y cómo mejorarlo?`;
     return message;
   };
 
