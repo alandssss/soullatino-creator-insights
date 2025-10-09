@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Users, TrendingUp, Eye, Zap, LogOut } from "lucide-react";
+import { Users, TrendingUp, Eye, Zap, LogOut, MessageCircle } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 import { AdminUploadPanel } from "@/components/AdminUploadPanel";
@@ -204,7 +204,21 @@ const Dashboard = () => {
                       {index + 1}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
+                        {creator.telefono && (
+                          <a
+                            href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-green-500 hover:text-green-600 transition-colors"
+                            title="Abrir WhatsApp"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">{creator.categoria || "Sin categoría"}</p>
                     </div>
                   </div>
