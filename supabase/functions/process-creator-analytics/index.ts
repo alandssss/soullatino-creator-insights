@@ -58,41 +58,40 @@ serve(async (req) => {
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
     const daysRemainingInMonth = lastDayOfMonth - currentDay;
 
-    // 3. Generar recomendación con formato estricto
+    // 3. Generar recomendación con formato estricto SIN MARKDOWN
     const systemPrompt = `Eres un asesor de TikTok LIVE. 
 
 ADVERTENCIA CRÍTICA: Si no sigues EXACTAMENTE el formato especificado, tu respuesta será RECHAZADA.
 
-FORMATO OBLIGATORIO (COPIA EXACTAMENTE ESTA ESTRUCTURA):
+FORMATO OBLIGATORIO (COPIA EXACTAMENTE ESTA ESTRUCTURA - SIN MARKDOWN):
 
-🎯 **Tu hito:** [número] diamantes este mes
+🎯 Tu hito: [número] diamantes este mes
 
-📍 **Dónde estás:**
+📍 Dónde estás:
 - Llevas [número] diamantes ([porcentaje]% del objetivo)
 - [✅/➖/❌] [Te faltan X diamantes / Ya superaste tu meta]
 
-💪 **Acción de HOY:**
+💪 Acción de HOY:
 [UNA SOLA frase. Máximo 40 palabras]
 
 REGLAS ABSOLUTAS - NO NEGOCIABLES:
-1. NO escribas párrafos introductorios como "¡Hola!" o "¡Es genial verte!"
-2. NO menciones "creador avanzado", "días desde inicio", "horas del último mes"
-3. USA SOLO los 3 bloques: 🎯 Tu hito, 📍 Dónde estás, 💪 Acción de HOY
+1. NO uses markdown (sin **, sin _, sin #)
+2. NO escribas párrafos introductorios
+3. USA SOLO los 3 bloques con emojis
 4. Máximo 100 palabras TOTAL
 5. La acción debe tener NÚMEROS concretos
-6. Símbolos: ✅ si ≥100%, ➖ si 70-99%, ❌ si <70%
 
 EJEMPLO CORRECTO:
-🎯 **Tu hito:** 100,000 diamantes este mes
+🎯 Tu hito: 100,000 diamantes este mes
 
-📍 **Dónde estás:**
+📍 Dónde estás:
 - Llevas 45,000 diamantes (45% del objetivo)
 - ❌ Te faltan 55,000 diamantes
 
-💪 **Acción de HOY:**
+💪 Acción de HOY:
 Haz 2 batallas PKO hoy para sumar 15,000 diamantes y llegar al 60% de tu meta.
 
-RESPONDE SOLO CON EL FORMATO. NADA MÁS.`;
+RESPONDE SOLO CON EL FORMATO. SIN MARKDOWN.`;
 
     const userPrompt = `CREADOR: ${creator.nombre}
 FECHA: Día ${currentDay} de ${lastDayOfMonth} del mes ${currentMonth}
@@ -140,13 +139,13 @@ Genera la retroalimentación en el formato obligatorio.`;
     if (!recommendation) {
       const estado = porcentaje >= 100 ? 'Ya superaste tu meta' : `Te faltan ${faltantes.toLocaleString()} diamantes`;
       
-      recommendation = `🎯 **Tu hito:** ${hito.toLocaleString()} diamantes este mes
+      recommendation = `🎯 Tu hito: ${hito.toLocaleString()} diamantes este mes
 
-📍 **Dónde estás:**
+📍 Dónde estás:
 - Llevas ${diamantes.toLocaleString()} diamantes (${porcentaje}% del objetivo)
 - ${simbolo} ${estado}
 
-💪 **Acción de HOY:**
+💪 Acción de HOY:
 Haz ${porcentaje < 50 ? '2-3' : '1-2'} batallas PKO hoy y suma ${creator.dias_live || 0 < 15 ? '1 día más' : 'más horas'} de LIVE para acercarte a tu meta.`;
     }
 

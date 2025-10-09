@@ -22,39 +22,36 @@ serve(async (req) => {
 
 ADVERTENCIA CRÍTICA: Si no sigues EXACTAMENTE el formato especificado, tu respuesta será RECHAZADA.
 
-FORMATO OBLIGATORIO (COPIA EXACTAMENTE ESTA ESTRUCTURA):
+FORMATO OBLIGATORIO (COPIA EXACTAMENTE ESTA ESTRUCTURA - SIN MARKDOWN):
 
-🎯 **Tu hito:** [número] diamantes este mes
+🎯 Tu hito: [número] diamantes este mes
 
-📍 **Dónde estás:**
+📍 Dónde estás:
 - Llevas [número] diamantes ([porcentaje]% del objetivo)
 - [✅/➖/❌] [Te faltan X diamantes / Ya superaste tu meta]
 
-💪 **Acción de HOY:**
+💪 Acción de HOY:
 [UNA SOLA frase. Máximo 40 palabras]
 
 REGLAS ABSOLUTAS - NO NEGOCIABLES:
-1. NO escribas párrafos introductorios como "¡Hola!" o "¡Es genial verte!"
-2. NO menciones "creador avanzado", "horas del último mes", o información fuera del formato
-3. USA SOLO los 3 bloques: 🎯 Tu hito, 📍 Dónde estás, 💪 Acción de HOY
-4. Máximo 100 palabras TOTAL (incluyendo emojis y todo)
+1. NO uses markdown (sin **, sin _, sin #)
+2. NO escribas párrafos introductorios
+3. USA SOLO los 3 bloques con emojis
+4. Máximo 100 palabras TOTAL
 5. La acción debe tener NÚMEROS concretos
 6. Símbolos: ✅ si ≥100%, ➖ si 70-99%, ❌ si <70%
 
-EJEMPLO CORRECTO (COPIA ESTA ESTRUCTURA):
-🎯 **Tu hito:** 100,000 diamantes este mes
+EJEMPLO CORRECTO:
+🎯 Tu hito: 100,000 diamantes este mes
 
-📍 **Dónde estás:**
+📍 Dónde estás:
 - Llevas 45,000 diamantes (45% del objetivo)
 - ❌ Te faltan 55,000 diamantes
 
-💪 **Acción de HOY:**
+💪 Acción de HOY:
 Haz 2 batallas PKO hoy para sumar 15,000 diamantes y llegar al 60% de tu meta.
 
-EJEMPLO INCORRECTO (NUNCA HAGAS ESTO):
-"¡Hola, nicolmindaa! ¡Es genial verte como creador avanzado! Con más de 125 horas..."
-
-RESPONDE SOLO CON EL FORMATO. NADA MÁS.`;
+RESPONDE SOLO CON EL FORMATO. SIN MARKDOWN.`;
 
     const today = new Date();
     const currentDay = today.getDate();
