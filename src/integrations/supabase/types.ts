@@ -207,6 +207,7 @@ export type Database = {
           engagement_rate: number | null
           followers: number | null
           graduacion: string | null
+          hito_diamantes: number | null
           horas_live: number | null
           id: string
           instagram: string | null
@@ -231,6 +232,7 @@ export type Database = {
           engagement_rate?: number | null
           followers?: number | null
           graduacion?: string | null
+          hito_diamantes?: number | null
           horas_live?: number | null
           id?: string
           instagram?: string | null
@@ -255,6 +257,7 @@ export type Database = {
           engagement_rate?: number | null
           followers?: number | null
           graduacion?: string | null
+          hito_diamantes?: number | null
           horas_live?: number | null
           id?: string
           instagram?: string | null
