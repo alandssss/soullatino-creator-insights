@@ -197,7 +197,13 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       return;
     }
     
-    const cleanPhone = creator.telefono.replace(/\D/g, "");
+    let cleanPhone = creator.telefono.replace(/\D/g, "");
+    
+    // Asegurar que el número tenga código de país (México = 52)
+    if (cleanPhone.length === 10) {
+      cleanPhone = "52" + cleanPhone;
+    }
+    
     // Usar la recomendación IA si existe, sino usar el resumen tradicional
     const message = aiAdvice || generateWhatsAppSummary();
     
@@ -214,7 +220,10 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     }
     
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, "_blank");
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    
+    console.log("WhatsApp URL:", whatsappUrl);
+    window.open(whatsappUrl, "_blank");
     
     toast({
       title: "WhatsApp abierto",
