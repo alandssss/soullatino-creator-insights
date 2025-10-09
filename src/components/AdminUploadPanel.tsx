@@ -140,31 +140,59 @@ export const AdminUploadPanel = () => {
         return;
       }
 
-      // Insertar creadores uno por uno o actualizar si ya existen
+      // Estrategia: UPSERT en creators + INSERT diario en creator_daily_stats
       let successCount = 0;
       let errorCount = 0;
 
       for (const creatorData of creatorsData) {
         try {
-          // Intentar actualizar primero por nombre
-          const { data: existing } = await supabase
+          // 1. UPSERT en tabla creators (info básica)
+          const { data: upsertedCreator, error: upsertError } = await supabase
             .from("creators")
-            .select("id")
-            .eq("nombre", creatorData.nombre)
-            .maybeSingle();
+            .upsert({
+              nombre: creatorData.nombre,
+              tiktok_username: creatorData.tiktok_username,
+              telefono: creatorData.telefono,
+              email: creatorData.email,
+              instagram: creatorData.instagram,
+              categoria: creatorData.categoria,
+              manager: creatorData.manager,
+              status: creatorData.status,
+              graduacion: creatorData.graduacion,
+              // Métricas actuales (para vista rápida)
+              diamantes: creatorData.diamantes,
+              followers: creatorData.followers,
+              views: creatorData.views,
+              engagement_rate: creatorData.engagement_rate,
+              dias_live: creatorData.dias_live,
+              horas_live: creatorData.horas_live,
+              dias_desde_inicio: creatorData.dias_desde_inicio,
+            }, { onConflict: 'nombre' })
+            .select()
+            .single();
 
-          if (existing) {
-            // Actualizar
-            await supabase
-              .from("creators")
-              .update(creatorData)
-              .eq("id", existing.id);
-          } else {
-            // Insertar nuevo
-            await supabase
-              .from("creators")
-              .insert(creatorData);
+          if (upsertError) throw upsertError;
+
+          // 2. INSERT snapshot diario en creator_daily_stats
+          const { error: snapshotError } = await supabase
+            .from("creator_daily_stats")
+            .insert({
+              creator_id: upsertedCreator.id,
+              snapshot_date: new Date().toISOString().split('T')[0], // Fecha de hoy
+              days_since_joining: creatorData.dias_desde_inicio || 0,
+              live_duration_l30d: creatorData.horas_live || 0,
+              diamonds_l30d: creatorData.diamantes || 0,
+              diamond_baseline: 0, // Ajustar si tienes este dato
+              ingreso_estimado: creatorData.diamantes ? (creatorData.diamantes * 0.005) : 0, // 0.5% conversión estimada
+              followers: creatorData.followers || 0,
+              engagement_rate: creatorData.engagement_rate || 0,
+            });
+
+          // Si ya existe un snapshot para hoy, ignorar el error de UNIQUE constraint
+          if (snapshotError && !snapshotError.message?.includes('duplicate key')) {
+            console.warn("Error creando snapshot:", snapshotError);
           }
+
           successCount++;
         } catch (err) {
           console.error("Error con creador:", creatorData.nombre, err);

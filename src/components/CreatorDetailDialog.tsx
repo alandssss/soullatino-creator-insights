@@ -36,6 +36,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   });
   const [aiAdvice, setAiAdvice] = useState<string>("");
   const [loadingAdvice, setLoadingAdvice] = useState(false);
+  const [milestone, setMilestone] = useState("");
   const [userRole, setUserRole] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -56,11 +57,17 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     setUserRole(data?.role || null);
   };
 
+  // Cargar recomendación al abrir modal
   useEffect(() => {
-    if (creator) {
+    if (open && creator) {
       fetchInteractions();
+      loadLatestRecommendation();
+    } else {
+      // Limpiar al cerrar
+      setAiAdvice("");
+      setMilestone("");
     }
-  }, [creator]);
+  }, [open, creator]);
 
   const fetchInteractions = async () => {
     if (!creator) return;
@@ -82,26 +89,59 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     }
   };
 
+  // Cargar la recomendación más reciente de la base de datos
+  const loadLatestRecommendation = async () => {
+    if (!creator) return;
+
+    setLoadingAdvice(true);
+    try {
+      const { data, error } = await supabase
+        .from('creator_recommendations')
+        .select('descripcion, tipo, titulo')
+        .eq('creator_id', creator.id)
+        .eq('activa', true)
+        .order('fecha_creacion', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setAiAdvice(data.descripcion);
+        setMilestone(data.tipo || '');
+      }
+    } catch (error) {
+      console.error('Error cargando recomendación:', error);
+    } finally {
+      setLoadingAdvice(false);
+    }
+  };
+
+  // Generar NUEVA recomendación inteligente
   const generateAIAdvice = async () => {
     if (!creator) return;
     
     setLoadingAdvice(true);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-creator-advice", {
-        body: { creatorData: creator },
+      const { data, error } = await supabase.functions.invoke("process-creator-analytics", {
+        body: { creatorId: creator.id },
       });
 
       if (error) throw error;
 
-      setAiAdvice(data.advice);
-      toast({
-        title: "Consejos generados",
-        description: "La IA ha generado nuevos consejos personalizados",
-      });
+      if (data?.recommendation) {
+        setAiAdvice(data.recommendation);
+        setMilestone(data.milestone || '');
+        toast({
+          title: "✨ Recomendación generada",
+          description: `Hito: ${data.milestoneDescription}`,
+        });
+      }
     } catch (error) {
+      console.error('Error generando recomendación:', error);
       toast({
         title: "Error",
-        description: "No se pudieron generar los consejos",
+        description: "No se pudo generar la recomendación. Verifica que existan datos históricos.",
         variant: "destructive",
       });
     } finally {
@@ -158,7 +198,8 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     }
     
     const cleanPhone = creator.telefono.replace(/\D/g, "");
-    const summary = generateWhatsAppSummary();
+    // Usar la recomendación IA si existe, sino usar el resumen tradicional
+    const message = aiAdvice || generateWhatsAppSummary();
     
     // Registrar la actividad en la base de datos
     const { data: { user } } = await supabase.auth.getUser();
@@ -168,11 +209,11 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
         user_email: user.email || "Unknown",
         action_type: "whatsapp_click",
         creator_name: creator.nombre,
-        message_preview: summary,
+        message_preview: message.substring(0, 200),
       });
     }
     
-    const encodedMessage = encodeURIComponent(summary);
+    const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, "_blank");
     
     toast({
@@ -304,8 +345,13 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent flex items-center gap-2">
             {creator.nombre}
+            {milestone && (
+              <span className="text-sm font-normal text-muted-foreground">
+                • {milestone}
+              </span>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -367,23 +413,32 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <Button 
                   onClick={openWhatsApp} 
                   className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  disabled={!creator.telefono}
+                  disabled={!creator.telefono || (!aiAdvice)}
                   size="lg"
                 >
                   <MessageSquare className="h-5 w-5 mr-2" />
-                  Enviar Mensaje por WhatsApp
+                  Enviar Recomendación por WhatsApp
                 </Button>
                 {!creator.telefono && (
                   <p className="text-sm text-muted-foreground text-center mt-2">
                     No hay número de teléfono registrado
                   </p>
                 )}
+                {!aiAdvice && creator.telefono && (
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    Genera primero una recomendación para enviar
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="milestones" className="w-full">
+          <Tabs defaultValue="advice" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="advice">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Consejos IA
+              </TabsTrigger>
               <TabsTrigger value="milestones">
                 <Target className="h-4 w-4 mr-2" />
                 Hitos
@@ -392,15 +447,51 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Crecimiento
               </TabsTrigger>
-              <TabsTrigger value="advice">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Consejos IA
-              </TabsTrigger>
               <TabsTrigger value="agenda">
                 <Calendar className="h-4 w-4 mr-2" />
                 Agenda
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="advice" className="space-y-4">
+              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">Recomendación Inteligente</CardTitle>
+                    <Button
+                      onClick={generateAIAdvice}
+                      disabled={loadingAdvice}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {loadingAdvice ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                          Generando...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-3 w-3 mr-2" />
+                          Generar Nueva
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Textarea
+                    value={loadingAdvice ? "Cargando recomendación..." : aiAdvice}
+                    onChange={(e) => setAiAdvice(e.target.value)}
+                    placeholder="Haz clic en 'Generar Nueva' para obtener una recomendación personalizada basada en datos históricos..."
+                    className="min-h-[150px] text-base"
+                    disabled={loadingAdvice}
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    💡 La recomendación se genera basándose en los datos históricos del creador y sus hitos de rendimiento
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             <TabsContent value="milestones" className="space-y-4">
               <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
@@ -457,28 +548,14 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                             ) : (
                               <Minus className="h-4 w-4 text-muted-foreground" />
                             )}
-                            <span className={`font-bold ${metric.value > 0 ? 'text-green-500' : metric.value < 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
-                              {metric.value > 0 ? '+' : ''}{metric.value.toFixed(1)}%
+                            <span className={metric.value > 0 ? "text-green-500" : metric.value < 0 ? "text-red-500" : "text-muted-foreground"}>
+                              {metric.value > 0 ? "+" : ""}{metric.value.toFixed(1)}%
                             </span>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Actual</p>
-                            <p className="font-semibold">
-                              {metric.isPercentage 
-                                ? `${metric.current.toFixed(1)}%` 
-                                : metric.current.toLocaleString()}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Mes Pasado</p>
-                            <p className="font-semibold">
-                              {metric.isPercentage 
-                                ? `${metric.last.toFixed(1)}%` 
-                                : metric.last.toLocaleString()}
-                            </p>
-                          </div>
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                          <span>Actual: {metric.isPercentage ? `${metric.current.toFixed(1)}%` : metric.current.toLocaleString()}</span>
+                          <span>Mes pasado: {metric.isPercentage ? `${metric.last.toFixed(1)}%` : metric.last.toLocaleString()}</span>
                         </div>
                       </div>
                     ));
@@ -487,166 +564,82 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               </Card>
             </TabsContent>
 
-            <TabsContent value="advice" className="space-y-4">
+            <TabsContent value="agenda" className="space-y-4">
               <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Consejos Personalizados</CardTitle>
-                    <Button
-                      onClick={generateAIAdvice}
-                      disabled={loadingAdvice}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {loadingAdvice ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Generando...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          Generar Nuevos Consejos
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  <CardTitle className="text-lg">Historial de Interacciones</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {aiAdvice ? (
-                    <div className="prose prose-sm max-w-none whitespace-pre-wrap text-foreground">
-                      {aiAdvice}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-center py-8">
-                      Haz clic en "Generar Nuevos Consejos" para obtener recomendaciones personalizadas
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="agenda" className="space-y-4">
-              {userRole === "admin" && (
-                <>
-                  <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <MessageSquare className="h-5 w-5 text-primary" />
-                        Enviar Resumen por WhatsApp
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Button 
-                        onClick={openWhatsApp} 
-                        className="w-full bg-green-600 hover:bg-green-700 text-white"
-                        disabled={!creator.telefono}
-                      >
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Enviar Resumen al Creador
-                      </Button>
-                      {!creator.telefono && (
-                        <p className="text-sm text-muted-foreground text-center mt-2">
-                          No hay número de teléfono registrado
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Nueva Interacción</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <Label htmlFor="tipo">Tipo de Interacción</Label>
-                        <Input
-                          id="tipo"
-                          placeholder="Ej: Llamada, Reunión, Email"
-                          value={newInteraction.tipo_interaccion}
-                          onChange={(e) =>
-                            setNewInteraction({ ...newInteraction, tipo_interaccion: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="admin">Manager/Admin</Label>
-                        <Input
-                          id="admin"
-                          placeholder="Tu nombre"
-                          value={newInteraction.admin_nombre}
-                          onChange={(e) =>
-                            setNewInteraction({ ...newInteraction, admin_nombre: e.target.value })
-                          }
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="notas">Notas</Label>
-                        <Textarea
-                          id="notas"
-                          placeholder="Detalles de la interacción..."
-                          value={newInteraction.notas}
-                          onChange={(e) =>
-                            setNewInteraction({ ...newInteraction, notas: e.target.value })
-                          }
-                          rows={3}
-                        />
-                      </div>
-                      <Button onClick={addInteraction} className="w-full">
-                        <Phone className="h-4 w-4 mr-2" />
-                        Guardar Interacción
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Historial de Interacciones (Solo Admin)</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {interactions.length > 0 ? (
-                        <div className="space-y-3">
-                          {interactions.map((interaction) => (
-                            <div
-                              key={interaction.id}
-                              className="p-3 rounded-lg bg-background/50 border border-border/30"
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <span className="font-semibold text-primary">
-                                  {interaction.tipo_interaccion}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {new Date(interaction.fecha).toLocaleDateString()}
-                                </span>
-                              </div>
-                              {interaction.admin_nombre && (
-                                <p className="text-sm text-muted-foreground mb-1">
-                                  Por: {interaction.admin_nombre}
-                                </p>
-                              )}
-                              <p className="text-sm">{interaction.notas}</p>
-                            </div>
-                          ))}
+                  <div className="space-y-4">
+                    {(userRole === "admin" || userRole === "manager") && (
+                      <div className="space-y-3 p-4 bg-background/50 rounded-lg border border-border/30">
+                        <div className="space-y-2">
+                          <Label>Tipo de Interacción</Label>
+                          <Input
+                            value={newInteraction.tipo_interaccion}
+                            onChange={(e) =>
+                              setNewInteraction({ ...newInteraction, tipo_interaccion: e.target.value })
+                            }
+                            placeholder="Ej: Llamada, Email, Reunión"
+                          />
                         </div>
-                      ) : (
-                        <p className="text-muted-foreground text-center py-4">
+                        <div className="space-y-2">
+                          <Label>Notas</Label>
+                          <Textarea
+                            value={newInteraction.notas}
+                            onChange={(e) =>
+                              setNewInteraction({ ...newInteraction, notas: e.target.value })
+                            }
+                            placeholder="Detalles de la interacción..."
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nombre del Admin/Manager</Label>
+                          <Input
+                            value={newInteraction.admin_nombre}
+                            onChange={(e) =>
+                              setNewInteraction({ ...newInteraction, admin_nombre: e.target.value })
+                            }
+                            placeholder="Tu nombre"
+                          />
+                        </div>
+                        <Button onClick={addInteraction} className="w-full">
+                          Agregar Interacción
+                        </Button>
+                      </div>
+                    )}
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                      {interactions.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-8">
                           No hay interacciones registradas
                         </p>
+                      ) : (
+                        interactions.map((interaction) => (
+                          <div
+                            key={interaction.id}
+                            className="p-3 rounded-lg bg-background/50 border border-border/30"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <span className="font-semibold">{interaction.tipo_interaccion}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(interaction.fecha).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-1">
+                              {interaction.notas}
+                            </p>
+                            {interaction.admin_nombre && (
+                              <p className="text-xs text-muted-foreground">
+                                Por: {interaction.admin_nombre}
+                              </p>
+                            )}
+                          </div>
+                        ))
                       )}
-                    </CardContent>
-                  </Card>
-                </>
-              )}
-              
-              {userRole !== "admin" && (
-                <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                  <CardContent className="py-12">
-                    <p className="text-muted-foreground text-center">
-                      Solo los administradores pueden ver y gestionar las interacciones con los creadores.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
