@@ -62,65 +62,112 @@ export const AdminUploadPanel = () => {
     try {
       const excelData = await processExcelFile(file) as any[];
       
+      console.log("Datos del Excel:", excelData.slice(0, 2)); // Ver las primeras 2 filas
+      
       // Mapear los datos del Excel a la estructura de la base de datos
-      const creatorsData = excelData.map((row: any) => ({
-        nombre: row["Nombre"] || row["nombre"] || "",
-        tiktok_username: row["Usuario TikTok"] || row["tiktok_username"] || row["TikTok"] || "",
-        telefono: row["Teléfono"] || row["telefono"] || row["Telefono"] || "",
-        email: row["Email"] || row["email"] || row["Correo"] || "",
-        instagram: row["Instagram"] || row["instagram"] || "",
-        categoria: row["Categoría"] || row["categoria"] || row["Categoria"] || "",
-        manager: row["Manager"] || row["manager"] || "",
-        status: row["Status"] || row["status"] || "activo",
-        graduacion: row["Graduación"] || row["graduacion"] || row["Graduacion"] || "",
-        diamantes: parseInt(row["Diamantes"] || row["diamantes"] || "0"),
-        followers: parseInt(row["Seguidores"] || row["followers"] || row["Followers"] || "0"),
-        views: parseInt(row["Vistas"] || row["views"] || row["Views"] || "0"),
-        engagement_rate: parseFloat(row["Engagement"] || row["engagement_rate"] || row["Engagement Rate"] || "0"),
-        dias_live: parseInt(row["Días Live"] || row["dias_live"] || row["Dias Live"] || "0"),
-        horas_live: parseFloat(row["Horas Live"] || row["horas_live"] || row["Horas Live"] || "0"),
-        dias_desde_inicio: parseInt(row["Días Desde Inicio"] || row["dias_desde_inicio"] || "0"),
-        last_month_diamantes: parseInt(row["Diamantes Mes Pasado"] || row["last_month_diamantes"] || "0"),
-        last_month_views: parseInt(row["Vistas Mes Pasado"] || row["last_month_views"] || "0"),
-        last_month_engagement: parseFloat(row["Engagement Mes Pasado"] || row["last_month_engagement"] || "0"),
-      }));
+      // Ser más flexible con los nombres de columnas
+      const creatorsData = excelData.map((row: any) => {
+        // Función helper para buscar valor en diferentes posibles nombres de columna
+        const findValue = (possibleKeys: string[]) => {
+          for (const key of possibleKeys) {
+            if (row[key] !== undefined && row[key] !== null && row[key] !== "") {
+              return row[key];
+            }
+          }
+          return null;
+        };
 
-      // Insertar o actualizar creadores en la base de datos
-      const { error } = await supabase
-        .from("creators")
-        .upsert(creatorsData, { 
-          onConflict: "tiktok_username",
-          ignoreDuplicates: false 
+        return {
+          nombre: findValue(["Nombre", "nombre", "Name", "name", "NOMBRE"]) || "",
+          tiktok_username: findValue(["Usuario TikTok", "tiktok_username", "TikTok", "TikTok Username", "Username", "username"]) || null,
+          telefono: findValue(["Teléfono", "telefono", "Telefono", "Phone", "phone"]) || null,
+          email: findValue(["Email", "email", "Correo", "correo", "E-mail"]) || null,
+          instagram: findValue(["Instagram", "instagram", "IG"]) || null,
+          categoria: findValue(["Categoría", "categoria", "Categoria", "Category"]) || null,
+          manager: findValue(["Manager", "manager", "Gerente"]) || null,
+          status: findValue(["Status", "status", "Estado"]) || "activo",
+          graduacion: findValue(["Graduación", "graduacion", "Graduacion"]) || null,
+          diamantes: parseInt(findValue(["Diamantes", "diamantes", "Diamonds"]) || "0") || 0,
+          followers: parseInt(findValue(["Seguidores", "followers", "Followers", "Fans"]) || "0") || 0,
+          views: parseInt(findValue(["Vistas", "views", "Views"]) || "0") || 0,
+          engagement_rate: parseFloat(findValue(["Engagement", "engagement_rate", "Engagement Rate"]) || "0") || 0,
+          dias_live: parseInt(findValue(["Días Live", "dias_live", "Dias Live", "Days Live"]) || "0") || 0,
+          horas_live: parseFloat(findValue(["Horas Live", "horas_live", "Hours Live"]) || "0") || 0,
+          dias_desde_inicio: parseInt(findValue(["Días Desde Inicio", "dias_desde_inicio"]) || "0") || 0,
+          last_month_diamantes: parseInt(findValue(["Diamantes Mes Pasado", "last_month_diamantes"]) || "0") || 0,
+          last_month_views: parseInt(findValue(["Vistas Mes Pasado", "last_month_views"]) || "0") || 0,
+          last_month_engagement: parseFloat(findValue(["Engagement Mes Pasado", "last_month_engagement"]) || "0") || 0,
+        };
+      }).filter(creator => creator.nombre); // Solo incluir filas con nombre
+
+      console.log("Datos mapeados:", creatorsData.slice(0, 2));
+
+      if (creatorsData.length === 0) {
+        toast({
+          title: "Error",
+          description: "No se encontraron datos válidos en el archivo. Asegúrate de que haya una columna 'Nombre'.",
+          variant: "destructive",
         });
+        setUploading(false);
+        return;
+      }
 
-      if (error) throw error;
+      // Insertar creadores uno por uno o actualizar si ya existen
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const creatorData of creatorsData) {
+        try {
+          // Intentar actualizar primero por nombre
+          const { data: existing } = await supabase
+            .from("creators")
+            .select("id")
+            .eq("nombre", creatorData.nombre)
+            .maybeSingle();
+
+          if (existing) {
+            // Actualizar
+            await supabase
+              .from("creators")
+              .update(creatorData)
+              .eq("id", existing.id);
+          } else {
+            // Insertar nuevo
+            await supabase
+              .from("creators")
+              .insert(creatorData);
+          }
+          successCount++;
+        } catch (err) {
+          console.error("Error con creador:", creatorData.nombre, err);
+          errorCount++;
+        }
+      }
 
       // Registrar el archivo cargado
       await supabase
         .from("uploaded_reports")
         .insert({
           filename: file.name,
-          records_count: creatorsData.length,
+          records_count: successCount,
           processed: true,
         });
 
       toast({
         title: "Éxito",
-        description: `Se procesaron ${creatorsData.length} creadores correctamente`,
+        description: `Se procesaron ${successCount} creadores correctamente${errorCount > 0 ? `. ${errorCount} con errores.` : ''}`,
       });
 
       setFile(null);
-      // Limpiar el input
       const fileInput = document.getElementById("file-upload") as HTMLInputElement;
       if (fileInput) fileInput.value = "";
 
-      // Recargar la página para mostrar los nuevos datos
       window.location.reload();
     } catch (error) {
       console.error("Error uploading file:", error);
       toast({
         title: "Error",
-        description: "No se pudo procesar el archivo",
+        description: "No se pudo procesar el archivo. Revisa la consola para más detalles.",
         variant: "destructive",
       });
     } finally {
