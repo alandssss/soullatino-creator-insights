@@ -9,6 +9,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 import { AdminUploadPanel } from "@/components/AdminUploadPanel";
 import { AdminActivityPanel } from "@/components/AdminActivityPanel";
+import { UserManagement } from "@/components/UserManagement";
 
 type Creator = Tables<"creators">;
 
@@ -116,10 +117,15 @@ const Dashboard = () => {
         </div>
 
         {userRole === "admin" && (
-          <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AdminUploadPanel />
-            <AdminActivityPanel />
-          </div>
+          <>
+            <div className="mb-8">
+              <UserManagement />
+            </div>
+            <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <AdminUploadPanel />
+              <AdminActivityPanel />
+            </div>
+          </>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
