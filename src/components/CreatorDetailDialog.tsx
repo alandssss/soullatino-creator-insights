@@ -231,11 +231,9 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     let message = `Hola ${creator.nombre}! 👋\n\n`;
     message += `📊 *Resumen de tu desempeño*\n\n`;
     message += `💎 Diamantes totales: ${(creator.diamantes || 0).toLocaleString()}\n`;
-    message += `💎 Diamantes este mes: ${(creator.last_month_diamantes || 0).toLocaleString()}\n`;
     message += `📺 Días en Live: ${creator.dias_live || 0}\n`;
     message += `⏰ Horas en Live: ${(creator.horas_live || 0).toFixed(1)}\n`;
-    message += `⚔️ Batallas: ${creator.dias_live || 0}\n`;
-    message += `📈 Engagement: ${(creator.engagement_rate || 0).toFixed(1)}%\n\n`;
+    message += `⚔️ Batallas: ${creator.dias_live || 0}\n\n`;
     
     if (growth.diamantes !== 0) {
       message += `*Comparación con el mes pasado:*\n`;
