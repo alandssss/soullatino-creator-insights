@@ -62,45 +62,73 @@ export const AdminUploadPanel = () => {
     try {
       const excelData = await processExcelFile(file) as any[];
       
-      console.log("Datos del Excel:", excelData.slice(0, 2)); // Ver las primeras 2 filas
+      console.log("Datos del Excel - Primeras 2 filas:", excelData.slice(0, 2));
+      console.log("Columnas disponibles:", excelData.length > 0 ? Object.keys(excelData[0]) : []);
       
       // Mapear los datos del Excel a la estructura de la base de datos
-      // Ser más flexible con los nombres de columnas
+      // Ser más flexible con los nombres de columnas - buscar cualquier variación
       const creatorsData = excelData.map((row: any) => {
-        // Función helper para buscar valor en diferentes posibles nombres de columna
+        // Función helper para buscar valor en diferentes posibles nombres de columna (case insensitive)
         const findValue = (possibleKeys: string[]) => {
+          // Primero buscar coincidencia exacta
           for (const key of possibleKeys) {
             if (row[key] !== undefined && row[key] !== null && row[key] !== "") {
               return row[key];
             }
           }
+          
+          // Si no hay coincidencia exacta, buscar case insensitive
+          const rowKeys = Object.keys(row);
+          for (const possibleKey of possibleKeys) {
+            const matchedKey = rowKeys.find(k => 
+              k.toLowerCase().trim() === possibleKey.toLowerCase().trim()
+            );
+            if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null && row[matchedKey] !== "") {
+              return row[matchedKey];
+            }
+          }
+          
+          // Buscar por palabras clave parciales
+          for (const possibleKey of possibleKeys) {
+            const matchedKey = rowKeys.find(k => 
+              k.toLowerCase().includes(possibleKey.toLowerCase()) ||
+              possibleKey.toLowerCase().includes(k.toLowerCase())
+            );
+            if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null && row[matchedKey] !== "") {
+              return row[matchedKey];
+            }
+          }
+          
           return null;
         };
 
+        const nombre = findValue(["Nombre", "nombre", "Name", "name", "NOMBRE", "Creator", "creator"]);
+        
         return {
-          nombre: findValue(["Nombre", "nombre", "Name", "name", "NOMBRE"]) || "",
-          tiktok_username: findValue(["Usuario TikTok", "tiktok_username", "TikTok", "TikTok Username", "Username", "username"]) || null,
-          telefono: findValue(["Teléfono", "telefono", "Telefono", "Phone", "phone"]) || null,
-          email: findValue(["Email", "email", "Correo", "correo", "E-mail"]) || null,
-          instagram: findValue(["Instagram", "instagram", "IG"]) || null,
-          categoria: findValue(["Categoría", "categoria", "Categoria", "Category"]) || null,
-          manager: findValue(["Manager", "manager", "Gerente"]) || null,
-          status: findValue(["Status", "status", "Estado"]) || "activo",
-          graduacion: findValue(["Graduación", "graduacion", "Graduacion"]) || null,
-          diamantes: parseInt(findValue(["Diamantes", "diamantes", "Diamonds"]) || "0") || 0,
-          followers: parseInt(findValue(["Seguidores", "followers", "Followers", "Fans"]) || "0") || 0,
-          views: parseInt(findValue(["Vistas", "views", "Views"]) || "0") || 0,
-          engagement_rate: parseFloat(findValue(["Engagement", "engagement_rate", "Engagement Rate"]) || "0") || 0,
-          dias_live: parseInt(findValue(["Días Live", "dias_live", "Dias Live", "Days Live"]) || "0") || 0,
-          horas_live: parseFloat(findValue(["Horas Live", "horas_live", "Hours Live"]) || "0") || 0,
-          dias_desde_inicio: parseInt(findValue(["Días Desde Inicio", "dias_desde_inicio"]) || "0") || 0,
-          last_month_diamantes: parseInt(findValue(["Diamantes Mes Pasado", "last_month_diamantes"]) || "0") || 0,
-          last_month_views: parseInt(findValue(["Vistas Mes Pasado", "last_month_views"]) || "0") || 0,
-          last_month_engagement: parseFloat(findValue(["Engagement Mes Pasado", "last_month_engagement"]) || "0") || 0,
+          nombre: nombre || "",
+          tiktok_username: findValue(["Usuario TikTok", "tiktok_username", "TikTok", "TikTok Username", "Username", "username", "user"]) || null,
+          telefono: findValue(["Teléfono", "telefono", "Telefono", "Phone", "phone", "tel", "Tel"]) || null,
+          email: findValue(["Email", "email", "Correo", "correo", "E-mail", "mail"]) || null,
+          instagram: findValue(["Instagram", "instagram", "IG", "ig"]) || null,
+          categoria: findValue(["Categoría", "categoria", "Categoria", "Category", "category", "Grupo", "grupo", "Group"]) || null,
+          manager: findValue(["Manager", "manager", "Gerente", "gerente", "Agency Manager"]) || null,
+          status: findValue(["Status", "status", "Estado", "estado", "State"]) || "activo",
+          graduacion: findValue(["Graduación", "graduacion", "Graduacion", "Graduation", "Level"]) || null,
+          diamantes: parseInt(findValue(["Diamantes", "diamantes", "Diamonds", "diamonds", "Beans"]) || "0") || 0,
+          followers: parseInt(findValue(["Seguidores", "followers", "Followers", "Fans", "fans"]) || "0") || 0,
+          views: parseInt(findValue(["Vistas", "views", "Views", "Visualizaciones"]) || "0") || 0,
+          engagement_rate: parseFloat(findValue(["Engagement", "engagement_rate", "Engagement Rate", "Tasa de Engagement"]) || "0") || 0,
+          dias_live: parseInt(findValue(["Días Live", "dias_live", "Dias Live", "Days Live", "Live Days"]) || "0") || 0,
+          horas_live: parseFloat(findValue(["Horas Live", "horas_live", "Hours Live", "Live Hours"]) || "0") || 0,
+          dias_desde_inicio: parseInt(findValue(["Días Desde Inicio", "dias_desde_inicio", "Days Since Start"]) || "0") || 0,
+          last_month_diamantes: parseInt(findValue(["Diamantes Mes Pasado", "last_month_diamantes", "Previous Diamonds"]) || "0") || 0,
+          last_month_views: parseInt(findValue(["Vistas Mes Pasado", "last_month_views", "Previous Views"]) || "0") || 0,
+          last_month_engagement: parseFloat(findValue(["Engagement Mes Pasado", "last_month_engagement", "Previous Engagement"]) || "0") || 0,
         };
-      }).filter(creator => creator.nombre); // Solo incluir filas con nombre
+      }).filter(creator => creator.nombre && creator.nombre.toString().trim().length > 0);
 
-      console.log("Datos mapeados:", creatorsData.slice(0, 2));
+      console.log("Datos mapeados - Primeros 2:", creatorsData.slice(0, 2));
+      console.log("Total de filas con nombre válido:", creatorsData.length);
 
       if (creatorsData.length === 0) {
         toast({
