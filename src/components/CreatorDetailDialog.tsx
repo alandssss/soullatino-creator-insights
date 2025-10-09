@@ -229,12 +229,8 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     const currentDay = today.getDate();
     const currentMonth = today.getMonth() + 1;
     
-    let message = `Hola ${creator.nombre}!\n\n`;
-    message += `Tus métricas al día ${currentDay}/${currentMonth} son:\n`;
-    message += `💎 ${(creator.diamantes || 0).toLocaleString()} diamantes\n`;
-    message += `📺 ${creator.dias_live || 0} días live\n`;
-    message += `⏰ ${(creator.horas_live || 0).toFixed(1)} horas\n\n`;
-    message += `Tienes un momento para que hablemos de ello y cómo mejorarlo?`;
+    const message = `Hola ${creator.nombre}!\n\nTus métricas al día ${currentDay}/${currentMonth} son:\n💎 ${(creator.diamantes || 0).toLocaleString()} diamantes\n📺 ${creator.dias_live || 0} días live\n⏰ ${(creator.horas_live || 0).toFixed(1)} horas\n\nTienes un momento para que hablemos de ello y como mejorarlo?`;
+    
     return message;
   };
 
