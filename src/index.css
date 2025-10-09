@@ -43,9 +43,16 @@ All colors MUST be HSL.
     --gradient-card: linear-gradient(180deg, hsl(240 10% 6%) 0%, hsl(240 10% 4%) 100%);
     
     --shadow-glow: 0 0 40px hsl(263 70% 50% / 0.3);
-    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 20px 60px hsl(0 0% 0% / 0.5);
+    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.2);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --glass-bg: hsl(240 10% 8% / 0.6);
+    --glass-border: hsl(240 10% 20% / 0.3);
+    --glass-highlight: hsl(0 0% 100% / 0.05);
 
     --sidebar-background: 240 10% 4.5%;
     --sidebar-foreground: 240 5% 84%;

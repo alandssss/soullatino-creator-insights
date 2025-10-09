@@ -343,41 +343,42 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent flex items-center gap-2">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[var(--glass-bg)] backdrop-blur-xl border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
+        <DialogHeader className="pb-4 border-b border-[var(--glass-border)]">
+          <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex items-center gap-3">
             {creator.nombre}
             {milestone && (
-              <span className="text-sm font-normal text-muted-foreground">
-                • {milestone}
+              <span className="text-sm font-normal text-muted-foreground bg-muted/30 px-3 py-1 rounded-full backdrop-blur-sm">
+                {milestone}
               </span>
             )}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
+        <div className="space-y-6 pt-4">
+          <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl font-semibold">
+                <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
                 Información del Creador
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Usuario TikTok</p>
-                <p className="font-semibold">@{creator.tiktok_username || "No especificado"}</p>
+            <CardContent className="grid grid-cols-2 gap-6">
+              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Usuario TikTok</p>
+                <p className="font-semibold text-base">@{creator.tiktok_username || "No especificado"}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Teléfono</p>
+              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Teléfono</p>
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold">{creator.telefono || "No especificado"}</p>
+                  <p className="font-semibold text-base">{creator.telefono || "No especificado"}</p>
                   {creator.telefono && (
                     <Button 
                       size="sm" 
-                      variant="default"
+                      variant="success"
                       onClick={openWhatsApp}
-                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       <MessageSquare className="h-4 w-4 mr-1" />
                       WhatsApp
@@ -385,47 +386,48 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                   )}
                 </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Categoría</p>
-                <p className="font-semibold">{creator.categoria || "No especificada"}</p>
+              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Categoría</p>
+                <p className="font-semibold text-base">{creator.categoria || "No especificada"}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Manager</p>
-                <p className="font-semibold">{creator.manager || "No asignado"}</p>
+              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Manager</p>
+                <p className="font-semibold text-base">{creator.manager || "No asignado"}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Días en Live</p>
-                <p className="font-semibold text-primary">{creator.dias_live || 0} días</p>
+              <div className="p-4 rounded-lg bg-primary/10 backdrop-blur-sm border border-primary/20">
+                <p className="text-xs uppercase tracking-wider text-primary mb-1 font-medium">Días en Live</p>
+                <p className="font-bold text-xl text-primary">{creator.dias_live || 0} días</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Horas en Live</p>
-                <p className="font-semibold text-primary">{creator.horas_live || 0} horas</p>
+              <div className="p-4 rounded-lg bg-primary/10 backdrop-blur-sm border border-primary/20">
+                <p className="text-xs uppercase tracking-wider text-primary mb-1 font-medium">Horas en Live</p>
+                <p className="font-bold text-xl text-primary">{creator.horas_live || 0} horas</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Diamantes</p>
-                <p className="font-semibold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
+              <div className="p-4 rounded-lg bg-accent/10 backdrop-blur-sm border border-accent/20">
+                <p className="text-xs uppercase tracking-wider text-accent mb-1 font-medium">Diamantes</p>
+                <p className="font-bold text-2xl text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Engagement</p>
-                <p className="font-semibold">{(creator.engagement_rate || 0).toFixed(1)}%</p>
+              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Engagement</p>
+                <p className="font-bold text-xl">{(creator.engagement_rate || 0).toFixed(1)}%</p>
               </div>
-              <div className="col-span-2">
+              <div className="col-span-2 pt-2">
                 <Button 
                   onClick={openWhatsApp} 
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  variant="success"
                   disabled={!creator.telefono || (!aiAdvice)}
                   size="lg"
+                  className="w-full text-base font-semibold"
                 >
                   <MessageSquare className="h-5 w-5 mr-2" />
                   Enviar Recomendación por WhatsApp
                 </Button>
                 {!creator.telefono && (
-                  <p className="text-sm text-muted-foreground text-center mt-2">
+                  <p className="text-sm text-muted-foreground text-center mt-3">
                     No hay número de teléfono registrado
                   </p>
                 )}
                 {!aiAdvice && creator.telefono && (
-                  <p className="text-sm text-muted-foreground text-center mt-2">
+                  <p className="text-sm text-muted-foreground text-center mt-3">
                     Genera primero una recomendación para enviar
                   </p>
                 )}
@@ -434,44 +436,51 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           </Card>
 
           <Tabs defaultValue="advice" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="advice">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Consejos IA
+            <TabsList className="grid w-full grid-cols-4 mb-2">
+              <TabsTrigger value="advice" className="gap-2">
+                <Sparkles className="h-4 w-4" />
+                <span className="hidden sm:inline">Consejos IA</span>
+                <span className="sm:hidden">IA</span>
               </TabsTrigger>
-              <TabsTrigger value="milestones">
-                <Target className="h-4 w-4 mr-2" />
-                Hitos
+              <TabsTrigger value="milestones" className="gap-2">
+                <Target className="h-4 w-4" />
+                <span className="hidden sm:inline">Hitos</span>
               </TabsTrigger>
-              <TabsTrigger value="growth">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Crecimiento
+              <TabsTrigger value="growth" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Crecimiento</span>
+                <span className="sm:hidden">Stats</span>
               </TabsTrigger>
-              <TabsTrigger value="agenda">
-                <Calendar className="h-4 w-4 mr-2" />
-                Agenda
+              <TabsTrigger value="agenda" className="gap-2">
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">Agenda</span>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="advice" className="space-y-4">
-              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                <CardHeader>
+            <TabsContent value="advice" className="space-y-4 mt-6">
+              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+                <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Recomendación Inteligente</CardTitle>
+                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                      </div>
+                      Recomendación Inteligente
+                    </CardTitle>
                     <Button
                       onClick={generateAIAdvice}
                       disabled={loadingAdvice}
-                      variant="outline"
+                      variant="glass"
                       size="sm"
                     >
                       {loadingAdvice ? (
                         <>
-                          <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                           Generando...
                         </>
                       ) : (
                         <>
-                          <Sparkles className="h-3 w-3 mr-2" />
+                          <Sparkles className="h-4 w-4 mr-2" />
                           Generar Nueva
                         </>
                       )}
@@ -483,38 +492,49 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                     value={loadingAdvice ? "Cargando recomendación..." : aiAdvice}
                     onChange={(e) => setAiAdvice(e.target.value)}
                     placeholder="Haz clic en 'Generar Nueva' para obtener una recomendación personalizada basada en datos históricos..."
-                    className="min-h-[150px] text-base"
+                    className="min-h-[180px] text-base bg-background/30 backdrop-blur-sm border-[var(--glass-border)] focus:border-primary/50 transition-colors leading-relaxed"
                     disabled={loadingAdvice}
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
-                    💡 La recomendación se genera basándose en los datos históricos del creador y sus hitos de rendimiento
-                  </p>
+                  <div className="flex items-start gap-2 mt-3 p-3 rounded-lg bg-primary/5 backdrop-blur-sm border border-primary/10">
+                    <Sparkles className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      La recomendación se genera basándose en los datos históricos del creador y sus hitos de rendimiento
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="milestones" className="space-y-4">
-              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Próximos Hitos</CardTitle>
+            <TabsContent value="milestones" className="space-y-4 mt-6">
+              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-accent/10 backdrop-blur-sm">
+                      <Target className="h-5 w-5 text-accent" />
+                    </div>
+                    Próximos Hitos
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-5">
                   {getMilestones().map((milestone, idx) => (
-                    <div key={idx} className="space-y-2">
+                    <div key={idx} className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)] space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold flex items-center gap-2">
-                          <span>{milestone.icon}</span>
+                        <span className="font-semibold text-base flex items-center gap-2">
+                          <span className="text-xl">{milestone.icon}</span>
                           {milestone.label}
                         </span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm font-medium text-muted-foreground bg-muted/30 px-3 py-1 rounded-full">
                           Faltan {milestone.remaining.toLocaleString()}
                         </span>
                       </div>
-                      <div className="h-2 bg-background rounded-full overflow-hidden">
+                      <div className="h-3 bg-background/50 rounded-full overflow-hidden shadow-inner">
                         <div
-                          className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-500 shadow-[var(--shadow-glow)]"
                           style={{ width: `${milestone.progress}%` }}
                         />
+                      </div>
+                      <div className="text-xs text-muted-foreground text-right">
+                        {milestone.progress.toFixed(1)}% completado
                       </div>
                     </div>
                   ))}
@@ -522,12 +542,17 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               </Card>
             </TabsContent>
 
-            <TabsContent value="growth" className="space-y-4">
-              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Comparación Mensual</CardTitle>
+            <TabsContent value="growth" className="space-y-4 mt-6">
+              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                    </div>
+                    Comparación Mensual
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-5">
                   {(() => {
                     const growth = getMonthlyGrowth();
                     const metrics = [
@@ -537,10 +562,10 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                     ];
 
                     return metrics.map((metric, idx) => (
-                      <div key={idx} className="p-4 rounded-lg bg-background/50 border border-border/30">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-semibold">{metric.label}</span>
-                          <div className="flex items-center gap-2">
+                      <div key={idx} className="p-5 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="font-semibold text-base">{metric.label}</span>
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/50 backdrop-blur-sm">
                             {metric.value > 0 ? (
                               <ArrowUp className="h-4 w-4 text-green-500" />
                             ) : metric.value < 0 ? (
@@ -548,14 +573,14 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                             ) : (
                               <Minus className="h-4 w-4 text-muted-foreground" />
                             )}
-                            <span className={metric.value > 0 ? "text-green-500" : metric.value < 0 ? "text-red-500" : "text-muted-foreground"}>
+                            <span className={`font-bold ${metric.value > 0 ? "text-green-500" : metric.value < 0 ? "text-red-500" : "text-muted-foreground"}`}>
                               {metric.value > 0 ? "+" : ""}{metric.value.toFixed(1)}%
                             </span>
                           </div>
                         </div>
                         <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>Actual: {metric.isPercentage ? `${metric.current.toFixed(1)}%` : metric.current.toLocaleString()}</span>
-                          <span>Mes pasado: {metric.isPercentage ? `${metric.last.toFixed(1)}%` : metric.last.toLocaleString()}</span>
+                          <span className="font-medium">Actual: <span className="text-foreground">{metric.isPercentage ? `${metric.current.toFixed(1)}%` : metric.current.toLocaleString()}</span></span>
+                          <span className="font-medium">Mes pasado: <span className="text-foreground/70">{metric.isPercentage ? `${metric.last.toFixed(1)}%` : metric.last.toLocaleString()}</span></span>
                         </div>
                       </div>
                     ));
@@ -564,15 +589,20 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               </Card>
             </TabsContent>
 
-            <TabsContent value="agenda" className="space-y-4">
-              <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Historial de Interacciones</CardTitle>
+            <TabsContent value="agenda" className="space-y-4 mt-6">
+              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
+                      <Calendar className="h-5 w-5 text-primary" />
+                    </div>
+                    Historial de Interacciones
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     {(userRole === "admin" || userRole === "manager") && (
-                      <div className="space-y-3 p-4 bg-background/50 rounded-lg border border-border/30">
+                      <div className="space-y-4 p-5 bg-background/30 backdrop-blur-sm rounded-lg border border-[var(--glass-border)]">
                         <div className="space-y-2">
                           <Label>Tipo de Interacción</Label>
                           <Input
@@ -603,12 +633,12 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                             placeholder="Tu nombre"
                           />
                         </div>
-                        <Button onClick={addInteraction} className="w-full">
+                        <Button onClick={addInteraction} variant="default" size="lg" className="w-full font-semibold">
                           Agregar Interacción
                         </Button>
                       </div>
                     )}
-                    <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                    <div className="space-y-3 max-h-[320px] overflow-y-auto pr-2">
                       {interactions.length === 0 ? (
                         <p className="text-center text-muted-foreground py-8">
                           No hay interacciones registradas
@@ -617,19 +647,19 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                         interactions.map((interaction) => (
                           <div
                             key={interaction.id}
-                            className="p-3 rounded-lg bg-background/50 border border-border/30"
+                            className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)] hover:border-primary/30 transition-colors"
                           >
                             <div className="flex justify-between items-start mb-2">
-                              <span className="font-semibold">{interaction.tipo_interaccion}</span>
-                              <span className="text-xs text-muted-foreground">
+                              <span className="font-semibold text-base">{interaction.tipo_interaccion}</span>
+                              <span className="text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-1 rounded-full">
                                 {new Date(interaction.fecha).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-1">
+                            <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
                               {interaction.notas}
                             </p>
                             {interaction.admin_nombre && (
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-muted-foreground font-medium">
                                 Por: {interaction.admin_nombre}
                               </p>
                             )}
