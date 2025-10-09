@@ -316,6 +316,44 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_activity: {
+        Row: {
+          action_type: string
+          creator_id: string
+          creator_name: string | null
+          id: string
+          message_preview: string | null
+          timestamp: string
+          user_email: string
+        }
+        Insert: {
+          action_type: string
+          creator_id: string
+          creator_name?: string | null
+          id?: string
+          message_preview?: string | null
+          timestamp?: string
+          user_email: string
+        }
+        Update: {
+          action_type?: string
+          creator_id?: string
+          creator_name?: string | null
+          id?: string
+          message_preview?: string | null
+          timestamp?: string
+          user_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_activity_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

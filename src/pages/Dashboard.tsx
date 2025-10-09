@@ -8,6 +8,7 @@ import { Users, TrendingUp, Eye, Zap, LogOut } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 import { AdminUploadPanel } from "@/components/AdminUploadPanel";
+import { AdminActivityPanel } from "@/components/AdminActivityPanel";
 
 type Creator = Tables<"creators">;
 
@@ -116,8 +117,9 @@ const Dashboard = () => {
         </div>
 
         {userRole === "admin" && (
-          <div className="mb-8">
+          <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             <AdminUploadPanel />
+            <AdminActivityPanel />
           </div>
         )}
 

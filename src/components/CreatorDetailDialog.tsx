@@ -147,13 +147,38 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     }
   };
 
-  const openWhatsApp = () => {
-    if (!creator?.telefono) return;
+  const openWhatsApp = async () => {
+    if (!creator?.telefono) {
+      toast({
+        title: "Error",
+        description: "Este creador no tiene número de teléfono registrado",
+        variant: "destructive",
+      });
+      return;
+    }
     
     const cleanPhone = creator.telefono.replace(/\D/g, "");
     const summary = generateWhatsAppSummary();
+    
+    // Registrar la actividad en la base de datos
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("whatsapp_activity").insert({
+        creator_id: creator.id,
+        user_email: user.email || "Unknown",
+        action_type: "whatsapp_click",
+        creator_name: creator.nombre,
+        message_preview: summary,
+      });
+    }
+    
     const encodedMessage = encodeURIComponent(summary);
     window.open(`https://wa.me/${cleanPhone}?text=${encodedMessage}`, "_blank");
+    
+    toast({
+      title: "WhatsApp abierto",
+      description: "Se ha abierto WhatsApp con el mensaje personalizado",
+    });
   };
 
   const generateWhatsAppSummary = () => {
@@ -299,14 +324,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Teléfono</p>
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold">{creator.telefono || "No especificado"}</p>
-                  {creator.telefono && (
-                    <Button size="sm" variant="outline" onClick={openWhatsApp}>
-                      <MessageSquare className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
+                <p className="font-semibold">{creator.telefono || "No especificado"}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Categoría</p>
@@ -331,6 +349,22 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               <div>
                 <p className="text-sm text-muted-foreground">Engagement</p>
                 <p className="font-semibold">{(creator.engagement_rate || 0).toFixed(1)}%</p>
+              </div>
+              <div className="col-span-2">
+                <Button 
+                  onClick={openWhatsApp} 
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  disabled={!creator.telefono}
+                  size="lg"
+                >
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  Enviar Mensaje por WhatsApp
+                </Button>
+                {!creator.telefono && (
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    No hay número de teléfono registrado
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
