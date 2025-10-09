@@ -220,9 +220,11 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     }
     
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    // Usar formato compatible que no se bloquea
+    const whatsappUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMessage}`;
     
     console.log("WhatsApp URL:", whatsappUrl);
+    console.log("Message:", message);
     window.open(whatsappUrl, "_blank");
     
     toast({
