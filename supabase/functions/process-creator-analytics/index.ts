@@ -27,34 +27,10 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // 1. Obtener el snapshot más reciente del creador
-    const { data: latestSnapshot, error: snapshotError } = await supabase
-      .from('creator_daily_stats')
-      .select('*')
-      .eq('creator_id', creatorId)
-      .order('snapshot_date', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (snapshotError) {
-      console.error('Error obteniendo snapshot:', snapshotError);
-      return new Response(
-        JSON.stringify({ error: 'Error obteniendo datos del creador' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!latestSnapshot) {
-      return new Response(
-        JSON.stringify({ error: 'No hay datos históricos para este creador' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // 2. Obtener información del creador
+    // 1. Obtener información del creador con métricas del mes actual
     const { data: creator, error: creatorError } = await supabase
       .from('creators')
-      .select('nombre, graduacion, categoria, manager')
+      .select('nombre, diamantes, horas_live, dias_live, hito_diamantes')
       .eq('id', creatorId)
       .single();
 
@@ -66,55 +42,69 @@ serve(async (req) => {
       );
     }
 
-    // 3. Determinar el hito actual basado en días y horas
-    const days = latestSnapshot.days_since_joining || 0;
-    const hours = latestSnapshot.live_duration_l30d || 0;
-    const diamonds = latestSnapshot.diamonds_l30d || 0;
-
-    let milestone = 'inicio';
-    let milestoneDescription = '';
+    // 2. Calcular métricas y determinar estado
+    const hito = creator.hito_diamantes || 50000;
+    const diamantes = creator.diamantes || 0;
+    const porcentaje = Math.round((diamantes / hito) * 100);
+    const faltantes = Math.max(0, hito - diamantes);
     
-    if (days >= 22 && hours >= 80) {
-      milestone = 'avanzado';
-      milestoneDescription = '22+ días, 80+ horas live';
-    } else if (days >= 20 && hours >= 60) {
-      milestone = 'intermedio';
-      milestoneDescription = '20+ días, 60+ horas live';
-    } else if (days >= 12 && hours >= 40) {
-      milestone = 'inicial';
-      milestoneDescription = '12+ días, 40+ horas live';
-    } else {
-      milestone = 'principiante';
-      milestoneDescription = `${days} días, ${hours.toFixed(1)} horas live`;
-    }
+    let simbolo = '❌';
+    if (porcentaje >= 100) simbolo = '✅';
+    else if (porcentaje >= 70) simbolo = '➖';
 
-    // 4. Generar recomendación personalizada con IA
-    const systemPrompt = `Eres un experto en gestión de creadores de TikTok Live. Tu objetivo es proporcionar consejos específicos, accionables y motivadores.
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth() + 1;
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const daysRemainingInMonth = lastDayOfMonth - currentDay;
 
-CONTEXTO DEL CREADOR:
-- Nombre: ${creator.nombre}
-- Categoría: ${creator.categoria || 'No especificada'}
-- Graduación: ${creator.graduacion || 'No especificada'}
-- Manager: ${creator.manager || 'No asignado'}
+    // 3. Generar recomendación con formato estricto
+    const systemPrompt = `Eres un asesor de TikTok LIVE. 
 
-MÉTRICAS ACTUALES:
-- Días desde inicio: ${days}
-- Horas live (últimos 30 días): ${hours.toFixed(1)}
-- Diamantes (últimos 30 días): ${diamonds.toLocaleString()}
-- Seguidores: ${latestSnapshot.followers || 0}
-- Engagement: ${latestSnapshot.engagement_rate || 0}%
-- Ingreso estimado: $${latestSnapshot.ingreso_estimado || 0}
+ADVERTENCIA CRÍTICA: Si no sigues EXACTAMENTE el formato especificado, tu respuesta será RECHAZADA.
 
-HITO ACTUAL: ${milestone} (${milestoneDescription})
+FORMATO OBLIGATORIO (COPIA EXACTAMENTE ESTA ESTRUCTURA):
 
-INSTRUCCIONES:
-1. Genera un consejo específico de 2-3 oraciones
-2. Enfócate en acciones concretas que el creador puede hacer HOY
-3. Sé positivo pero realista
-4. Menciona el hito actual si es relevante
-5. Si está por debajo de las expectativas, motiva sin criticar`;
+🎯 **Tu hito:** [número] diamantes este mes
 
-    const userPrompt = `Genera un consejo personalizado para ${creator.nombre} basado en su hito actual: ${milestone}.`;
+📍 **Dónde estás:**
+- Llevas [número] diamantes ([porcentaje]% del objetivo)
+- [✅/➖/❌] [Te faltan X diamantes / Ya superaste tu meta]
+
+💪 **Acción de HOY:**
+[UNA SOLA frase. Máximo 40 palabras]
+
+REGLAS ABSOLUTAS - NO NEGOCIABLES:
+1. NO escribas párrafos introductorios como "¡Hola!" o "¡Es genial verte!"
+2. NO menciones "creador avanzado", "días desde inicio", "horas del último mes"
+3. USA SOLO los 3 bloques: 🎯 Tu hito, 📍 Dónde estás, 💪 Acción de HOY
+4. Máximo 100 palabras TOTAL
+5. La acción debe tener NÚMEROS concretos
+6. Símbolos: ✅ si ≥100%, ➖ si 70-99%, ❌ si <70%
+
+EJEMPLO CORRECTO:
+🎯 **Tu hito:** 100,000 diamantes este mes
+
+📍 **Dónde estás:**
+- Llevas 45,000 diamantes (45% del objetivo)
+- ❌ Te faltan 55,000 diamantes
+
+💪 **Acción de HOY:**
+Haz 2 batallas PKO hoy para sumar 15,000 diamantes y llegar al 60% de tu meta.
+
+RESPONDE SOLO CON EL FORMATO. NADA MÁS.`;
+
+    const userPrompt = `CREADOR: ${creator.nombre}
+FECHA: Día ${currentDay} de ${lastDayOfMonth} del mes ${currentMonth}
+DÍAS RESTANTES: ${daysRemainingInMonth}
+
+DATOS DEL MES ACTUAL (columnas H, I, J, AB):
+- Hito asignado: ${hito.toLocaleString()} diamantes
+- Diamantes actuales: ${diamantes.toLocaleString()}
+- Días en LIVE: ${creator.dias_live || 0}
+- Horas en LIVE: ${creator.horas_live || 0}
+
+Genera la retroalimentación en el formato obligatorio.`;
 
     let recommendation = '';
 
@@ -148,25 +138,29 @@ INSTRUCCIONES:
 
     // Fallback si no hay IA o falló
     if (!recommendation) {
-      const fallbacks: Record<string, string> = {
-        'principiante': `¡Bienvenido/a ${creator.nombre}! Estás en tus primeros pasos. Enfócate en crear una rutina de transmisiones consistente. Objetivo: alcanzar 12 días y 40 horas de live en los próximos 30 días. Tu progreso actual: ${days} días, ${hours.toFixed(1)} horas.`,
-        'inicial': `¡Excelente ${creator.nombre}! Has alcanzado el primer hito (12d/40h). Ahora enfócate en aumentar la interacción con tu audiencia. Responde todos los comentarios y crea dinámicas participativas. Próximo objetivo: 20 días, 60 horas.`,
-        'intermedio': `¡Vas muy bien ${creator.nombre}! Estás en el hito intermedio (20d/60h). Es momento de monetizar mejor: pide regalos de forma estratégica y promociona eventos especiales. Objetivo: 22 días, 80 horas.`,
-        'avanzado': `¡Eres un creador consolidado ${creator.nombre}! Con ${days} días y ${hours.toFixed(1)} horas, estás en la élite. Enfócate en diversificar contenido y crear colaboraciones con otros creadores top.`
-      };
-      recommendation = fallbacks[milestone] || fallbacks['principiante'];
+      const estado = porcentaje >= 100 ? 'Ya superaste tu meta' : `Te faltan ${faltantes.toLocaleString()} diamantes`;
+      
+      recommendation = `🎯 **Tu hito:** ${hito.toLocaleString()} diamantes este mes
+
+📍 **Dónde estás:**
+- Llevas ${diamantes.toLocaleString()} diamantes (${porcentaje}% del objetivo)
+- ${simbolo} ${estado}
+
+💪 **Acción de HOY:**
+Haz ${porcentaje < 50 ? '2-3' : '1-2'} batallas PKO hoy y suma ${creator.dias_live || 0 < 15 ? '1 día más' : 'más horas'} de LIVE para acercarte a tu meta.`;
     }
 
-    // 5. Guardar la recomendación en la base de datos
+    // 4. Guardar la recomendación en la base de datos
+    const tipo = porcentaje >= 100 ? 'completado' : porcentaje >= 70 ? 'cerca' : 'en_progreso';
     const { error: insertError } = await supabase
       .from('creator_recommendations')
       .insert({
         creator_id: creatorId,
-        titulo: `Recomendación ${milestone.charAt(0).toUpperCase() + milestone.slice(1)}`,
+        titulo: `Recomendación - ${porcentaje}% del hito`,
         descripcion: recommendation,
-        tipo: milestone,
-        prioridad: days < 12 ? 'alta' : days < 20 ? 'media' : 'baja',
-        icono: milestone === 'avanzado' ? '🏆' : milestone === 'intermedio' ? '📈' : milestone === 'inicial' ? '🎯' : '🌱'
+        tipo: tipo,
+        prioridad: porcentaje < 50 ? 'alta' : porcentaje < 80 ? 'media' : 'baja',
+        icono: simbolo
       });
 
     if (insertError) {
@@ -176,12 +170,13 @@ INSTRUCCIONES:
     return new Response(
       JSON.stringify({ 
         recommendation,
-        milestone,
-        milestoneDescription,
+        milestone: tipo,
+        milestoneDescription: `${porcentaje}% del hito alcanzado`,
         metrics: {
-          days,
-          hours: hours.toFixed(1),
-          diamonds
+          hito,
+          diamantes,
+          porcentaje,
+          faltantes
         }
       }),
       { 
