@@ -85,30 +85,47 @@ serve(async (req) => {
       ? Math.round(needed_diamonds / remaining_calendar_days)
       : needed_diamonds;
 
-    // 9. Sugerencias para hoy
-    const hoy_horas_sugeridas = Math.ceil(required_hours_per_day);
+    // 9. Sugerencias para hoy (PKO siempre obligatorio)
+    const hoy_horas_sugeridas = Math.max(1, Math.ceil(required_hours_per_day));
     const hoy_dias_validos_sugeridos = needed_valid_days > 0 ? 1 : 0;
-    const pko_sugeridos_hoy = required_diamonds_per_day > 5000 ? 1 : 0;
+    
+    // Calcular PKO según el estado
+    let pko_sugeridos_hoy = 10; // Por defecto encaminado
+    if (valid_days_so_far < 5 || hours_so_far < 15) {
+      pko_sugeridos_hoy = 5; // Empezando
+    } else if (diamonds_so_far < target_diamonds * 0.3) {
+      pko_sugeridos_hoy = 20; // Bajo en diamantes
+    }
 
-    // 10. Generar retroalimentación con formato estricto
-    const systemPrompt = `Eres un asesor de TikTok LIVE que genera retroalimentaciones factuales y directas.
+    // 10. Generar retroalimentación con formato de 4 líneas
+    const systemPrompt = `Eres un asesor de TikTok LIVE que genera retroalimentaciones cortas y accionables.
 
-FORMATO OBLIGATORIO (máximo 4 oraciones):
+REGLAS ESTRICTAS:
+1. Diamantes = graduaciones (50K, 100K, 300K, 500K, 1M)
+2. Horas y días = hitos (Hito 1: 12d+40h, Hito 3: 20d+60h, Hito 4: 22d+80h)
+3. SIEMPRE incluir PKO (nunca 0)
+4. Máximo 4 líneas
+5. Sin tecnicismos, sin porcentajes visibles, sin markdown
+6. Lenguaje simple y directo
 
-1. Estado: "Llevas X/Y días y Z/W h; faltan A días y B h con C días por delante."
-2. Factibilidad: "Días: [factible/no factible]. Horas: necesitas ~N h/día ([semáforo])."
-3. Diamantes: "Faltan X para Y (≈ Z/día)."
-4. Acción de hoy: "Transmite N h, asegura M día(s) válido(s) y agenda K PKO."
+FORMATO OBLIGATORIO (4 líneas):
 
-REGLAS:
-- NO uses markdown
-- NO uses saludos ni motivacionales
-- SOLO números concretos
-- Máximo 4 oraciones
-- Si días no factibles: sugerir apuntar al hito inferior
+LÍNEA 1 - Estado actual en palabras simples:
+Ejemplo: "Apenas llevas X días y Y horas, pero todavía alcanzas el hito."
 
-EJEMPLO:
-"Llevas 14/20 días y 48/70 h; faltan 6 días y 22 h con 11 días por delante. Días: alcanzas. Horas: necesitas ~2 h/día (ajustado). Faltan 120,000 para 300,000 (≈10,909/día). Transmite 2 h, asegura 1 día válido y agenda 1 PKO."`;
+LÍNEA 2 - Qué debe hacer hoy:
+Ejemplo: "Hoy transmite Z horas y marca este día como válido."
+
+LÍNEA 3 - Diamantes:
+Ejemplo: "Te faltan N diamantes para tu graduación, todavía es alcanzable."
+
+LÍNEA 4 - PKO obligatorio:
+Ejemplo: "Incluye al menos 5 PKO de 5 minutos hoy para avanzar en diamantes."
+
+EJEMPLO COMPLETO:
+"Llevas poco avance pero aún estás a tiempo. Hoy transmite 3 horas y asegúrate de contar este día como válido. Te faltan pocos diamantes para tu meta. Haz mínimo 10 PKO de 5 minutos hoy para no atrasarte."
+
+NUNCA uses markdown, nunca digas "0 PKO", siempre da un número de PKO.`;
 
     const userPrompt = `CREADOR: ${creator.nombre}
 HOY: día ${currentDay} del mes ${currentMonth}
@@ -168,7 +185,19 @@ Genera la retro en 4 oraciones exactas según el formato.`;
 
     // Fallback si no hay IA o falló
     if (!recommendation) {
-      recommendation = `Llevas ${valid_days_so_far}/${target_valid_days} días y ${hours_so_far.toFixed(1)}/${target_hours} h; faltan ${needed_valid_days} días y ${needed_hours.toFixed(1)} h con ${remaining_calendar_days} días por delante. Días: ${dias_factibles_texto}. Horas: necesitas ~${required_hours_per_day.toFixed(1)} h/día (${semaforo_horas}). Faltan ${needed_diamonds.toLocaleString()} para ${target_diamonds.toLocaleString()} (≈${required_diamonds_per_day.toLocaleString()}/día). Transmite ${hoy_horas_sugeridas} h, asegura ${hoy_dias_validos_sugeridos} día(s) válido(s) y agenda ${pko_sugeridos_hoy} PKO.`;
+      const estado = valid_days_so_far < target_valid_days * 0.5 
+        ? 'Llevas poco avance pero aún estás a tiempo'
+        : dias_factibles 
+          ? 'Vas bien encaminado y todavía alcanzas tu hito'
+          : 'El tiempo se agota pero aún puedes ajustar tu meta';
+      
+      const diamantes_texto = needed_diamonds > target_diamonds * 0.7
+        ? 'te faltan muchos diamantes para tu graduación'
+        : needed_diamonds > 0
+          ? 'te faltan pocos diamantes para tu meta'
+          : 'ya alcanzaste tu graduación de diamantes';
+      
+      recommendation = `${estado}. Hoy transmite ${hoy_horas_sugeridas} horas y asegúrate de contar este día como válido. ${diamantes_texto.charAt(0).toUpperCase() + diamantes_texto.slice(1)}. Haz mínimo ${pko_sugeridos_hoy} PKO de 5 minutos hoy para ${needed_diamonds > 0 ? 'no atrasarte' : 'mantener el ritmo'}.`;
     }
 
     // 4. Guardar la recomendación en la base de datos
