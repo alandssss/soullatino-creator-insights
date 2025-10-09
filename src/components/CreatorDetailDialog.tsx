@@ -199,12 +199,12 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     
     let cleanPhone = creator.telefono.replace(/\D/g, "");
     
-    // Asegurar que el número tenga código de país (México = 52)
+    // Asegurar que el número tenga código de país
     if (cleanPhone.length === 10) {
       cleanPhone = "52" + cleanPhone;
     }
     
-    // Usar la recomendación IA si existe, sino usar el resumen tradicional
+    // Generar mensaje
     const message = aiAdvice || generateWhatsAppSummary();
     
     if (!message || message.trim() === "") {
@@ -216,7 +216,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       return;
     }
     
-    // Registrar la actividad en la base de datos
+    // Registrar la actividad
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from("whatsapp_activity").insert({
@@ -228,8 +228,8 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       });
     }
     
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
+    // Abrir WhatsApp directamente - formato simple que no se bloquea
+    window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
     
     toast({
       title: "WhatsApp abierto",
