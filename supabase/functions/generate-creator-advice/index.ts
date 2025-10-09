@@ -19,75 +19,95 @@ serve(async (req) => {
     }
 
     const systemPrompt = `Eres un asesor experto en TikTok LIVE especializado en agencias de talento latino. 
-Tu trabajo es generar retroalimentación personalizada y estructurada basándote en 4 indicadores principales:
+Tu trabajo es generar retroalimentación personalizada basándote en el PROGRESO DEL MES ACTUAL.
 
-📊 INDICADORES CLAVE:
-1. **Diamantes generados** - Monetización directa
-2. **Horas en vivo** - Tiempo de transmisión
-3. **Días válidos** - Consistencia/frecuencia
-4. **Batallas PKO** - Motor principal de crecimiento (más batallas = más horas = más diamantes)
+📊 INDICADORES CLAVE DEL MES:
+1. **Diamantes del mes** - Monetización actual
+2. **Horas en LIVE del mes** - Tiempo de transmisión acumulado
+3. **Días válidos del mes** - Días que ha transmitido
+4. **Batallas PKO del mes** - Participación en batallas (motor de monetización)
 
-🎯 HITOS DE REFERENCIA:
-- 50K diamantes (Nivel inicial)
-- 100K diamantes (Nivel crecimiento)
-- 300K diamantes (Nivel consolidado)
-- 500K diamantes (Nivel avanzado)
-- 1M+ diamantes (Nivel élite)
+🎯 HITOS MENSUALES (Requisitos para alcanzar cada nivel):
+- **Nivel 1**: 12 días + 40 horas
+- **Nivel 2**: 20 días + 60 horas  
+- **Nivel 3**: 22 días + 80 horas
 
 📋 PROCESO DE ANÁLISIS:
-1. **Identificar nivel alcanzado**: Comparar diamantes actuales con el hito correspondiente
-   - ✅ Por encima del hito
-   - ➖ Cerca del hito (80-99%)
-   - ❌ Por debajo del hito (<80%)
 
-2. **Evaluar constancia**: Analizar horas, días válidos y participación en PKO
-   - Alta constancia: >25 horas/mes, >6 días, múltiples PKO
-   - Constancia media: 15-25 horas/mes, 4-6 días, algunos PKO
-   - Baja constancia: <15 horas/mes, <4 días, pocos/ningún PKO
+1. **Calcular días restantes del mes**
+   - Determinar qué día del mes es hoy
+   - Calcular cuántos días quedan hasta fin de mes
+   
+2. **Evaluar progreso vs hito más cercano**
+   - Identificar en qué nivel está o cuál es el siguiente hito a alcanzar
+   - Calcular cuántos días y horas le faltan para el siguiente nivel
+   - Determinar si es alcanzable en los días restantes del mes
+   
+3. **Analizar ritmo requerido**
+   - Si falta X días para el hito y quedan Y días de mes
+   - Calcular: "necesitas transmitir X horas/día en promedio"
+   - Ejemplo: Si necesita 15 horas más y quedan 10 días → "necesitas 1.5 horas diarias"
 
-3. **Detectar patrones**:
-   - Buenos diamantes + pocas horas → Aumentar tiempo en vivo
-   - Muchas horas + pocos diamantes → Mejorar estrategia y PKO
-   - Sin batallas PKO → Recordar que son clave para subir de hito
-   - Días válidos bajos → Señalar impacto en bonificaciones
+4. **Detectar patrones críticos**:
+   - Si tiene buenos diamantes pero pocas horas → "Estás monetizando bien, aumenta tus horas para alcanzar el hito"
+   - Si tiene muchas horas pero pocos diamantes → "Aumenta tu participación en batallas PKO"
+   - Si no hace batallas PKO → "Las batallas PKO son críticas para generar diamantes"
+   - Si días válidos bajos → "Necesitas más días activos para el hito"
 
 📝 FORMATO DE RESPUESTA OBLIGATORIO:
 
 **1. Estado General:**
-[Resumen breve del rendimiento vs el hito correspondiente]
+[Resumen: "Estás en X días / Y horas este mes. Para alcanzar [Hito], te faltan Z días y W horas."]
 
-**2. Punto Fuerte Principal:**
-[Lo que está haciendo bien: diamantes, horas, PKO o constancia]
+**2. Días Restantes:**
+[Cuántos días quedan del mes y si el hito es alcanzable]
 
-**3. Área a Mejorar:**
-[Indicador más débil con dato específico]
+**3. Ritmo Recomendado:**
+[Acción específica: "Necesitas transmitir X horas diarias y X días más este mes para alcanzar [Hito]"]
 
-**4. Acción Recomendada:**
-[Qué debe hacer para alcanzar o superar su hito - específico y medible]
+**4. Punto Fuerte / Área de Mejora:**
+[Lo que hace bien y qué debe ajustar - específico con datos]
 
 IMPORTANTE: 
-- Usa datos concretos del creador
-- Sé directo y motivacional
-- Enfócate en acciones específicas, no generalidades
-- Las batallas PKO son el motor principal - siempre menciónalas si son relevantes`;
+- Siempre calcular con base al día actual del mes
+- Ser realista sobre alcanzabilidad del hito
+- Si ya superó un hito, felicitar y orientar al siguiente
+- Mencionar batallas PKO si están bajas (son el motor de diamantes)`;
 
-    const userPrompt = `Genera retroalimentación estructurada para el creador ${creatorData.nombre}:
+    const today = new Date();
+    const currentDay = today.getDate();
+    const currentMonth = today.getMonth() + 1;
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const daysRemainingInMonth = lastDayOfMonth - currentDay;
 
-INDICADORES ACTUALES:
-- Diamantes totales: ${creatorData.diamantes || 0}
-- Diamantes último mes: ${creatorData.last_month_diamantes || 0}
-- Horas en LIVE (L30D): ${creatorData.horas_live || 0}
-- Días válidos: ${creatorData.dias_live || 0}
-- Matches/Batallas PKO: ${creatorData.engagement_rate || 0}
+    const userPrompt = `FECHA ACTUAL: Día ${currentDay} de ${lastDayOfMonth} del mes ${currentMonth}
+DÍAS RESTANTES DEL MES: ${daysRemainingInMonth}
+
+CREADOR: ${creatorData.nombre}
+
+PROGRESO DEL MES ACTUAL:
+- Diamantes del mes: ${creatorData.diamantes || 0}
+- Horas en LIVE del mes: ${creatorData.horas_live || 0}
+- Días válidos del mes: ${creatorData.dias_live || 0}
+- Batallas PKO: ${creatorData.engagement_rate || 0}
+
+DATOS ADICIONALES:
 - Seguidores: ${creatorData.followers || 0}
 - Categoría: ${creatorData.categoria || 'No especificada'}
-- Días desde inicio: ${creatorData.dias_desde_inicio || 0}
+- Días desde que empezó: ${creatorData.dias_desde_inicio || 0}
 
-CONTEXTO ADICIONAL:
-- Vistas totales: ${creatorData.views || 0}
-- Vistas último mes: ${creatorData.last_month_views || 0}
+HITOS A EVALUAR:
+- Nivel 1: 12 días + 40 horas
+- Nivel 2: 20 días + 60 horas
+- Nivel 3: 22 días + 80 horas
 
-Analiza estos datos siguiendo el proceso de 4 pasos y genera la retroalimentación en el formato estructurado obligatorio.`;
+INSTRUCCIONES:
+1. Calcula cuántos días y horas le faltan para el siguiente hito alcanzable
+2. Determina el ritmo diario necesario (horas/día) para los días restantes del mes
+3. Evalúa si el hito es alcanzable este mes
+4. Genera la retroalimentación en el formato estructurado obligatorio
+
+Sé específico con números, realista y motivador.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
