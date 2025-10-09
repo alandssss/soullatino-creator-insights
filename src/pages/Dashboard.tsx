@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Users, TrendingUp, Eye, Zap, LogOut } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
+import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 
 type Creator = Tables<"creators">;
 
@@ -13,6 +14,8 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -162,7 +165,11 @@ const Dashboard = () => {
               {creators.map((creator, index) => (
                 <div
                   key={creator.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-all border border-border/30 hover:border-primary/30"
+                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-all border border-border/30 hover:border-primary/30 cursor-pointer"
+                  onClick={() => {
+                    setSelectedCreator(creator);
+                    setDialogOpen(true);
+                  }}
                 >
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold">
@@ -183,6 +190,12 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </main>
+
+      <CreatorDetailDialog
+        creator={selectedCreator}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 };

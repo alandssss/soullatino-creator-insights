@@ -167,6 +167,7 @@ export type Database = {
           nombre: string
           status: string | null
           telefono: string | null
+          tiktok_username: string | null
           updated_at: string | null
           views: number | null
         }
@@ -190,6 +191,7 @@ export type Database = {
           nombre: string
           status?: string | null
           telefono?: string | null
+          tiktok_username?: string | null
           updated_at?: string | null
           views?: number | null
         }
@@ -213,6 +215,7 @@ export type Database = {
           nombre?: string
           status?: string | null
           telefono?: string | null
+          tiktok_username?: string | null
           updated_at?: string | null
           views?: number | null
         }
