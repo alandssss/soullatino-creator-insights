@@ -68,62 +68,50 @@ export const AdminUploadPanel = () => {
       // Mapear los datos del Excel a la estructura de la base de datos
       // Ser más flexible con los nombres de columnas - buscar cualquier variación
       const creatorsData = excelData.map((row: any) => {
-        // Función helper para buscar valor en diferentes posibles nombres de columna (case insensitive)
-        const findValue = (possibleKeys: string[]) => {
-          // Primero buscar coincidencia exacta
-          for (const key of possibleKeys) {
-            if (row[key] !== undefined && row[key] !== null && row[key] !== "") {
-              return row[key];
-            }
-          }
-          
-          // Si no hay coincidencia exacta, buscar case insensitive
-          const rowKeys = Object.keys(row);
-          for (const possibleKey of possibleKeys) {
-            const matchedKey = rowKeys.find(k => 
-              k.toLowerCase().trim() === possibleKey.toLowerCase().trim()
-            );
-            if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null && row[matchedKey] !== "") {
-              return row[matchedKey];
-            }
-          }
-          
-          // Buscar por palabras clave parciales
-          for (const possibleKey of possibleKeys) {
-            const matchedKey = rowKeys.find(k => 
-              k.toLowerCase().includes(possibleKey.toLowerCase()) ||
-              possibleKey.toLowerCase().includes(k.toLowerCase())
-            );
-            if (matchedKey && row[matchedKey] !== undefined && row[matchedKey] !== null && row[matchedKey] !== "") {
-              return row[matchedKey];
-            }
-          }
-          
-          return null;
+        // Función para parsear duración en formato "40h 3m 43s" a horas decimales
+        const parseDuration = (duration: string): number => {
+          if (!duration) return 0;
+          const hourMatch = duration.match(/(\d+)h/);
+          const minMatch = duration.match(/(\d+)m/);
+          const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+          const minutes = minMatch ? parseInt(minMatch[1]) : 0;
+          return hours + (minutes / 60);
         };
 
-        const nombre = findValue(["Nombre", "nombre", "Name", "name", "NOMBRE", "Creator", "creator"]);
+        const tiktokUsername = row["Creator's username"] || "";
+        const diasDesdeInicio = row["Days since joining"] || 0;
+        const diamantes = row["Diamonds"] || 0;
+        const horasLive = parseDuration(row["LIVE duration"] || "");
+        const diasLive = row["Valid go LIVE days"] || 0;
+        const followers = row["New followers"] || 0;
+        const manager = row["Creator Network manager"] || null;
+        const graduacion = row["Graduation status"] || null;
+        const diamantesLastMonth = row["Diamonds last month"] || 0;
+        const horasLiveLastMonth = parseDuration(row["LIVE duration (hours) last month"] || "");
+        const diasLiveLastMonth = row["Valid go LIVE days last month"] || 0;
         
         return {
-          nombre: nombre || "",
-          tiktok_username: findValue(["Usuario TikTok", "tiktok_username", "TikTok", "TikTok Username", "Username", "username", "user"]) || null,
-          telefono: findValue(["Teléfono", "telefono", "Telefono", "Phone", "phone", "tel", "Tel"]) || null,
-          email: findValue(["Email", "email", "Correo", "correo", "E-mail", "mail"]) || null,
-          instagram: findValue(["Instagram", "instagram", "IG", "ig"]) || null,
-          categoria: findValue(["Categoría", "categoria", "Categoria", "Category", "category", "Grupo", "grupo", "Group"]) || null,
-          manager: findValue(["Manager", "manager", "Gerente", "gerente", "Agency Manager"]) || null,
-          status: findValue(["Status", "status", "Estado", "estado", "State"]) || "activo",
-          graduacion: findValue(["Graduación", "graduacion", "Graduacion", "Graduation", "Level"]) || null,
-          diamantes: parseInt(findValue(["Diamantes", "diamantes", "Diamonds", "diamonds", "Beans"]) || "0") || 0,
-          followers: parseInt(findValue(["Seguidores", "followers", "Followers", "Fans", "fans"]) || "0") || 0,
-          views: parseInt(findValue(["Vistas", "views", "Views", "Visualizaciones"]) || "0") || 0,
-          engagement_rate: parseFloat(findValue(["Engagement", "engagement_rate", "Engagement Rate", "Tasa de Engagement"]) || "0") || 0,
-          dias_live: parseInt(findValue(["Días Live", "dias_live", "Dias Live", "Days Live", "Live Days"]) || "0") || 0,
-          horas_live: parseFloat(findValue(["Horas Live", "horas_live", "Hours Live", "Live Hours"]) || "0") || 0,
-          dias_desde_inicio: parseInt(findValue(["Días Desde Inicio", "dias_desde_inicio", "Days Since Start"]) || "0") || 0,
-          last_month_diamantes: parseInt(findValue(["Diamantes Mes Pasado", "last_month_diamantes", "Previous Diamonds"]) || "0") || 0,
-          last_month_views: parseInt(findValue(["Vistas Mes Pasado", "last_month_views", "Previous Views"]) || "0") || 0,
-          last_month_engagement: parseFloat(findValue(["Engagement Mes Pasado", "last_month_engagement", "Previous Engagement"]) || "0") || 0,
+          nombre: tiktokUsername,
+          tiktok_username: tiktokUsername,
+          telefono: null,
+          email: null,
+          instagram: null,
+          categoria: row["Group"] !== "Not in a group" ? row["Group"] : null,
+          manager: manager,
+          status: "activo",
+          graduacion: graduacion,
+          diamantes: diamantes,
+          followers: followers,
+          views: 0, // No disponible en el Excel
+          engagement_rate: 0, // Calcular si es necesario
+          dias_live: diasLive,
+          horas_live: horasLive,
+          dias_desde_inicio: diasDesdeInicio,
+          last_month_diamantes: diamantesLastMonth,
+          last_month_views: 0, // No disponible
+          last_month_engagement: 0, // No disponible
+          horasLiveLastMonth: horasLiveLastMonth,
+          diasLiveLastMonth: diasLiveLastMonth,
         };
       }).filter(creator => creator.nombre && creator.nombre.toString().trim().length > 0);
 
@@ -178,14 +166,14 @@ export const AdminUploadPanel = () => {
             .from("creator_daily_stats")
             .insert({
               creator_id: upsertedCreator.id,
-              snapshot_date: new Date().toISOString().split('T')[0], // Fecha de hoy
+              snapshot_date: new Date().toISOString().split('T')[0],
               days_since_joining: creatorData.dias_desde_inicio || 0,
-              live_duration_l30d: creatorData.horas_live || 0,
-              diamonds_l30d: creatorData.diamantes || 0,
-              diamond_baseline: 0, // Ajustar si tienes este dato
-              ingreso_estimado: creatorData.diamantes ? (creatorData.diamantes * 0.005) : 0, // 0.5% conversión estimada
+              live_duration_l30d: creatorData.horasLiveLastMonth || 0,
+              diamonds_l30d: creatorData.last_month_diamantes || 0,
+              diamond_baseline: 0,
+              ingreso_estimado: creatorData.last_month_diamantes ? (creatorData.last_month_diamantes * 0.005) : 0,
               followers: creatorData.followers || 0,
-              engagement_rate: creatorData.engagement_rate || 0,
+              engagement_rate: 0,
             });
 
           // Si ya existe un snapshot para hoy, ignorar el error de UNIQUE constraint
