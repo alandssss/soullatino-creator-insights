@@ -225,8 +225,6 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   const generateWhatsAppSummary = () => {
     if (!creator) return "";
     
-    const growth = getMonthlyGrowth();
-    const milestones = getMilestones().slice(0, 1);
     const today = new Date();
     const currentDay = today.getDate();
     const currentMonth = today.getMonth() + 1;
