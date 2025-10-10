@@ -1,0 +1,31 @@
+-- Corregir las funciones agregando search_path
+DROP FUNCTION IF EXISTS get_current_period_start();
+DROP FUNCTION IF EXISTS get_current_period_end();
+
+CREATE OR REPLACE FUNCTION get_current_period_start()
+RETURNS DATE
+LANGUAGE SQL
+IMMUTABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT CASE 
+    WHEN EXTRACT(DAY FROM CURRENT_DATE) >= 15 
+    THEN DATE_TRUNC('month', CURRENT_DATE)::DATE + INTERVAL '14 days'
+    ELSE (DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '1 month')::DATE + INTERVAL '14 days'
+  END::DATE;
+$$;
+
+CREATE OR REPLACE FUNCTION get_current_period_end()
+RETURNS DATE
+LANGUAGE SQL
+IMMUTABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT CASE 
+    WHEN EXTRACT(DAY FROM CURRENT_DATE) >= 15 
+    THEN (DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month')::DATE + INTERVAL '13 days'
+    ELSE DATE_TRUNC('month', CURRENT_DATE)::DATE + INTERVAL '13 days'
+  END::DATE;
+$$;

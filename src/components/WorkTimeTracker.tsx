@@ -49,7 +49,10 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
           </div>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Target className="h-4 w-4" />
-            <span>Meta diaria: {dailyGoalHours}h de apoyo</span>
+            <span>Meta del período: {dailyGoalHours}h</span>
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Corte cada día 15
           </div>
         </div>
 
@@ -63,7 +66,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
 
         {progress >= 100 && (
           <div className="text-center text-sm font-medium text-green-600 dark:text-green-400">
-            ¡Meta de apoyo diario alcanzada! 🎉
+            ¡Meta del período alcanzada! 🎉
           </div>
         )}
 
