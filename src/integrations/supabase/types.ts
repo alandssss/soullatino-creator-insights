@@ -64,6 +64,65 @@ export type Database = {
           },
         ]
       }
+      creator_feedback_impact: {
+        Row: {
+          created_at: string
+          creator_id: string
+          diamantes_after: number | null
+          diamantes_before: number | null
+          dias_live_after: number | null
+          dias_live_before: number | null
+          engagement_after: number | null
+          engagement_before: number | null
+          feedback_count: number
+          id: string
+          period_end_date: string
+          period_start_date: string
+          views_after: number | null
+          views_before: number | null
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          diamantes_after?: number | null
+          diamantes_before?: number | null
+          dias_live_after?: number | null
+          dias_live_before?: number | null
+          engagement_after?: number | null
+          engagement_before?: number | null
+          feedback_count?: number
+          id?: string
+          period_end_date: string
+          period_start_date: string
+          views_after?: number | null
+          views_before?: number | null
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          diamantes_after?: number | null
+          diamantes_before?: number | null
+          dias_live_after?: number | null
+          dias_live_before?: number | null
+          engagement_after?: number | null
+          engagement_before?: number | null
+          feedback_count?: number
+          id?: string
+          period_end_date?: string
+          period_start_date?: string
+          views_after?: number | null
+          views_before?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_feedback_impact_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_interactions: {
         Row: {
           admin_nombre: string | null
@@ -325,35 +384,74 @@ export type Database = {
       user_daily_activity: {
         Row: {
           accumulated_seconds: number
-          activity_date: string
           created_at: string
           daily_goal_hours: number
           id: string
           is_active: boolean
           last_activity_at: string | null
+          period_end_date: string | null
+          period_start_date: string
           updated_at: string
           user_id: string
         }
         Insert: {
           accumulated_seconds?: number
-          activity_date?: string
           created_at?: string
           daily_goal_hours?: number
           id?: string
           is_active?: boolean
           last_activity_at?: string | null
+          period_end_date?: string | null
+          period_start_date?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           accumulated_seconds?: number
-          activity_date?: string
           created_at?: string
           daily_goal_hours?: number
           id?: string
           is_active?: boolean
           last_activity_at?: string | null
+          period_end_date?: string | null
+          period_start_date?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_feedback_history: {
+        Row: {
+          created_at: string
+          creators_feedback_count: number | null
+          goal_completed: boolean
+          goal_hours: number
+          id: string
+          period_end_date: string
+          period_start_date: string
+          total_seconds: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          creators_feedback_count?: number | null
+          goal_completed?: boolean
+          goal_hours: number
+          id?: string
+          period_end_date: string
+          period_start_date: string
+          total_seconds?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          creators_feedback_count?: number | null
+          goal_completed?: boolean
+          goal_hours?: number
+          id?: string
+          period_end_date?: string
+          period_start_date?: string
+          total_seconds?: number
           user_id?: string
         }
         Relationships: []
@@ -472,6 +570,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_current_period_end: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_current_period_start: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
