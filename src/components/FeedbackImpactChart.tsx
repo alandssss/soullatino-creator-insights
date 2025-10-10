@@ -27,12 +27,16 @@ export const FeedbackImpactChart = () => {
 
   const fetchImpactData = async () => {
     try {
-      // Obtener datos de impacto de los últimos 6 períodos
+      // Obtener datos de impacto de los últimos 6 meses
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      sixMonthsAgo.setDate(1); // Primer día del mes
+
       const { data: impactRecords, error } = await supabase
         .from("creator_feedback_impact")
         .select("*")
-        .order("period_start_date", { ascending: false })
-        .limit(6);
+        .gte("month_date", sixMonthsAgo.toISOString().split('T')[0])
+        .order("month_date", { ascending: false });
 
       if (error) {
         console.error("Error fetching impact data:", error);
@@ -40,8 +44,8 @@ export const FeedbackImpactChart = () => {
         return;
       }
 
-      // Agrupar por período y calcular promedios
-      const periodMap = new Map<string, {
+      // Agrupar por mes y calcular promedios
+      const monthMap = new Map<string, {
         diamantes_total: number;
         engagement_total: number;
         dias_live_total: number;
@@ -49,7 +53,7 @@ export const FeedbackImpactChart = () => {
       }>();
 
       impactRecords?.forEach(record => {
-        const periodKey = new Date(record.period_start_date).toLocaleDateString('es-MX', { 
+        const monthKey = new Date(record.month_date).toLocaleDateString('es-MX', { 
           month: 'short', 
           year: '2-digit' 
         });
@@ -57,9 +61,9 @@ export const FeedbackImpactChart = () => {
         const diamantesDiff = (record.diamantes_after || 0) - (record.diamantes_before || 0);
         const engagementDiff = (record.engagement_after || 0) - (record.engagement_before || 0);
         const diasLiveDiff = (record.dias_live_after || 0) - (record.dias_live_before || 0);
-
-        if (!periodMap.has(periodKey)) {
-          periodMap.set(periodKey, {
+        
+        if (!monthMap.has(monthKey)) {
+          monthMap.set(monthKey, {
             diamantes_total: 0,
             engagement_total: 0,
             dias_live_total: 0,
@@ -67,7 +71,7 @@ export const FeedbackImpactChart = () => {
           });
         }
 
-        const current = periodMap.get(periodKey)!;
+        const current = monthMap.get(monthKey)!;
         current.diamantes_total += diamantesDiff;
         current.engagement_total += engagementDiff;
         current.dias_live_total += diasLiveDiff;
@@ -75,7 +79,7 @@ export const FeedbackImpactChart = () => {
       });
 
       // Convertir a array y calcular promedios
-      const chartData: ImpactData[] = Array.from(periodMap.entries()).map(([period, data]) => ({
+      const chartData: ImpactData[] = Array.from(monthMap.entries()).map(([period, data]) => ({
         period,
         diamantes_mejora: Math.round(data.diamantes_total / data.count),
         engagement_mejora: Number((data.engagement_total / data.count).toFixed(2)),
@@ -149,7 +153,7 @@ export const FeedbackImpactChart = () => {
           Impacto de tu Feedback
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
-          Evolución del desempeño de creadores con retroalimentación
+          Evolución mensual del desempeño de creadores con retroalimentación
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -215,7 +219,7 @@ export const FeedbackImpactChart = () => {
         </div>
 
         <div className="text-center text-sm text-muted-foreground">
-          Mostrando impacto de los últimos {impactData.length} períodos de feedback
+          Mostrando impacto de los últimos {impactData.length} meses
         </div>
       </CardContent>
     </Card>

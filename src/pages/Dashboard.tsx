@@ -12,6 +12,7 @@ import { AdminActivityPanel } from "@/components/AdminActivityPanel";
 import { UserManagement } from "@/components/UserManagement";
 import { LowActivityPanel } from "@/components/LowActivityPanel";
 import { WorkTimeTracker } from "@/components/WorkTimeTracker";
+import { MonthlyFeedbackCalendar } from "@/components/MonthlyFeedbackCalendar";
 import { FeedbackImpactChart } from "@/components/FeedbackImpactChart";
 
 type Creator = Tables<"creators">;
@@ -192,7 +193,8 @@ const Dashboard = () => {
           <WorkTimeTracker userEmail={user?.email} />
         </div>
 
-        <div className="mb-8">
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <MonthlyFeedbackCalendar />
           <FeedbackImpactChart />
         </div>
 

@@ -76,16 +76,13 @@ export const useWorkTimeTracker = (userEmail?: string) => {
 
       const dailyGoal = goalData?.daily_hours_goal || 8;
 
-      // Obtener inicio y fin del período actual desde la base de datos
-      const { data: periodData } = await supabase.rpc('get_current_period_start');
-      const periodStart = periodData;
-
-      // Obtener actividad del período actual
+      // Obtener actividad de hoy
+      const today = new Date().toISOString().split('T')[0];
       const { data: activityData, error } = await supabase
         .from("user_daily_activity")
         .select("*")
         .eq("user_id", user.id)
-        .eq("period_start_date", periodStart)
+        .eq("activity_date", today)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -101,19 +98,19 @@ export const useWorkTimeTracker = (userEmail?: string) => {
           isLoading: false,
         });
       } else {
-        // Crear registro para el período actual
+        // Crear registro para hoy
         const { error: insertError } = await supabase
           .from("user_daily_activity")
           .insert({
             user_id: user.id,
-            period_start_date: periodStart,
+            activity_date: today,
             accumulated_seconds: 0,
             daily_goal_hours: dailyGoal,
             is_active: false,
           });
 
         if (insertError) {
-          console.error("Error creating period activity:", insertError);
+          console.error("Error creating today's activity:", insertError);
         }
 
         setTimeData({
@@ -134,7 +131,7 @@ export const useWorkTimeTracker = (userEmail?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: periodStart } = await supabase.rpc('get_current_period_start');
+      const today = new Date().toISOString().split('T')[0];
       
       const { error } = await supabase
         .from("user_daily_activity")
@@ -143,7 +140,7 @@ export const useWorkTimeTracker = (userEmail?: string) => {
           last_activity_at: new Date().toISOString(),
         })
         .eq("user_id", user.id)
-        .eq("period_start_date", periodStart);
+        .eq("activity_date", today);
 
       if (error) {
         console.error("Error updating active status:", error);
@@ -168,7 +165,7 @@ export const useWorkTimeTracker = (userEmail?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: periodStart } = await supabase.rpc('get_current_period_start');
+      const today = new Date().toISOString().split('T')[0];
       const newSeconds = timeData.accumulatedSeconds + 1;
 
       const { error } = await supabase
@@ -178,7 +175,7 @@ export const useWorkTimeTracker = (userEmail?: string) => {
           last_activity_at: new Date().toISOString(),
         })
         .eq("user_id", user.id)
-        .eq("period_start_date", periodStart);
+        .eq("activity_date", today);
 
       if (error) {
         console.error("Error incrementing time:", error);
