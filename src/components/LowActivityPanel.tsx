@@ -9,11 +9,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 type Creator = Tables<"creators">;
 
 export const LowActivityPanel = () => {
-  const [lowActivityCreators, setLowActivityCreators] = useState<Creator[]>([]);
-  const [zeroActivityCreators, setZeroActivityCreators] = useState<Creator[]>([]);
+  const [creatorsByDays, setCreatorsByDays] = useState<{ [key: number]: Creator[] }>({});
   const [loading, setLoading] = useState(true);
-  const [isLowOpen, setIsLowOpen] = useState(false);
-  const [isZeroOpen, setIsZeroOpen] = useState(false);
+  const [openSections, setOpenSections] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     fetchLowActivityCreators();
@@ -26,22 +24,35 @@ export const LowActivityPanel = () => {
         .select("*")
         .lt("dias_live", 4)
         .eq("status", "activo")
-        .order("dias_live", { ascending: true });
+        .order("dias_live", { ascending: false });
 
       if (error) throw error;
       
-      // Separar creadores con 0 días de los que tienen 1-3 días
-      const zero = (data || []).filter(c => (c.dias_live || 0) === 0);
-      const low = (data || []).filter(c => (c.dias_live || 0) > 0 && (c.dias_live || 0) < 4);
+      // Agrupar creadores por días live exactos
+      const grouped: { [key: number]: Creator[] } = {};
+      (data || []).forEach(creator => {
+        const days = creator.dias_live || 0;
+        if (!grouped[days]) {
+          grouped[days] = [];
+        }
+        grouped[days].push(creator);
+      });
       
-      setZeroActivityCreators(zero);
-      setLowActivityCreators(low);
+      setCreatorsByDays(grouped);
     } catch (error) {
       console.error("Error fetching low activity creators:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const toggleSection = (days: number) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [days]: !prev[days]
+    }));
+  };
+
 
   if (loading) {
     return (
@@ -61,7 +72,15 @@ export const LowActivityPanel = () => {
     );
   }
 
-  const totalLowActivity = lowActivityCreators.length + zeroActivityCreators.length;
+  const totalLowActivity = Object.values(creatorsByDays).reduce((sum, creators) => sum + creators.length, 0);
+
+  const getColorForDays = (days: number) => {
+    if (days === 0) return { border: "border-red-500/30 hover:border-red-500/50", bg: "hover:bg-red-500/5", text: "text-red-500", icon: "text-red-500" };
+    if (days === 1) return { border: "border-orange-600/30 hover:border-orange-600/50", bg: "hover:bg-orange-600/5", text: "text-orange-600", icon: "text-orange-600" };
+    if (days === 2) return { border: "border-orange-500/30 hover:border-orange-500/50", bg: "hover:bg-orange-500/5", text: "text-orange-500", icon: "text-orange-500" };
+    if (days === 3) return { border: "border-yellow-500/30 hover:border-yellow-500/50", bg: "hover:bg-yellow-500/5", text: "text-yellow-500", icon: "text-yellow-500" };
+    return { border: "border-muted", bg: "hover:bg-muted/5", text: "text-muted-foreground", icon: "text-muted-foreground" };
+  };
 
   return (
     <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
@@ -81,102 +100,65 @@ export const LowActivityPanel = () => {
             <p>Todos los creadores tienen buena actividad</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Creadores con 1-3 días - Menú desplegable */}
-            {lowActivityCreators.length > 0 && (
-              <Collapsible open={isLowOpen} onOpenChange={setIsLowOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-3 h-auto border border-orange-500/30 hover:border-orange-500/50 hover:bg-orange-500/5"
-                  >
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-orange-500" />
-                      <span className="font-medium text-orange-500">
-                        {lowActivityCreators.length} creadores con baja actividad (1-3 días)
-                      </span>
-                    </div>
-                    {isLowOpen ? (
-                      <ChevronUp className="h-4 w-4 text-orange-500" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-orange-500" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-3 space-y-3">
-                  {lowActivityCreators.map((creator) => (
-                    <div
-                      key={creator.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-orange-500/20 hover:border-orange-500/40 transition-all"
+          <div className="space-y-3">
+            {/* Ordenar por días descendente (3, 2, 1, 0) */}
+            {[3, 2, 1, 0].map(days => {
+              if (!creatorsByDays[days] || creatorsByDays[days].length === 0) return null;
+              
+              const colors = getColorForDays(days);
+              const creators = creatorsByDays[days];
+              
+              return (
+                <Collapsible 
+                  key={days} 
+                  open={openSections[days]} 
+                  onOpenChange={() => toggleSection(days)}
+                >
+                  <CollapsibleTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className={`w-full justify-between p-3 h-auto border ${colors.border} ${colors.bg}`}
                     >
-                      <div>
-                        <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {creator.categoria || "Sin categoría"} • {creator.manager || "Sin manager"}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className={`h-4 w-4 ${colors.icon}`} />
+                        <span className={`font-medium ${colors.text}`}>
+                          {creators.length} {creators.length === 1 ? 'creador' : 'creadores'} con {days} {days === 1 ? 'día' : 'días'} live
+                        </span>
                       </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 text-orange-500 font-bold">
-                          <Calendar className="h-4 w-4" />
-                          <span>{creator.dias_live || 0} días</span>
+                      {openSections[days] ? (
+                        <ChevronUp className={`h-4 w-4 ${colors.icon}`} />
+                      ) : (
+                        <ChevronDown className={`h-4 w-4 ${colors.icon}`} />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-3 space-y-3">
+                    {creators.map((creator) => (
+                      <div
+                        key={creator.id}
+                        className={`flex items-center justify-between p-3 rounded-lg bg-background/50 border ${colors.border.replace('hover:', '')} hover:${colors.border.split('hover:')[1]} transition-all`}
+                      >
+                        <div>
+                          <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {creator.categoria || "Sin categoría"} • {creator.manager || "Sin manager"}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {(creator.horas_live || 0).toFixed(1)} hrs live
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            )}
-
-            {/* Creadores con 0 días - Menú desplegable */}
-            {zeroActivityCreators.length > 0 && (
-              <Collapsible open={isZeroOpen} onOpenChange={setIsZeroOpen}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-3 h-auto border border-red-500/30 hover:border-red-500/50 hover:bg-red-500/5"
-                  >
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-500" />
-                      <span className="font-medium text-red-500">
-                        {zeroActivityCreators.length} creadores sin actividad (0 días)
-                      </span>
-                    </div>
-                    {isZeroOpen ? (
-                      <ChevronUp className="h-4 w-4 text-red-500" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-red-500" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="mt-3 space-y-3">
-                  {zeroActivityCreators.map((creator) => (
-                    <div
-                      key={creator.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-red-500/20 hover:border-red-500/40 transition-all"
-                    >
-                      <div>
-                        <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {creator.categoria || "Sin categoría"} • {creator.manager || "Sin manager"}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex items-center gap-1 text-red-500 font-bold">
-                          <Calendar className="h-4 w-4" />
-                          <span>0 días</span>
+                        <div className="text-right">
+                          <div className={`flex items-center gap-1 ${colors.text} font-bold`}>
+                            <Calendar className="h-4 w-4" />
+                            <span>{days} {days === 1 ? 'día' : 'días'}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {(creator.horas_live || 0).toFixed(1)} hrs live
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {(creator.horas_live || 0).toFixed(1)} hrs live
-                        </p>
                       </div>
-                    </div>
-                  ))}
-                </CollapsibleContent>
-              </Collapsible>
-            )}
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
           </div>
         )}
       </CardContent>
