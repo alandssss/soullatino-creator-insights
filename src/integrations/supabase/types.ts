@@ -322,6 +322,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_daily_activity: {
+        Row: {
+          accumulated_seconds: number
+          activity_date: string
+          created_at: string
+          daily_goal_hours: number
+          id: string
+          is_active: boolean
+          last_activity_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accumulated_seconds?: number
+          activity_date?: string
+          created_at?: string
+          daily_goal_hours?: number
+          id?: string
+          is_active?: boolean
+          last_activity_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accumulated_seconds?: number
+          activity_date?: string
+          created_at?: string
+          daily_goal_hours?: number
+          id?: string
+          is_active?: boolean
+          last_activity_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_personal_messages: {
         Row: {
           creator_id: string
@@ -365,6 +401,30 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_work_goals: {
+        Row: {
+          created_at: string
+          daily_hours_goal: number
+          updated_at: string
+          user_email: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_hours_goal?: number
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_hours_goal?: number
+          updated_at?: string
+          user_email?: string | null
           user_id?: string
         }
         Relationships: []

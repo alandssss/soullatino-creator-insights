@@ -11,6 +11,7 @@ import { AdminUploadPanel } from "@/components/AdminUploadPanel";
 import { AdminActivityPanel } from "@/components/AdminActivityPanel";
 import { UserManagement } from "@/components/UserManagement";
 import { LowActivityPanel } from "@/components/LowActivityPanel";
+import { WorkTimeTracker } from "@/components/WorkTimeTracker";
 
 type Creator = Tables<"creators">;
 
@@ -185,8 +186,9 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
           <LowActivityPanel />
+          <WorkTimeTracker userEmail={user?.email} />
         </div>
 
         <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
