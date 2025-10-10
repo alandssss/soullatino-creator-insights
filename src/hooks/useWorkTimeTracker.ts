@@ -152,7 +152,7 @@ export const useWorkTimeTracker = (userEmail?: string) => {
       if (!active) {
         toast({
           title: "Contador pausado",
-          description: "Se detectó inactividad. El contador se ha pausado.",
+          description: "Se detectó inactividad. Continúa dando feedback para reanudar.",
         });
       }
     } catch (error) {
@@ -191,8 +191,8 @@ export const useWorkTimeTracker = (userEmail?: string) => {
       const hours = newSeconds / 3600;
       if (hours >= timeData.dailyGoalHours && (newSeconds - 1) / 3600 < timeData.dailyGoalHours) {
         toast({
-          title: "¡Meta alcanzada! 🎉",
-          description: `Has completado tus ${timeData.dailyGoalHours} horas del día.`,
+          title: "¡Meta de apoyo alcanzada! 🎉",
+          description: `Has completado tus ${timeData.dailyGoalHours} horas de feedback a creadores.`,
         });
       }
     } catch (error) {

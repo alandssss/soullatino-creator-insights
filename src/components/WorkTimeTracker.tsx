@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Clock, Target } from "lucide-react";
+import { MessageCircle, Target } from "lucide-react";
 import { useWorkTimeTracker } from "@/hooks/useWorkTimeTracker";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,8 +16,8 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
       <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Tiempo de Trabajo Hoy
+            <MessageCircle className="h-5 w-5 text-primary" />
+            Tiempo de Feedback a Creadores
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -34,11 +34,11 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
       <CardHeader>
         <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Tiempo de Trabajo Hoy
+            <MessageCircle className="h-5 w-5 text-primary" />
+            Tiempo de Feedback a Creadores
           </div>
           <Badge variant={isActive ? "default" : "secondary"} className="ml-auto">
-            {isActive ? "Activo" : "Pausado"}
+            {isActive ? "Dando Feedback" : "Pausado"}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -49,7 +49,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
           </div>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Target className="h-4 w-4" />
-            <span>Meta: {dailyGoalHours} horas</span>
+            <span>Meta diaria: {dailyGoalHours}h de apoyo</span>
           </div>
         </div>
 
@@ -63,13 +63,13 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
 
         {progress >= 100 && (
           <div className="text-center text-sm font-medium text-green-600 dark:text-green-400">
-            ¡Meta del día alcanzada! 🎉
+            ¡Meta de apoyo diario alcanzada! 🎉
           </div>
         )}
 
         {!isActive && (
           <div className="text-center text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-            El contador está pausado. Mueve el mouse o interactúa con la página para reanudar.
+            El contador está pausado por inactividad. Continúa dando feedback para reanudar.
           </div>
         )}
       </CardContent>
