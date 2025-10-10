@@ -22,7 +22,7 @@ export const LowActivityPanel = () => {
       const { data, error } = await supabase
         .from("creators")
         .select("*")
-        .lt("dias_live", 4)
+        .lte("dias_live", 8)
         .eq("status", "activo")
         .order("dias_live", { ascending: false });
 
@@ -79,6 +79,11 @@ export const LowActivityPanel = () => {
     if (days === 1) return { border: "border-orange-600/30 hover:border-orange-600/50", bg: "hover:bg-orange-600/5", text: "text-orange-600", icon: "text-orange-600" };
     if (days === 2) return { border: "border-orange-500/30 hover:border-orange-500/50", bg: "hover:bg-orange-500/5", text: "text-orange-500", icon: "text-orange-500" };
     if (days === 3) return { border: "border-yellow-500/30 hover:border-yellow-500/50", bg: "hover:bg-yellow-500/5", text: "text-yellow-500", icon: "text-yellow-500" };
+    if (days === 4) return { border: "border-yellow-400/30 hover:border-yellow-400/50", bg: "hover:bg-yellow-400/5", text: "text-yellow-400", icon: "text-yellow-400" };
+    if (days === 5) return { border: "border-lime-500/30 hover:border-lime-500/50", bg: "hover:bg-lime-500/5", text: "text-lime-500", icon: "text-lime-500" };
+    if (days === 6) return { border: "border-green-500/30 hover:border-green-500/50", bg: "hover:bg-green-500/5", text: "text-green-500", icon: "text-green-500" };
+    if (days === 7) return { border: "border-green-600/30 hover:border-green-600/50", bg: "hover:bg-green-600/5", text: "text-green-600", icon: "text-green-600" };
+    if (days === 8) return { border: "border-emerald-600/30 hover:border-emerald-600/50", bg: "hover:bg-emerald-600/5", text: "text-emerald-600", icon: "text-emerald-600" };
     return { border: "border-muted", bg: "hover:bg-muted/5", text: "text-muted-foreground", icon: "text-muted-foreground" };
   };
 
@@ -90,7 +95,7 @@ export const LowActivityPanel = () => {
           Creadores con Baja Actividad
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
-          {totalLowActivity} creadores con menos de 4 días live este mes
+          {totalLowActivity} creadores con 8 días live o menos este mes
         </p>
       </CardHeader>
       <CardContent>
@@ -101,8 +106,8 @@ export const LowActivityPanel = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Ordenar por días descendente (3, 2, 1, 0) */}
-            {[3, 2, 1, 0].map(days => {
+            {/* Ordenar por días descendente (8, 7, 6, 5, 4, 3, 2, 1, 0) */}
+            {[8, 7, 6, 5, 4, 3, 2, 1, 0].map(days => {
               if (!creatorsByDays[days] || creatorsByDays[days].length === 0) return null;
               
               const colors = getColorForDays(days);
