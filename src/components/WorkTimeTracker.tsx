@@ -13,16 +13,16 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
 
   if (isLoading) {
     return (
-      <Card className="glass-card border-primary/50 gradient-tiktok">
+      <Card className="bg-card/80 backdrop-blur-sm border-border/30">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-primary" />
+            <MessageCircle className="h-5 w-5 text-accent" />
             Tiempo de Feedback a Creadores
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
           </div>
         </CardContent>
       </Card>
@@ -30,11 +30,11 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
   }
 
   return (
-    <Card className="glass-card border-primary/50 gradient-tiktok">
+    <Card className="bg-card/80 backdrop-blur-sm border-border/30">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-primary" />
+            <MessageCircle className="h-5 w-5 text-accent" />
             Tiempo de Feedback a Creadores
           </div>
           <Badge variant={isActive ? "default" : "secondary"} className="ml-auto">
@@ -44,7 +44,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center">
-          <div className="text-5xl font-bold text-white mb-2 font-mono drop-shadow-lg">
+          <div className="text-5xl font-bold text-foreground mb-2 font-mono">
             {formatTime}
           </div>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
