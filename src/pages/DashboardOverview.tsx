@@ -22,33 +22,42 @@ const DashboardOverview = () => {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
         <p className="text-muted-foreground">Gestión de feedback y creadores</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="pending">
+        <TabsList className="grid w-full grid-cols-3 mb-6 glass-panel p-1">
+          <TabsTrigger 
+            value="pending"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+          >
             Creadores que necesitan Feedback
           </TabsTrigger>
-          <TabsTrigger value="history">
+          <TabsTrigger 
+            value="history"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+          >
             Mi Histórico de Feedback
           </TabsTrigger>
-          <TabsTrigger value="creators">
+          <TabsTrigger 
+            value="creators"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+          >
             Creadores
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="pending">
+        <TabsContent value="pending" className="mt-0">
           <FeedbackPending />
         </TabsContent>
         
-        <TabsContent value="history">
+        <TabsContent value="history" className="mt-0">
           <FeedbackHistory />
         </TabsContent>
         
-        <TabsContent value="creators">
+        <TabsContent value="creators" className="mt-0">
           <CreatorsList />
         </TabsContent>
       </Tabs>

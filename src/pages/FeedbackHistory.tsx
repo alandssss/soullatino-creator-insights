@@ -40,24 +40,24 @@ const FeedbackHistory = () => {
     <div className="space-y-6">
       <WorkTimeTracker userEmail={user?.email} />
       
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="glass-card border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-primary" />
-            Mi Histórico de Feedback
+            Actividad de Feedback
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-6">
             Visualiza tu actividad de feedback y el impacto en el rendimiento de los creadores
           </p>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <MonthlyFeedbackCalendar />
+            <FeedbackImpactChart />
+          </div>
         </CardContent>
       </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <MonthlyFeedbackCalendar />
-        <FeedbackImpactChart />
-      </div>
     </div>
   );
 };

@@ -120,7 +120,7 @@ const FeedbackPending = () => {
       
       <LowActivityPanel />
       
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="glass-card border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />

@@ -13,7 +13,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
 
   if (isLoading) {
     return (
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="glass-card border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-primary" />
@@ -30,7 +30,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+    <Card className="glass-card border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
