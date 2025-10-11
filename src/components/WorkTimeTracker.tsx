@@ -13,7 +13,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
 
   if (isLoading) {
     return (
-      <Card className="glass-card border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
+      <Card className="glass-card border-primary/50 gradient-tiktok">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-primary" />
@@ -30,7 +30,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
   }
 
   return (
-    <Card className="glass-card border-border/50 bg-gradient-to-br from-primary/10 to-accent/10">
+    <Card className="glass-card border-primary/50 gradient-tiktok">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center">
-          <div className="text-5xl font-bold text-primary mb-2 font-mono">
+          <div className="text-5xl font-bold text-white mb-2 font-mono drop-shadow-lg">
             {formatTime}
           </div>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
