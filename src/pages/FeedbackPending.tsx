@@ -137,7 +137,7 @@ const FeedbackPending = () => {
               {creators.map((creator, index) => (
                 <div
                   key={creator.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-all border border-border/30 hover:border-primary/30 cursor-pointer"
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-300 border border-border/50 hover:border-primary/30 cursor-pointer"
                   onClick={() => {
                     setSelectedCreator(creator);
                     setDialogOpen(true);
