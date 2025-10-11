@@ -95,7 +95,7 @@ const CreatorsList = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
+        <Card className="glass-card border-border/50 hover:shadow-glow hover:border-primary/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Creadores
@@ -107,7 +107,7 @@ const CreatorsList = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
+        <Card className="glass-card border-border/50 hover:shadow-glow hover:border-primary/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Diamantes
@@ -121,7 +121,7 @@ const CreatorsList = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
+        <Card className="glass-card border-border/50 hover:shadow-glow hover:border-primary/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Vistas
@@ -135,7 +135,7 @@ const CreatorsList = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
+        <Card className="glass-card border-border/50 hover:shadow-glow hover:border-primary/50 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Hito Promedio
@@ -155,20 +155,20 @@ const CreatorsList = () => {
         <WorkTimeTracker userEmail={user?.email} />
       </div>
 
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="glass-card border-primary/50">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground">Top Creadores</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {creators.map((creator, index) => (
-              <div
-                key={creator.id}
-                className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-all border border-border/30 hover:border-primary/30 cursor-pointer"
-                onClick={() => {
-                  setSelectedCreator(creator);
-                  setDialogOpen(true);
-                }}
+              {creators.map((creator, index) => (
+                <div
+                  key={creator.id}
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all border border-border/50 hover:border-primary/30 cursor-pointer"
+                  onClick={() => {
+                    setSelectedCreator(creator);
+                    setDialogOpen(true);
+                  }}
               >
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold">
