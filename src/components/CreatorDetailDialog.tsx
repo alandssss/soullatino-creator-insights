@@ -225,20 +225,21 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       cleanPhone = "52" + cleanPhone;
     }
     
-    // Generar mensaje
-    const message = aiAdvice || generateWhatsAppSummary();
+    // Generar mensaje personalizado con el nombre del usuario
+    const { data: { user } } = await supabase.auth.getUser();
+    const userName = user?.email?.split('@')[0] || "el equipo";
+    const message = generateWhatsAppSummary(userName);
     
     if (!message || message.trim() === "") {
       toast({
         title: "Error",
-        description: "No hay mensaje para enviar. Genera primero una recomendación.",
+        description: "No se pudo generar el mensaje",
         variant: "destructive",
       });
       return;
     }
     
     // Registrar la actividad
-    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from("whatsapp_activity").insert({
         creator_id: creator.id,
@@ -258,14 +259,10 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     });
   };
 
-  const generateWhatsAppSummary = () => {
+  const generateWhatsAppSummary = (userName: string = "el equipo") => {
     if (!creator) return "";
     
-    const today = new Date();
-    const currentDay = today.getDate();
-    const currentMonth = today.getMonth() + 1;
-    
-    const message = `Hola ${creator.nombre}!\n\nTus métricas al día ${currentDay}/${currentMonth} son:\n💎 ${(creator.diamantes || 0).toLocaleString()} diamantes\n📺 ${creator.dias_live || 0} días live\n⏰ ${(creator.horas_live || 0).toFixed(1)} horas\n\nTienes un momento para que hablemos de ello y como mejorarlo?`;
+    const message = `Hola soy ${userName} de SoulLatino, tus estadisticas al dia de ayer son:\n\n📅 ${creator.dias_live || 0} Dias Live\n⏰ ${(creator.horas_live || 0).toFixed(1)} Horas Live\n💎 ${(creator.diamantes || 0).toLocaleString()} Diamantes\n\n¿Podemos hablar para ayudarte en como mejorar ese desempeño?`;
     
     return message;
   };
