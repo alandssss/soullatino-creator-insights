@@ -1,0 +1,62 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { History, MessageCircle } from "lucide-react";
+import { MonthlyFeedbackCalendar } from "@/components/MonthlyFeedbackCalendar";
+import { FeedbackImpactChart } from "@/components/FeedbackImpactChart";
+
+const FeedbackHistory = () => {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/login");
+    } else {
+      setUser(user);
+    }
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <History className="h-5 w-5 text-primary" />
+            Mi Histórico de Feedback
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-4">
+            Visualiza tu actividad de feedback y el impacto en el rendimiento de los creadores
+          </p>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <MonthlyFeedbackCalendar />
+        <FeedbackImpactChart />
+      </div>
+    </div>
+  );
+};
+
+export default FeedbackHistory;
