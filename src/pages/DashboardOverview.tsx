@@ -28,22 +28,22 @@ const DashboardOverview = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 glass-panel p-1">
+        <TabsList className="grid w-full grid-cols-3 mb-6 glass-panel p-1 rounded-lg">
           <TabsTrigger 
             value="pending"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 data-[state=active]:rounded-md data-[state=active]:font-bold data-[state=active]:scale-[1.02] transition-all text-muted-foreground data-[state=active]:text-primary-foreground"
           >
             Creadores que necesitan Feedback
           </TabsTrigger>
           <TabsTrigger 
             value="history"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 data-[state=active]:rounded-md data-[state=active]:font-bold data-[state=active]:scale-[1.02] transition-all text-muted-foreground data-[state=active]:text-primary-foreground"
           >
             Mi Histórico de Feedback
           </TabsTrigger>
           <TabsTrigger 
             value="creators"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg data-[state=active]:shadow-primary/30 data-[state=active]:rounded-md data-[state=active]:font-bold data-[state=active]:scale-[1.02] transition-all text-muted-foreground data-[state=active]:text-primary-foreground"
           >
             Creadores
           </TabsTrigger>

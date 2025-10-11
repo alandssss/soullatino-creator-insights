@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import DashboardOverview from "@/pages/DashboardOverview";
@@ -19,11 +19,19 @@ const AppLayout = () => {
     <div className="min-h-screen">
       <header className="border-b border-border/50 glass-panel sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img src={logo} alt="Soullatino" className="h-10 w-10 object-contain" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Soullatino Analytics
-            </h1>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <img src={logo} alt="Soullatino" className="h-10 w-10 object-contain" />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Soullatino Analytics
+              </h1>
+            </div>
+            
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg glass-panel border border-primary/30">
+              <Building2 className="h-4 w-4 text-primary" />
+              <span className="text-sm text-muted-foreground">Agencia:</span>
+              <span className="text-sm font-semibold text-primary">Soullatino</span>
+            </div>
           </div>
           <Button
             variant="outline"
