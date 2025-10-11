@@ -56,6 +56,13 @@ All colors MUST be HSL.
     --glass-border: hsl(240 10% 30% / 0.2);
     --glass-highlight: hsl(0 0% 100% / 0.05);
     --glass-shadow: 0 8px 32px 0 hsl(0 0% 0% / 0.37);
+    
+    --metallic-gradient: linear-gradient(145deg, hsl(0 0% 85%) 0%, hsl(0 0% 65%) 25%, hsl(0 0% 75%) 50%, hsl(0 0% 55%) 75%, hsl(0 0% 70%) 100%);
+    --metallic-border: linear-gradient(145deg, hsl(0 0% 90%), hsl(0 0% 50%), hsl(0 0% 80%));
+    --metallic-shadow-inner: inset 0 2px 4px hsl(0 0% 100% / 0.3), inset 0 -2px 4px hsl(0 0% 0% / 0.3);
+    --metallic-shadow-outer: 0 4px 8px hsl(0 0% 0% / 0.4), 0 2px 4px hsl(0 0% 0% / 0.3);
+    --metallic-highlight: linear-gradient(to bottom, hsl(0 0% 100% / 0.4) 0%, transparent 50%);
+    --metallic-edge: 0 0 0 1px hsl(0 0% 40%), 0 0 0 2px hsl(0 0% 60%), 0 0 0 3px hsl(0 0% 30%);
 
     --sidebar-background: 240 10% 6% / 0.6;
     --sidebar-foreground: 240 5% 84%;
