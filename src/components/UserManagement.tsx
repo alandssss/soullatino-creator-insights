@@ -71,7 +71,7 @@ export const UserManagement = () => {
   return (
     <Card className="glass-card">
       <CardHeader>
-        <CardTitle>Gestión de Usuarios</CardTitle>
+        <CardTitle className="text-lg md:text-xl">Gestión de Usuarios</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
@@ -82,6 +82,7 @@ export const UserManagement = () => {
             placeholder="usuario@ejemplo.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full"
           />
         </div>
         <div className="space-y-2">
@@ -92,23 +93,24 @@ export const UserManagement = () => {
             placeholder="Contraseña segura"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <Button 
             onClick={handleCreateUser} 
             disabled={loading}
-            className="flex-1"
+            className="flex-1 w-full sm:w-auto"
           >
-            Crear Usuario Manager
+            {loading ? "Creando..." : "Crear Usuario Manager"}
           </Button>
           <Button 
             onClick={handleUpdatePassword} 
             disabled={loading}
             variant="outline"
-            className="flex-1"
+            className="flex-1 w-full sm:w-auto"
           >
-            Actualizar Contraseña
+            {loading ? "Actualizando..." : "Actualizar Contraseña"}
           </Button>
         </div>
       </CardContent>
