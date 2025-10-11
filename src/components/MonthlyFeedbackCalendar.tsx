@@ -115,16 +115,16 @@ export const MonthlyFeedbackCalendar = () => {
 
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="bg-card/80 backdrop-blur-sm border-border/30">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
+            <Calendar className="h-5 w-5 text-accent" />
             Registro Mensual de Feedback
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
           </div>
         </CardContent>
       </Card>
@@ -132,11 +132,11 @@ export const MonthlyFeedbackCalendar = () => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+    <Card className="bg-card/80 backdrop-blur-sm border-border/30">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-primary" />
+            <Calendar className="h-5 w-5 text-accent" />
             Registro Mensual de Feedback
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -201,7 +201,7 @@ export const MonthlyFeedbackCalendar = () => {
             }
 
             if (today) {
-              borderColor = "border-primary ring-2 ring-primary/20";
+              borderColor = "border-accent/50 ring-1 ring-accent/30";
             }
 
             return (

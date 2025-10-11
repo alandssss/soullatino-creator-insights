@@ -109,10 +109,10 @@ export const FeedbackImpactChart = () => {
 
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="bg-card/80 backdrop-blur-sm border-border/30">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
+            <TrendingUp className="h-5 w-5 text-accent" />
             Impacto de tu Feedback
           </CardTitle>
         </CardHeader>
@@ -127,10 +127,10 @@ export const FeedbackImpactChart = () => {
 
   if (impactData.length === 0) {
     return (
-      <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+      <Card className="bg-card/80 backdrop-blur-sm border-border/30">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
+            <TrendingUp className="h-5 w-5 text-accent" />
             Impacto de tu Feedback
           </CardTitle>
         </CardHeader>
@@ -146,10 +146,10 @@ export const FeedbackImpactChart = () => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
+    <Card className="bg-card/80 backdrop-blur-sm border-border/30">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-primary" />
+          <TrendingUp className="h-5 w-5 text-accent" />
           Impacto de tu Feedback
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-1">
@@ -159,17 +159,17 @@ export const FeedbackImpactChart = () => {
       <CardContent className="space-y-6">
         {/* Estadísticas resumidas */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-4 rounded-lg bg-primary/5 border border-primary/10">
-            <Users className="h-5 w-5 mx-auto mb-2 text-primary" />
+          <div className="text-center p-4 rounded-lg bg-accent/10 border border-accent/20">
+            <Users className="h-5 w-5 mx-auto mb-2 text-accent" />
             <div className="text-2xl font-bold text-foreground">{stats.totalCreators}</div>
             <div className="text-xs text-muted-foreground">Creadores apoyados</div>
           </div>
-          <div className="text-center p-4 rounded-lg bg-accent/5 border border-accent/10">
-            <TrendingUp className="h-5 w-5 mx-auto mb-2 text-accent" />
+          <div className="text-center p-4 rounded-lg bg-secondary/30 border border-secondary/40">
+            <TrendingUp className="h-5 w-5 mx-auto mb-2 text-secondary-foreground" />
             <div className="text-2xl font-bold text-foreground">+{stats.avgDiamanteIncrease.toLocaleString()}</div>
             <div className="text-xs text-muted-foreground">Diamantes promedio</div>
           </div>
-          <div className="text-center p-4 rounded-lg bg-green-500/5 border border-green-500/10">
+          <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/20">
             <BarChart3 className="h-5 w-5 mx-auto mb-2 text-green-500" />
             <div className="text-2xl font-bold text-foreground">+{stats.avgEngagementIncrease}%</div>
             <div className="text-xs text-muted-foreground">Engagement promedio</div>
@@ -209,10 +209,10 @@ export const FeedbackImpactChart = () => {
               <Line 
                 type="monotone" 
                 dataKey="dias_live_mejora" 
-                stroke="hsl(var(--primary))" 
+                stroke="hsl(var(--accent))" 
                 strokeWidth={2}
                 name="Mejora Días Live"
-                dot={{ fill: 'hsl(var(--primary))' }}
+                dot={{ fill: 'hsl(var(--accent))' }}
               />
             </LineChart>
           </ResponsiveContainer>
