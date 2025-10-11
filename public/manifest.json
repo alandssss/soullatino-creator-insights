@@ -1,0 +1,41 @@
+{
+  "name": "Soullatino Analytics - Dashboard de Creadores TikTok",
+  "short_name": "Soullatino",
+  "description": "Plataforma de analytics para monitorear y optimizar el rendimiento de creadores de contenido en TikTok",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1e",
+  "theme_color": "#d4ff6a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Feedback Pendiente",
+      "short_name": "Pendiente",
+      "description": "Ver feedback pendiente de creadores",
+      "url": "/dashboard/pending",
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Historial",
+      "short_name": "Historial",
+      "description": "Ver historial de feedback",
+      "url": "/dashboard/history",
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Lista de Creadores",
+      "short_name": "Creadores",
+      "description": "Ver todos los creadores",
+      "url": "/dashboard/creators",
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
+    }
+  ]
+}
