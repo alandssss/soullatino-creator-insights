@@ -16,8 +16,8 @@ const AppLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen">
+      <header className="border-b border-border/50 glass-panel sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <img src={logo} alt="Soullatino" className="h-10 w-10 object-contain" />
