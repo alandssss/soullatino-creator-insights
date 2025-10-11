@@ -174,7 +174,7 @@ const FeedbackPending = () => {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
+                          <h3 className="font-display font-semibold text-foreground">{creator.nombre}</h3>
                           {creator.telefono && (
                             <a
                               href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '').length === 10 ? '52' : ''}${creator.telefono.replace(/[^0-9]/g, '')}`}
@@ -188,7 +188,7 @@ const FeedbackPending = () => {
                             </a>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{creator.categoria || "Sin categoría"}</p>
+                        <p className="text-sm text-muted-foreground font-display">{creator.categoria || "Sin categoría"}</p>
                         {creator.lastFeedbackDate ? (
                           <div className="flex items-center gap-2 mt-1">
                             <Clock className="h-3 w-3 text-muted-foreground" />
@@ -204,8 +204,8 @@ const FeedbackPending = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
-                      <p className="text-sm text-muted-foreground">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
+                      <p className="font-display font-bold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
+                      <p className="text-sm text-muted-foreground font-display">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
                     </div>
                   </div>
                 ))}

@@ -178,10 +178,10 @@ const CreatorsList = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                        <h3 className="font-semibold text-foreground truncate">{creator.nombre}</h3>
+                        <h3 className="font-display font-semibold text-foreground truncate">{creator.nombre}</h3>
                         {creator.telefono && (
                           <div className="flex items-center gap-2">
-                            <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
+                            <span className="text-xs md:text-sm text-muted-foreground flex items-center gap-1 font-display">
                               <Phone className="h-3 w-3 md:h-4 md:w-4 text-primary flex-shrink-0" />
                               <span className="truncate">{creator.telefono}</span>
                             </span>
@@ -198,12 +198,12 @@ const CreatorsList = () => {
                           </div>
                         )}
                       </div>
-                      <p className="text-xs md:text-sm text-muted-foreground truncate">{creator.categoria || "Sin categoría"}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground truncate font-display">{creator.categoria || "Sin categoría"}</p>
                     </div>
                   </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="font-bold text-accent text-sm md:text-base whitespace-nowrap">{(creator.diamantes || 0).toLocaleString()} 💎</p>
-                  <p className="text-xs md:text-sm text-muted-foreground whitespace-nowrap">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
+                  <p className="font-display font-bold text-accent text-sm md:text-base whitespace-nowrap">{(creator.diamantes || 0).toLocaleString()} 💎</p>
+                  <p className="text-xs md:text-sm text-muted-foreground whitespace-nowrap font-display">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
                 </div>
               </div>
             ))}
