@@ -17,8 +17,8 @@ All colors MUST be HSL.
     --popover: 240 10% 8% / 0.8;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 316 73% 52%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 75 100% 60%;
+    --primary-foreground: 0 0% 10%;
 
     --secondary: 240 5% 20% / 0.5;
     --secondary-foreground: 0 0% 98%;
@@ -34,17 +34,17 @@ All colors MUST be HSL.
 
     --border: 240 10% 20% / 0.3;
     --input: 240 10% 20% / 0.4;
-    --ring: 316 73% 52%;
+    --ring: 75 100% 60%;
 
     --radius: 0.75rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(316 73% 52%) 0%, hsl(280 80% 60%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(75 100% 60%) 0%, hsl(85 100% 55%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(33 100% 61%) 0%, hsl(350 100% 65%) 100%);
     --gradient-card: linear-gradient(180deg, hsl(240 10% 8% / 0.4) 0%, hsl(240 10% 6% / 0.6) 100%);
-    --gradient-background: radial-gradient(ellipse at top, hsl(316 73% 15% / 0.3) 0%, hsl(240 15% 6%) 50%);
-    --gradient-tiktok: linear-gradient(135deg, hsl(316 73% 52%) 0%, hsl(195 100% 50%) 50%, hsl(33 100% 61%) 100%);
+    --gradient-background: radial-gradient(ellipse at top, hsl(75 100% 15% / 0.3) 0%, hsl(240 15% 6%) 50%);
+    --gradient-tiktok: linear-gradient(135deg, hsl(75 100% 60%) 0%, hsl(195 100% 50%) 50%, hsl(33 100% 61%) 100%);
     
-    --shadow-glow: 0 0 40px hsl(316 73% 52% / 0.3);
+    --shadow-glow: 0 0 40px hsl(75 100% 60% / 0.4);
     --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.4);
     --shadow-elevated: 0 20px 60px hsl(0 0% 0% / 0.5);
     --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.2);
@@ -66,12 +66,12 @@ All colors MUST be HSL.
 
     --sidebar-background: 240 10% 6% / 0.6;
     --sidebar-foreground: 240 5% 84%;
-    --sidebar-primary: 316 73% 52%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 75 100% 60%;
+    --sidebar-primary-foreground: 0 0% 10%;
     --sidebar-accent: 240 5% 15% / 0.5;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 10% 20% / 0.3;
-    --sidebar-ring: 316 73% 52%;
+    --sidebar-ring: 75 100% 60%;
   }
 
   .dark {
@@ -81,8 +81,8 @@ All colors MUST be HSL.
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 8% / 0.8;
     --popover-foreground: 0 0% 98%;
-    --primary: 316 73% 52%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 75 100% 60%;
+    --primary-foreground: 0 0% 10%;
     --secondary: 240 5% 20% / 0.5;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 5% 15% / 0.5;
@@ -93,15 +93,15 @@ All colors MUST be HSL.
     --destructive-foreground: 0 0% 98%;
     --border: 240 10% 20% / 0.3;
     --input: 240 10% 20% / 0.4;
-    --ring: 316 73% 52%;
+    --ring: 75 100% 60%;
     --sidebar-background: 240 10% 6% / 0.6;
     --sidebar-foreground: 240 5% 84%;
-    --sidebar-primary: 316 73% 52%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 75 100% 60%;
+    --sidebar-primary-foreground: 0 0% 10%;
     --sidebar-accent: 240 5% 15% / 0.5;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 10% 20% / 0.3;
-    --sidebar-ring: 316 73% 52%;
+    --sidebar-ring: 75 100% 60%;
   }
 }
 
