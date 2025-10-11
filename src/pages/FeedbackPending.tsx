@@ -2,18 +2,27 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Calendar } from "lucide-react";
+import { MessageCircle, Calendar, Clock } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 import { WorkTimeTracker } from "@/components/WorkTimeTracker";
+import { LowActivityPanel } from "@/components/LowActivityPanel";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 
 type Creator = Tables<"creators">;
+type CreatorInteraction = Tables<"creator_interactions">;
+
+interface CreatorWithLastFeedback extends Creator {
+  lastFeedbackDate?: string;
+  daysSinceLastFeedback?: number;
+}
 
 const FeedbackPending = () => {
   const [user, setUser] = useState<any>(null);
-  const [creators, setCreators] = useState<Creator[]>([]);
+  const [creators, setCreators] = useState<CreatorWithLastFeedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -36,21 +45,64 @@ const FeedbackPending = () => {
   };
 
   const fetchPendingCreators = async () => {
-    // Obtener creadores que necesitan feedback (ejemplo: sin última retroalimentación o con actividad reciente)
-    const { data, error } = await supabase
+    // Obtener creadores ordenados por diamantes
+    const { data: creatorsData, error: creatorsError } = await supabase
       .from("creators")
       .select("*")
       .order("diamantes", { ascending: false });
 
-    if (error) {
+    if (creatorsError) {
       toast({
         title: "Error",
         description: "No se pudieron cargar los creadores pendientes",
         variant: "destructive",
       });
-    } else {
-      setCreators(data || []);
+      setLoading(false);
+      return;
     }
+
+    // Obtener el último feedback de cada creador
+    const { data: interactions } = await supabase
+      .from("creator_interactions")
+      .select("creator_id, fecha")
+      .eq("tipo_interaccion", "feedback")
+      .order("fecha", { ascending: false });
+
+    // Crear un mapa con la última fecha de feedback por creador
+    const lastFeedbackMap = new Map<string, string>();
+    interactions?.forEach((interaction) => {
+      if (!lastFeedbackMap.has(interaction.creator_id)) {
+        lastFeedbackMap.set(interaction.creator_id, interaction.fecha);
+      }
+    });
+
+    // Combinar datos y calcular días desde el último feedback
+    const creatorsWithFeedback: CreatorWithLastFeedback[] = (creatorsData || []).map((creator) => {
+      const lastFeedback = lastFeedbackMap.get(creator.id);
+      let daysSinceLastFeedback: number | undefined;
+
+      if (lastFeedback) {
+        const lastDate = new Date(lastFeedback);
+        const now = new Date();
+        daysSinceLastFeedback = Math.floor((now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      }
+
+      return {
+        ...creator,
+        lastFeedbackDate: lastFeedback,
+        daysSinceLastFeedback,
+      };
+    });
+
+    // Ordenar por prioridad: primero los que nunca han recibido feedback, luego por días desde último feedback
+    creatorsWithFeedback.sort((a, b) => {
+      if (!a.lastFeedbackDate && !b.lastFeedbackDate) return 0;
+      if (!a.lastFeedbackDate) return -1;
+      if (!b.lastFeedbackDate) return 1;
+      return (b.daysSinceLastFeedback || 0) - (a.daysSinceLastFeedback || 0);
+    });
+
+    setCreators(creatorsWithFeedback);
     setLoading(false);
   };
 
@@ -65,6 +117,8 @@ const FeedbackPending = () => {
   return (
     <div className="space-y-6">
       <WorkTimeTracker userEmail={user?.email} />
+      
+      <LowActivityPanel />
       
       <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
         <CardHeader>
@@ -110,6 +164,18 @@ const FeedbackPending = () => {
                         )}
                       </div>
                       <p className="text-sm text-muted-foreground">{creator.categoria || "Sin categoría"}</p>
+                      {creator.lastFeedbackDate ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <Clock className="h-3 w-3 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">
+                            Último feedback: hace {creator.daysSinceLastFeedback} días
+                          </span>
+                        </div>
+                      ) : (
+                        <Badge variant="destructive" className="mt-1 text-xs">
+                          Sin feedback registrado
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">
