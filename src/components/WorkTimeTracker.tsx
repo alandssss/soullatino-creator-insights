@@ -44,10 +44,10 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center">
-          <div className="text-5xl font-bold text-foreground mb-2 font-mono">
+          <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2 font-mono">
             {formatTime}
           </div>
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
             <Target className="h-4 w-4" />
             <span>Meta hoy: {dailyGoalHours}h de apoyo</span>
           </div>

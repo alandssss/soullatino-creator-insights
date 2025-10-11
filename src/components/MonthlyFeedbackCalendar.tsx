@@ -134,12 +134,13 @@ export const MonthlyFeedbackCalendar = () => {
   return (
     <Card className="bg-card/80 backdrop-blur-sm border-border/30">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <CardTitle className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
             <Calendar className="h-5 w-5 text-accent" />
-            Registro Mensual de Feedback
+            <span className="hidden sm:inline">Registro Mensual de Feedback</span>
+            <span className="sm:hidden">Registro Mensual</span>
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-center">
             <Button
               variant="outline"
               size="sm"
@@ -147,7 +148,7 @@ export const MonthlyFeedbackCalendar = () => {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium capitalize min-w-[150px] text-center">
+            <span className="text-xs sm:text-sm font-medium capitalize min-w-[120px] sm:min-w-[150px] text-center">
               {monthName}
             </span>
             <Button
@@ -226,7 +227,7 @@ export const MonthlyFeedbackCalendar = () => {
         </div>
 
         {/* Leyenda */}
-        <div className="mt-6 flex items-center justify-center gap-6 text-sm">
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-green-500/20 border-2 border-green-500/40" />
             <span className="text-muted-foreground">Meta cumplida</span>

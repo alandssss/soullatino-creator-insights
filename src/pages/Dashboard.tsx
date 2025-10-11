@@ -93,13 +93,14 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-gradient-to-br from-primary to-primary/80 rounded-xl">
-              <TrendingUp className="h-6 w-6 text-primary-foreground" />
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="p-1.5 sm:p-2 bg-gradient-to-br from-primary to-primary/80 rounded-xl">
+              <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Soullatino Analytics
+            <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <span className="hidden sm:inline">Soullatino Analytics</span>
+              <span className="sm:hidden">Soullatino</span>
             </h1>
           </div>
           <Button
@@ -108,16 +109,16 @@ const Dashboard = () => {
             onClick={handleLogout}
             className="border-border/50 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 transition-all"
           >
-            <LogOut className="h-4 w-4 mr-2" />
-            Salir
+            <LogOut className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Salir</span>
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Dashboard</h2>
-          <p className="text-muted-foreground">Resumen de métricas de tus creadores</p>
+      <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Dashboard</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">Resumen de métricas de tus creadores</p>
         </div>
 
         {userRole === "admin" && (
@@ -132,7 +133,7 @@ const Dashboard = () => {
           </>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
           <Card className="bg-gradient-to-br from-card to-card/50 border-border/50 hover:shadow-glow transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -188,12 +189,12 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="mb-6 sm:mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <LowActivityPanel />
           <WorkTimeTracker userEmail={user?.email} />
         </div>
 
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="mb-6 sm:mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <MonthlyFeedbackCalendar />
           <FeedbackImpactChart />
         </div>
