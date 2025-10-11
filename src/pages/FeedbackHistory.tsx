@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { History, MessageCircle } from "lucide-react";
+import { History } from "lucide-react";
 import { MonthlyFeedbackCalendar } from "@/components/MonthlyFeedbackCalendar";
 import { FeedbackImpactChart } from "@/components/FeedbackImpactChart";
+import { WorkTimeTracker } from "@/components/WorkTimeTracker";
 
 const FeedbackHistory = () => {
   const [user, setUser] = useState<any>(null);
@@ -37,6 +38,8 @@ const FeedbackHistory = () => {
 
   return (
     <div className="space-y-6">
+      <WorkTimeTracker userEmail={user?.email} />
+      
       <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

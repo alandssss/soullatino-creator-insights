@@ -7,10 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Calendar } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
+import { WorkTimeTracker } from "@/components/WorkTimeTracker";
 
 type Creator = Tables<"creators">;
 
 const FeedbackPending = () => {
+  const [user, setUser] = useState<any>(null);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
@@ -29,6 +31,7 @@ const FeedbackPending = () => {
       return;
     }
     
+    setUser(user);
     await fetchPendingCreators();
   };
 
@@ -61,6 +64,8 @@ const FeedbackPending = () => {
 
   return (
     <div className="space-y-6">
+      <WorkTimeTracker userEmail={user?.email} />
+      
       <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
