@@ -57,11 +57,32 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     setUserRole(data?.role || null);
   };
 
-  // Cargar recomendación al abrir modal
+  // Cargar recomendación al abrir modal y suscribirse a cambios en tiempo real
   useEffect(() => {
     if (open && creator) {
       fetchInteractions();
       loadLatestRecommendation();
+      
+      // Suscribirse a cambios en tiempo real de interacciones
+      const channel = supabase
+        .channel('creator-interactions-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'creator_interactions',
+            filter: `creator_id=eq.${creator.id}`
+          },
+          () => {
+            fetchInteractions(); // Recargar cuando haya cambios
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     } else {
       // Limpiar al cerrar
       setAiAdvice("");
