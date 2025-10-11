@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2, Clock, Award, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2, Clock, Award, ArrowUp, ArrowDown, Minus, Eye } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { z } from "zod";
 
@@ -38,7 +39,16 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   const [loadingAdvice, setLoadingAdvice] = useState(false);
   const [milestone, setMilestone] = useState("");
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     checkUserRole();
@@ -391,14 +401,37 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-base">{creator.telefono || "No especificado"}</p>
                   {creator.telefono && (
-                    <Button 
-                      size="sm" 
-                      variant="success"
-                      onClick={openWhatsApp}
-                    >
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      WhatsApp
-                    </Button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          variant="success"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Vista Previa
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm">Mensaje de WhatsApp</h4>
+                            <div className="p-3 bg-muted/50 rounded-lg border border-border">
+                              <p className="text-sm whitespace-pre-wrap font-display">
+                                {generateWhatsAppSummary(user?.email?.split('@')[0] || "el equipo")}
+                              </p>
+                            </div>
+                          </div>
+                          <Button 
+                            className="w-full"
+                            variant="success"
+                            onClick={openWhatsApp}
+                          >
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Enviar por WhatsApp
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   )}
                 </div>
               </div>
@@ -427,24 +460,42 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <p className="font-bold text-xl">{(creator.engagement_rate || 0).toFixed(1)}%</p>
               </div>
               <div className="col-span-2 pt-2">
-                <Button 
-                  onClick={openWhatsApp} 
-                  variant="success"
-                  disabled={!creator.telefono || (!aiAdvice)}
-                  size="lg"
-                  className="w-full text-base font-semibold"
-                >
-                  <MessageSquare className="h-5 w-5 mr-2" />
-                  Enviar Recomendación por WhatsApp
-                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="success"
+                      disabled={!creator.telefono}
+                      size="lg"
+                      className="w-full text-base font-semibold"
+                    >
+                      <Eye className="h-5 w-5 mr-2" />
+                      Vista Previa del Mensaje
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-96">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <h4 className="font-semibold">Mensaje que se enviará</h4>
+                        <div className="p-4 bg-muted/50 rounded-lg border border-border max-h-60 overflow-y-auto">
+                          <p className="text-sm whitespace-pre-wrap font-display">
+                            {generateWhatsAppSummary(user?.email?.split('@')[0] || "el equipo")}
+                          </p>
+                        </div>
+                      </div>
+                      <Button 
+                        className="w-full"
+                        variant="success"
+                        onClick={openWhatsApp}
+                      >
+                        <MessageSquare className="h-5 w-5 mr-2" />
+                        Enviar por WhatsApp
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
                 {!creator.telefono && (
                   <p className="text-sm text-muted-foreground text-center mt-3">
                     No hay número de teléfono registrado
-                  </p>
-                )}
-                {!aiAdvice && creator.telefono && (
-                  <p className="text-sm text-muted-foreground text-center mt-3">
-                    Genera primero una recomendación para enviar
                   </p>
                 )}
               </div>
