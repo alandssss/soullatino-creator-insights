@@ -75,15 +75,15 @@ export const LowActivityPanel = () => {
   const totalLowActivity = Object.values(creatorsByDays).reduce((sum, creators) => sum + creators.length, 0);
 
   const getColorForDays = (days: number) => {
-    if (days === 0) return { border: "border-red-500/30 hover:border-red-500/50", bg: "hover:bg-red-500/5", text: "text-red-500", icon: "text-red-500" };
-    if (days === 1) return { border: "border-orange-600/30 hover:border-orange-600/50", bg: "hover:bg-orange-600/5", text: "text-orange-600", icon: "text-orange-600" };
-    if (days === 2) return { border: "border-orange-500/30 hover:border-orange-500/50", bg: "hover:bg-orange-500/5", text: "text-orange-500", icon: "text-orange-500" };
-    if (days === 3) return { border: "border-yellow-500/30 hover:border-yellow-500/50", bg: "hover:bg-yellow-500/5", text: "text-yellow-500", icon: "text-yellow-500" };
-    if (days === 4) return { border: "border-yellow-400/30 hover:border-yellow-400/50", bg: "hover:bg-yellow-400/5", text: "text-yellow-400", icon: "text-yellow-400" };
-    if (days === 5) return { border: "border-lime-500/30 hover:border-lime-500/50", bg: "hover:bg-lime-500/5", text: "text-lime-500", icon: "text-lime-500" };
-    if (days === 6) return { border: "border-green-500/30 hover:border-green-500/50", bg: "hover:bg-green-500/5", text: "text-green-500", icon: "text-green-500" };
-    if (days === 7) return { border: "border-green-600/30 hover:border-green-600/50", bg: "hover:bg-green-600/5", text: "text-green-600", icon: "text-green-600" };
-    if (days === 8) return { border: "border-emerald-600/30 hover:border-emerald-600/50", bg: "hover:bg-emerald-600/5", text: "text-emerald-600", icon: "text-emerald-600" };
+    if (days === 0) return { border: "border-destructive/40", bg: "hover:bg-destructive/10", text: "text-destructive", icon: "text-destructive" };
+    if (days === 1) return { border: "border-accent/40", bg: "hover:bg-accent/10", text: "text-accent", icon: "text-accent" };
+    if (days === 2) return { border: "border-accent/35", bg: "hover:bg-accent/8", text: "text-accent/90", icon: "text-accent/90" };
+    if (days === 3) return { border: "border-primary/40", bg: "hover:bg-primary/10", text: "text-primary", icon: "text-primary" };
+    if (days === 4) return { border: "border-primary/35", bg: "hover:bg-primary/8", text: "text-primary/90", icon: "text-primary/90" };
+    if (days === 5) return { border: "border-primary/30", bg: "hover:bg-primary/5", text: "text-primary/80", icon: "text-primary/80" };
+    if (days === 6) return { border: "border-muted-foreground/30", bg: "hover:bg-muted/10", text: "text-muted-foreground", icon: "text-muted-foreground" };
+    if (days === 7) return { border: "border-muted-foreground/25", bg: "hover:bg-muted/8", text: "text-muted-foreground/90", icon: "text-muted-foreground/90" };
+    if (days === 8) return { border: "border-muted-foreground/20", bg: "hover:bg-muted/5", text: "text-muted-foreground/80", icon: "text-muted-foreground/80" };
     return { border: "border-muted", bg: "hover:bg-muted/5", text: "text-muted-foreground", icon: "text-muted-foreground" };
   };
 
