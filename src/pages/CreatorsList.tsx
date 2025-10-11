@@ -12,6 +12,7 @@ import { AdminActivityPanel } from "@/components/AdminActivityPanel";
 import { UserManagement } from "@/components/UserManagement";
 import { LowActivityPanel } from "@/components/LowActivityPanel";
 import { WorkTimeTracker } from "@/components/WorkTimeTracker";
+import { CreatorPhoneUpdate } from "@/components/CreatorPhoneUpdate";
 
 type Creator = Tables<"creators">;
 
@@ -87,6 +88,7 @@ const CreatorsList = () => {
       {userRole === "admin" && (
         <>
           <UserManagement />
+          <CreatorPhoneUpdate />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <AdminUploadPanel />
             <AdminActivityPanel />
