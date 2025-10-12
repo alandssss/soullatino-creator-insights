@@ -723,6 +723,80 @@ export type Database = {
         }
         Relationships: []
       }
+      supervision_live_logs: {
+        Row: {
+          accion_sugerida: string | null
+          attachments: Json | null
+          audio_claro: boolean | null
+          buena_iluminacion: boolean | null
+          created_at: string
+          creator_id: string
+          cumple_normas: boolean | null
+          en_batalla: boolean | null
+          en_vivo: boolean | null
+          fecha_evento: string
+          id: string
+          observer_name: string | null
+          observer_user_id: string
+          reporte: string | null
+          riesgo: string | null
+          score: number | null
+          set_profesional: boolean | null
+          severidad: string | null
+          updated_at: string
+        }
+        Insert: {
+          accion_sugerida?: string | null
+          attachments?: Json | null
+          audio_claro?: boolean | null
+          buena_iluminacion?: boolean | null
+          created_at?: string
+          creator_id: string
+          cumple_normas?: boolean | null
+          en_batalla?: boolean | null
+          en_vivo?: boolean | null
+          fecha_evento?: string
+          id?: string
+          observer_name?: string | null
+          observer_user_id: string
+          reporte?: string | null
+          riesgo?: string | null
+          score?: number | null
+          set_profesional?: boolean | null
+          severidad?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accion_sugerida?: string | null
+          attachments?: Json | null
+          audio_claro?: boolean | null
+          buena_iluminacion?: boolean | null
+          created_at?: string
+          creator_id?: string
+          cumple_normas?: boolean | null
+          en_batalla?: boolean | null
+          en_vivo?: boolean | null
+          fecha_evento?: string
+          id?: string
+          observer_name?: string | null
+          observer_user_id?: string
+          reporte?: string | null
+          riesgo?: string | null
+          score?: number | null
+          set_profesional?: boolean | null
+          severidad?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supervision_live_logs_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       uploaded_reports: {
         Row: {
           filename: string
@@ -894,7 +968,32 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      supervision_live_summary: {
+        Row: {
+          cnt_audio_claro: number | null
+          cnt_buena_iluminacion: number | null
+          cnt_cumple_normas: number | null
+          cnt_en_batalla: number | null
+          cnt_en_vivo: number | null
+          cnt_riesgo_alto: number | null
+          cnt_riesgo_bajo: number | null
+          cnt_riesgo_medio: number | null
+          cnt_set_prof: number | null
+          creator_id: string | null
+          eventos: number | null
+          mes: string | null
+          score_promedio: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supervision_live_logs_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       calcular_bonificaciones_mes: {
@@ -911,6 +1010,22 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      supervision_compute_score: {
+        Args: {
+          _audio_claro: boolean
+          _buena_iluminacion: boolean
+          _cumple_normas: boolean
+          _en_batalla: boolean
+          _en_vivo: boolean
+          _set_profesional: boolean
+          _severidad: string
+        }
+        Returns: number
+      }
+      supervision_score_to_risk: {
+        Args: { _score: number }
+        Returns: string
       }
     }
     Enums: {

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import DashboardOverview from "@/pages/DashboardOverview";
 import Reclutamiento from "@/pages/Reclutamiento";
+import SupervisionLive from "@/pages/SupervisionLive";
 import NotFound from "@/pages/NotFound";
 import logo from "@/assets/logo.png";
 
@@ -51,6 +52,7 @@ const AppLayout = () => {
           <Route path="/" element={<Navigate to="/dashboard/pending" replace />} />
           <Route path="/dashboard/*" element={<DashboardOverview />} />
           <Route path="/reclutamiento" element={<Reclutamiento />} />
+          <Route path="/supervision" element={<SupervisionLive />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

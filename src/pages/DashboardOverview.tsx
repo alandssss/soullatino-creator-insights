@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import FeedbackPending from "./FeedbackPending";
@@ -43,6 +43,7 @@ const DashboardOverview = () => {
   };
 
   const canAccessReclutamiento = userRole === 'admin' || userRole === 'reclutador';
+  const canAccessSupervision = userRole === 'admin' || userRole === 'manager' || userRole === 'supervisor';
 
   return (
     <div className="container mx-auto px-6 py-8">
@@ -51,15 +52,26 @@ const DashboardOverview = () => {
           <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
           <p className="text-muted-foreground">Gestión de feedback y creadores</p>
         </div>
-        {canAccessReclutamiento && (
-          <Button
-            onClick={() => navigate("/reclutamiento")}
-            className="bg-gradient-to-r from-primary to-accent"
-          >
-            <Users className="h-4 w-4 mr-2" />
-            Reclutamiento
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {canAccessSupervision && (
+            <Button
+              onClick={() => navigate("/supervision")}
+              className="bg-gradient-to-r from-green-600 to-emerald-600"
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Supervisión Live
+            </Button>
+          )}
+          {canAccessReclutamiento && (
+            <Button
+              onClick={() => navigate("/reclutamiento")}
+              className="bg-gradient-to-r from-primary to-accent"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Reclutamiento
+            </Button>
+          )}
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
