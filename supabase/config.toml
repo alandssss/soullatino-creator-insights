@@ -1,10 +1,10 @@
 project_id = "rgypfqxiqeymltbinkvs"
 
 [functions.process-creator-analytics]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-creator-advice]
-verify_jwt = false
+verify_jwt = true
 
 [functions.manage-user]
-verify_jwt = false
+verify_jwt = true

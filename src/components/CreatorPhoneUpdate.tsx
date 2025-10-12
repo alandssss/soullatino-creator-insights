@@ -74,15 +74,28 @@ export const CreatorPhoneUpdate = () => {
       }
 
       try {
-        // Buscar el creador por username (nombre o tiktok_username)
-        const { data: creators, error: searchError } = await supabase
+        // Search by nombre first with parameterized query (safe from SQL injection)
+        let { data: creator, error: searchError } = await supabase
           .from('creators')
           .select('id, nombre, tiktok_username')
-          .or(`nombre.eq.${update.username},tiktok_username.eq.${update.username}`);
+          .eq('nombre', update.username)
+          .maybeSingle();
 
         if (searchError) throw searchError;
 
-        if (!creators || creators.length === 0) {
+        // If not found by nombre, try by tiktok_username with parameterized query (safe from SQL injection)
+        if (!creator) {
+          const result = await supabase
+            .from('creators')
+            .select('id, nombre, tiktok_username')
+            .eq('tiktok_username', update.username)
+            .maybeSingle();
+          
+          creator = result.data;
+          if (result.error) throw result.error;
+        }
+
+        if (!creator) {
           resultsArray.push({ 
             ...update, 
             status: 'error',
@@ -95,7 +108,7 @@ export const CreatorPhoneUpdate = () => {
         const { error: updateError } = await supabase
           .from('creators')
           .update({ telefono: update.telefono })
-          .eq('id', creators[0].id);
+          .eq('id', creator.id);
 
         if (updateError) throw updateError;
 
