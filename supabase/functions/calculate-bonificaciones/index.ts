@@ -32,154 +32,57 @@ serve(async (req) => {
       );
     }
 
-    // Obtener datos del creador
-    const { data: creator, error: creatorError } = await supabaseClient
-      .from('creators')
-      .select('*')
-      .eq('id', creatorId)
-      .single();
-
-    if (creatorError || !creator) {
-      return new Response(
-        JSON.stringify({ error: "Creador no encontrado" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Cálculos de fecha
+    // Calcular fecha del mes actual
     const fechaReporte = new Date();
     const inicioMes = new Date(fechaReporte.getFullYear(), fechaReporte.getMonth(), 1);
-    const ultimoDiaMes = new Date(fechaReporte.getFullYear(), fechaReporte.getMonth() + 1, 0);
-    const diasRestantes = Math.max(0, Math.ceil((ultimoDiaMes.getTime() - fechaReporte.getTime()) / (1000 * 60 * 60 * 24)));
+    const mesReferencia = inicioMes.toISOString().split('T')[0];
 
-    // Métricas LIVE del mes (del creador)
-    const diasLiveMes = creator.dias_live_mes || 0;
-    const horasLiveMes = creator.horas_live_mes || 0;
-    const diamLiveMes = creator.diam_live_mes || 0;
-    const diasEnAgencia = creator.dias_en_agencia || 0;
+    console.log(`Calculando bonificaciones para creator ${creatorId}, mes ${mesReferencia}`);
 
-    // Graduaciones
-    const graduaciones = [
-      { valor: 50000, label: "50K", key: "grad_50k" },
-      { valor: 100000, label: "100K", key: "grad_100k" },
-      { valor: 300000, label: "300K", key: "grad_300k" },
-      { valor: 500000, label: "500K", key: "grad_500k" },
-      { valor: 1000000, label: "1M", key: "grad_1m" }
-    ];
+    // Ejecutar función SQL para calcular bonificaciones del mes
+    const { error: calcError } = await supabaseClient.rpc('calcular_bonificaciones_mes', {
+      mes_referencia: mesReferencia
+    });
 
-    const gradAlcanzadas: any = {};
-    let proximaGrad: any = null;
-    let faltanDiam = 0;
-    let reqDiamPorDia = 0;
-
-    for (const grad of graduaciones) {
-      gradAlcanzadas[grad.key] = diamLiveMes >= grad.valor;
-      if (!proximaGrad && diamLiveMes < grad.valor) {
-        proximaGrad = grad;
-        faltanDiam = Math.max(0, grad.valor - diamLiveMes);
-        reqDiamPorDia = diasRestantes > 0 ? Math.ceil(faltanDiam / diasRestantes) : 0;
-      }
-    }
-
-    // Hitos
-    const hitos = [
-      { dias: 12, horas: 40, label: "12d/40h", key: "hito_12d_40h" },
-      { dias: 20, horas: 60, label: "20d/60h", key: "hito_20d_60h" },
-      { dias: 22, horas: 80, label: "22d/80h", key: "hito_22d_80h" }
-    ];
-
-    const hitosAlcanzados: any = {};
-    let proximoHito: any = null;
-    let faltanDias = 0;
-    let faltanHoras = 0;
-    let reqHorasPorDia = 0;
-
-    for (const hito of hitos) {
-      const alcanzado = (diasLiveMes >= hito.dias) && (horasLiveMes >= hito.horas);
-      hitosAlcanzados[hito.key] = alcanzado;
-      
-      if (!proximoHito && !alcanzado) {
-        proximoHito = hito;
-        faltanDias = Math.max(0, hito.dias - diasLiveMes);
-        faltanHoras = Math.max(0, hito.horas - horasLiveMes);
-        reqHorasPorDia = diasRestantes > 0 ? Math.ceil(faltanHoras / diasRestantes) : 0;
-      }
-    }
-
-    // Bono extra (días > 22)
-    const diasExtra = Math.max(0, diasLiveMes - 22);
-    const bonoExtraUsd = diasExtra * 3;
-
-    // Prioridad <90 días: 300K
-    const esPrioridad300k = diasEnAgencia < 90 && diamLiveMes < 300000;
-
-    // ¿Cerca del objetivo?
-    let cercaObjetivo = false;
-    if (proximaGrad) {
-      cercaObjetivo = faltanDiam <= (proximaGrad.valor * 0.10) || faltanDiam <= 5000;
-    }
-    if (!cercaObjetivo && proximoHito) {
-      cercaObjetivo = faltanDias <= 3 || faltanHoras <= 5;
-    }
-
-    // Determinar próximo objetivo
-    let proximoObjetivoTipo = "";
-    let proximoObjetivoValor = "";
-
-    if (esPrioridad300k) {
-      proximoObjetivoTipo = "graduacion_prioritaria";
-      proximoObjetivoValor = "300K Diamantes";
-    } else if (proximaGrad) {
-      proximoObjetivoTipo = "graduacion";
-      proximoObjetivoValor = `${proximaGrad.label} Diamantes`;
-    } else if (proximoHito) {
-      proximoObjetivoTipo = "hito";
-      proximoObjetivoValor = proximoHito.label;
-    }
-
-    // Guardar en BD
-    const bonificacionData = {
-      creator_id: creatorId,
-      mes_referencia: inicioMes.toISOString().split('T')[0],
-      fecha_calculo: fechaReporte.toISOString().split('T')[0],
-      dias_live_mes: diasLiveMes,
-      horas_live_mes: horasLiveMes,
-      diam_live_mes: diamLiveMes,
-      dias_restantes: diasRestantes,
-      ...gradAlcanzadas,
-      ...hitosAlcanzados,
-      dias_extra_22: diasExtra,
-      bono_extra_usd: bonoExtraUsd,
-      proximo_objetivo_tipo: proximoObjetivoTipo,
-      proximo_objetivo_valor: proximoObjetivoValor,
-      req_diam_por_dia: reqDiamPorDia,
-      req_horas_por_dia: reqHorasPorDia,
-      es_prioridad_300k: esPrioridad300k,
-      cerca_de_objetivo: cercaObjetivo
-    };
-
-    const { data: bonificacion, error: bonifError } = await supabaseClient
-      .from('creator_bonificaciones')
-      .upsert(bonificacionData, { 
-        onConflict: 'creator_id,mes_referencia',
-        ignoreDuplicates: false 
-      })
-      .select()
-      .single();
-
-    if (bonifError) {
-      console.error('Error guardando bonificación:', bonifError);
+    if (calcError) {
+      console.error('Error en calcular_bonificaciones_mes:', calcError);
       return new Response(
-        JSON.stringify({ error: "Error al guardar bonificación" }),
+        JSON.stringify({ error: "Error al calcular bonificaciones" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    // Obtener el resultado calculado
+    const { data: bonificacion, error: fetchError } = await supabaseClient
+      .from('creator_bonificaciones')
+      .select('*')
+      .eq('creator_id', creatorId)
+      .eq('mes_referencia', mesReferencia)
+      .single();
+
+    if (fetchError || !bonificacion) {
+      console.error('Error obteniendo bonificación:', fetchError);
+      return new Response(
+        JSON.stringify({ error: "No se encontraron datos para este creador" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Obtener nombre del creador para los mensajes
+    const { data: creator } = await supabaseClient
+      .from('creators')
+      .select('nombre')
+      .eq('id', creatorId)
+      .single();
+
+
     // Generar mensaje para creador
-    const mensajeCreador = generarMensajeCreador(bonificacion, creator.nombre);
+    const mensajeCreador = generarMensajeCreador(bonificacion, creator?.nombre || 'Creador');
     
     // Generar mensaje para manager
-    const mensajeManager = generarMensajeManager(bonificacion, creator.nombre);
+    const mensajeManager = generarMensajeManager(bonificacion, creator?.nombre || 'Creador');
+
+    console.log(`Bonificaciones calculadas exitosamente para ${creator?.nombre}`);
 
     return new Response(
       JSON.stringify({
