@@ -1,5 +1,8 @@
 project_id = "rgypfqxiqeymltbinkvs"
 
+[functions.calculate-all-bonificaciones]
+verify_jwt = false
+
 [functions.calculate-bonificaciones]
 verify_jwt = false
 

@@ -14,6 +14,7 @@ import { LowActivityPanel } from "@/components/LowActivityPanel";
 import { WorkTimeTracker } from "@/components/WorkTimeTracker";
 import { MonthlyFeedbackCalendar } from "@/components/MonthlyFeedbackCalendar";
 import { FeedbackImpactChart } from "@/components/FeedbackImpactChart";
+import { PanelPredictivoCreadores } from "@/components/PanelPredictivoCreadores";
 
 type Creator = Tables<"creators">;
 
@@ -187,6 +188,10 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="mb-6 sm:mb-8">
+          <PanelPredictivoCreadores />
         </div>
 
         <div className="mb-6 sm:mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
