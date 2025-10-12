@@ -6,13 +6,15 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
+  "display_override": ["tabbed", "window-controls-overlay", "standalone"],
   "background_color": "#0a0f1e",
   "theme_color": "#d4ff6a",
   "orientation": "portrait-primary",
   "lang": "es-MX",
   "dir": "ltr",
   "categories": ["business", "productivity", "analytics"],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "icons": [
     {
       "src": "/logo.png",
@@ -28,6 +30,13 @@
       "type": "image/png",
       "form_factor": "wide",
       "label": "Dashboard de Analytics de Creadores TikTok"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vista móvil del dashboard"
     }
   ],
   "shortcuts": [
@@ -62,5 +71,11 @@
       "text": "text",
       "url": "url"
     }
+  },
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
   }
 }

@@ -102,9 +102,76 @@ self.addEventListener('sync', (event) => {
 });
 
 async function syncFeedback() {
-  // Implement background sync logic here
   console.log('Background sync triggered');
 }
+
+// Periodic Background Sync - update data periodically
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'update-analytics') {
+    event.waitUntil(updateAnalytics());
+  }
+});
+
+async function updateAnalytics() {
+  console.log('Periodic sync: Updating analytics data');
+  // Fetch latest analytics data
+  try {
+    const response = await fetch('/api/analytics/latest');
+    if (response.ok) {
+      const data = await response.json();
+      // Update cache or notify clients
+      const clients = await self.clients.matchAll();
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'ANALYTICS_UPDATE',
+          data: data
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Failed to update analytics:', error);
+  }
+}
+
+// Push Notifications
+self.addEventListener('push', (event) => {
+  const options = {
+    body: event.data?.text() || 'Tienes nuevas notificaciones',
+    icon: '/logo.png',
+    badge: '/logo.png',
+    vibrate: [200, 100, 200],
+    tag: 'soullatino-notification',
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    },
+    actions: [
+      {
+        action: 'view',
+        title: 'Ver'
+      },
+      {
+        action: 'close',
+        title: 'Cerrar'
+      }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification('Soullatino Analytics', options)
+  );
+});
+
+// Handle notification clicks
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'view') {
+    event.waitUntil(
+      clients.openWindow('/dashboard/pending')
+    );
+  }
+});
 
 // Handle shutdown
 addEventListener('beforeunload', (ev) => {
