@@ -1,5 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import FeedbackPending from "./FeedbackPending";
 import FeedbackHistory from "./FeedbackHistory";
 import CreatorsList from "./CreatorsList";
@@ -13,18 +17,49 @@ const PATH_TO_TAB = {
 const DashboardOverview = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userRole, setUserRole] = useState<string | null>(null);
   
   const activeTab = PATH_TO_TAB[location.pathname as keyof typeof PATH_TO_TAB] || "pending";
+
+  useEffect(() => {
+    checkUserRole();
+  }, []);
+
+  const checkUserRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    setUserRole(roleData?.role || null);
+  };
 
   const handleTabChange = (value: string) => {
     navigate(`/dashboard/${value}`);
   };
 
+  const canAccessReclutamiento = userRole === 'admin' || userRole === 'reclutador';
+
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Gestión de feedback y creadores</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
+          <p className="text-muted-foreground">Gestión de feedback y creadores</p>
+        </div>
+        {canAccessReclutamiento && (
+          <Button
+            onClick={() => navigate("/reclutamiento")}
+            className="bg-gradient-to-r from-primary to-accent"
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Reclutamiento
+          </Button>
+        )}
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">

@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      actividad_reclutamiento: {
+        Row: {
+          accion: string
+          created_at: string | null
+          estado_anterior: string | null
+          estado_nuevo: string | null
+          id: string
+          nota: string | null
+          prospecto_id: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          accion: string
+          created_at?: string | null
+          estado_anterior?: string | null
+          estado_nuevo?: string | null
+          id?: string
+          nota?: string | null
+          prospecto_id?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          accion?: string
+          created_at?: string | null
+          estado_anterior?: string | null
+          estado_nuevo?: string | null
+          id?: string
+          nota?: string | null
+          prospecto_id?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "actividad_reclutamiento_prospecto_id_fkey"
+            columns: ["prospecto_id"]
+            isOneToOne: false
+            referencedRelation: "prospectos_reclutamiento"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_bonificaciones: {
         Row: {
           bono_extra_usd: number | null
@@ -461,6 +505,87 @@ export type Database = {
           email?: string | null
           id?: string
           nombre?: string
+        }
+        Relationships: []
+      }
+      prospectos_reclutamiento: {
+        Row: {
+          agendo_prueba: boolean | null
+          created_at: string | null
+          edad: number | null
+          en_humand: boolean | null
+          estado_actual: string
+          fecha_aceptacion: string | null
+          fecha_captura: string | null
+          fecha_ingreso_humand: string | null
+          fecha_ultimo_cambio: string | null
+          fuente_reclutamiento: string | null
+          id: string
+          instagram: string | null
+          lengua: string | null
+          mostro_interes: boolean | null
+          nombre_completo: string
+          notas: Json | null
+          pais: string
+          reclutador_id: string | null
+          reclutador_nombre: string | null
+          updated_at: string | null
+          usuario_humand: string | null
+          usuario_tiktok: string
+          validado_por: string | null
+          whatsapp: string
+        }
+        Insert: {
+          agendo_prueba?: boolean | null
+          created_at?: string | null
+          edad?: number | null
+          en_humand?: boolean | null
+          estado_actual?: string
+          fecha_aceptacion?: string | null
+          fecha_captura?: string | null
+          fecha_ingreso_humand?: string | null
+          fecha_ultimo_cambio?: string | null
+          fuente_reclutamiento?: string | null
+          id?: string
+          instagram?: string | null
+          lengua?: string | null
+          mostro_interes?: boolean | null
+          nombre_completo: string
+          notas?: Json | null
+          pais: string
+          reclutador_id?: string | null
+          reclutador_nombre?: string | null
+          updated_at?: string | null
+          usuario_humand?: string | null
+          usuario_tiktok: string
+          validado_por?: string | null
+          whatsapp: string
+        }
+        Update: {
+          agendo_prueba?: boolean | null
+          created_at?: string | null
+          edad?: number | null
+          en_humand?: boolean | null
+          estado_actual?: string
+          fecha_aceptacion?: string | null
+          fecha_captura?: string | null
+          fecha_ingreso_humand?: string | null
+          fecha_ultimo_cambio?: string | null
+          fuente_reclutamiento?: string | null
+          id?: string
+          instagram?: string | null
+          lengua?: string | null
+          mostro_interes?: boolean | null
+          nombre_completo?: string
+          notas?: Json | null
+          pais?: string
+          reclutador_id?: string | null
+          reclutador_nombre?: string | null
+          updated_at?: string | null
+          usuario_humand?: string | null
+          usuario_tiktok?: string
+          validado_por?: string | null
+          whatsapp?: string
         }
         Relationships: []
       }
