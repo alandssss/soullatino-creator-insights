@@ -67,6 +67,18 @@ export function CreatorCard({ creator, latestLog, onReload, onOpenIncident }: Cr
 
       if (error) throw error;
 
+      // Registrar actividad en el panel de admin
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("whatsapp_activity").insert({
+          creator_id: creator.id,
+          user_email: user.email || "Unknown",
+          action_type: "supervision_log",
+          creator_name: creator.nombre,
+          message_preview: `Supervisión: ${Object.keys(flags).join(', ')}`,
+        });
+      }
+
       toast({
         title: "Registro guardado",
         description: `Evento registrado para ${creator.nombre}`,

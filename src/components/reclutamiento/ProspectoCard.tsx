@@ -58,13 +58,25 @@ export const ProspectoCard = ({ prospecto, onUpdate }: ProspectoCardProps) => {
   const [nota, setNota] = useState("");
   const { toast } = useToast();
 
-  const abrirWhatsApp = () => {
+  const abrirWhatsApp = async () => {
     let cleanPhone = prospecto.whatsapp.replace(/\D/g, "");
     if (cleanPhone.length === 10) {
       cleanPhone = "52" + cleanPhone;
     }
     
     const mensaje = `Hola ${prospecto.nombre_completo}! 👋\n\nSoy del equipo de Soul Latino. Vi tu perfil de TikTok (@${prospecto.usuario_tiktok}) y me gustaría platicarte sobre una gran oportunidad.\n\n¿Tienes unos minutos para hablar?`;
+    
+    // Registrar actividad
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("whatsapp_activity").insert({
+        creator_id: prospecto.id,
+        user_email: user.email || "Unknown",
+        action_type: "reclutamiento_whatsapp",
+        creator_name: prospecto.nombre_completo,
+        message_preview: mensaje.substring(0, 200),
+      });
+    }
     
     window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(mensaje)}`;
   };
@@ -112,6 +124,15 @@ export const ProspectoCard = ({ prospecto, onUpdate }: ProspectoCardProps) => {
           });
 
         if (activityError) throw activityError;
+
+        // Registrar en el panel de actividad del admin
+        await supabase.from("whatsapp_activity").insert({
+          creator_id: prospecto.id,
+          user_email: user?.email || "Unknown",
+          action_type: "reclutamiento_nota",
+          creator_name: prospecto.nombre_completo,
+          message_preview: `Nota: ${nota.trim().substring(0, 150)}`,
+        });
       }
 
       toast({
