@@ -60,6 +60,7 @@ export type Database = {
       }
       creator_bonificaciones: {
         Row: {
+          bono_dias_extra_usd: number | null
           bono_extra_usd: number | null
           cerca_de_objetivo: boolean | null
           created_at: string | null
@@ -68,26 +69,59 @@ export type Database = {
           dias_extra_22: number | null
           dias_live_mes: number
           dias_restantes: number
+          es_nuevo_menos_90_dias: boolean | null
           es_prioridad_300k: boolean | null
+          faltan_100k: number | null
+          faltan_1m: number | null
+          faltan_300k: number | null
+          faltan_500k: number | null
+          faltan_50k: number | null
           fecha_calculo: string
+          fecha_estimada_100k: string | null
+          fecha_estimada_1m: string | null
+          fecha_estimada_300k: string | null
+          fecha_estimada_500k: string | null
+          fecha_estimada_50k: string | null
           grad_100k: boolean | null
           grad_1m: boolean | null
           grad_300k: boolean | null
           grad_500k: boolean | null
           grad_50k: boolean | null
+          hito_12_40: boolean | null
           hito_12d_40h: boolean | null
+          hito_20_60: boolean | null
           hito_20d_60h: boolean | null
+          hito_22_80: boolean | null
           hito_22d_80h: boolean | null
           horas_live_mes: number
           id: string
           mes_referencia: string
+          meta_recomendada: string | null
+          prob_100k: number | null
+          prob_1m: number | null
+          prob_300k: number | null
+          prob_500k: number | null
+          prob_50k: number | null
           proximo_objetivo_tipo: string | null
           proximo_objetivo_valor: string | null
           req_diam_por_dia: number | null
+          req_diam_por_dia_100k: number | null
+          req_diam_por_dia_1m: number | null
+          req_diam_por_dia_300k: number | null
+          req_diam_por_dia_500k: number | null
+          req_diam_por_dia_50k: number | null
           req_horas_por_dia: number | null
+          semaforo_100k: string | null
+          semaforo_1m: string | null
+          semaforo_300k: string | null
+          semaforo_500k: string | null
+          semaforo_50k: string | null
+          texto_creador: string | null
+          texto_manager: string | null
           updated_at: string | null
         }
         Insert: {
+          bono_dias_extra_usd?: number | null
           bono_extra_usd?: number | null
           cerca_de_objetivo?: boolean | null
           created_at?: string | null
@@ -96,26 +130,59 @@ export type Database = {
           dias_extra_22?: number | null
           dias_live_mes?: number
           dias_restantes?: number
+          es_nuevo_menos_90_dias?: boolean | null
           es_prioridad_300k?: boolean | null
+          faltan_100k?: number | null
+          faltan_1m?: number | null
+          faltan_300k?: number | null
+          faltan_500k?: number | null
+          faltan_50k?: number | null
           fecha_calculo?: string
+          fecha_estimada_100k?: string | null
+          fecha_estimada_1m?: string | null
+          fecha_estimada_300k?: string | null
+          fecha_estimada_500k?: string | null
+          fecha_estimada_50k?: string | null
           grad_100k?: boolean | null
           grad_1m?: boolean | null
           grad_300k?: boolean | null
           grad_500k?: boolean | null
           grad_50k?: boolean | null
+          hito_12_40?: boolean | null
           hito_12d_40h?: boolean | null
+          hito_20_60?: boolean | null
           hito_20d_60h?: boolean | null
+          hito_22_80?: boolean | null
           hito_22d_80h?: boolean | null
           horas_live_mes?: number
           id?: string
           mes_referencia: string
+          meta_recomendada?: string | null
+          prob_100k?: number | null
+          prob_1m?: number | null
+          prob_300k?: number | null
+          prob_500k?: number | null
+          prob_50k?: number | null
           proximo_objetivo_tipo?: string | null
           proximo_objetivo_valor?: string | null
           req_diam_por_dia?: number | null
+          req_diam_por_dia_100k?: number | null
+          req_diam_por_dia_1m?: number | null
+          req_diam_por_dia_300k?: number | null
+          req_diam_por_dia_500k?: number | null
+          req_diam_por_dia_50k?: number | null
           req_horas_por_dia?: number | null
+          semaforo_100k?: string | null
+          semaforo_1m?: string | null
+          semaforo_300k?: string | null
+          semaforo_500k?: string | null
+          semaforo_50k?: string | null
+          texto_creador?: string | null
+          texto_manager?: string | null
           updated_at?: string | null
         }
         Update: {
+          bono_dias_extra_usd?: number | null
           bono_extra_usd?: number | null
           cerca_de_objetivo?: boolean | null
           created_at?: string | null
@@ -124,23 +191,55 @@ export type Database = {
           dias_extra_22?: number | null
           dias_live_mes?: number
           dias_restantes?: number
+          es_nuevo_menos_90_dias?: boolean | null
           es_prioridad_300k?: boolean | null
+          faltan_100k?: number | null
+          faltan_1m?: number | null
+          faltan_300k?: number | null
+          faltan_500k?: number | null
+          faltan_50k?: number | null
           fecha_calculo?: string
+          fecha_estimada_100k?: string | null
+          fecha_estimada_1m?: string | null
+          fecha_estimada_300k?: string | null
+          fecha_estimada_500k?: string | null
+          fecha_estimada_50k?: string | null
           grad_100k?: boolean | null
           grad_1m?: boolean | null
           grad_300k?: boolean | null
           grad_500k?: boolean | null
           grad_50k?: boolean | null
+          hito_12_40?: boolean | null
           hito_12d_40h?: boolean | null
+          hito_20_60?: boolean | null
           hito_20d_60h?: boolean | null
+          hito_22_80?: boolean | null
           hito_22d_80h?: boolean | null
           horas_live_mes?: number
           id?: string
           mes_referencia?: string
+          meta_recomendada?: string | null
+          prob_100k?: number | null
+          prob_1m?: number | null
+          prob_300k?: number | null
+          prob_500k?: number | null
+          prob_50k?: number | null
           proximo_objetivo_tipo?: string | null
           proximo_objetivo_valor?: string | null
           req_diam_por_dia?: number | null
+          req_diam_por_dia_100k?: number | null
+          req_diam_por_dia_1m?: number | null
+          req_diam_por_dia_300k?: number | null
+          req_diam_por_dia_500k?: number | null
+          req_diam_por_dia_50k?: number | null
           req_horas_por_dia?: number | null
+          semaforo_100k?: string | null
+          semaforo_1m?: string | null
+          semaforo_300k?: string | null
+          semaforo_500k?: string | null
+          semaforo_50k?: string | null
+          texto_creador?: string | null
+          texto_manager?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -290,6 +389,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "creator_interactions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_live_daily: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          diamantes: number
+          fecha: string
+          horas: number
+          id: number
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          diamantes?: number
+          fecha: string
+          horas?: number
+          id?: number
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          diamantes?: number
+          fecha?: string
+          horas?: number
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_live_daily_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "creators"
@@ -763,9 +897,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calcular_bonificaciones_mes: {
+        Args: { mes_referencia: string }
+        Returns: undefined
+      }
       get_user_role: {
-        Args: Record<PropertyKey, never> | { _user_id: string }
-        Returns: Database["public"]["Enums"]["app_role"]
+        Args: Record<PropertyKey, never> | { p_user_id: string }
+        Returns: string
       }
       has_role: {
         Args: {
