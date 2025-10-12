@@ -13,8 +13,6 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
       <TooltipProvider delayDuration={200} skipDelayDuration={300}>
         {children}
-        <Toaster />
-        <Sonner />
       </TooltipProvider>
     </BrowserRouter>
   </QueryClientProvider>
@@ -22,10 +20,14 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 
 const App = () => (
   <AppProviders>
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/*" element={<AppLayout />} />
-    </Routes>
+    <>
+      <Toaster />
+      <Sonner />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/*" element={<AppLayout />} />
+      </Routes>
+    </>
   </AppProviders>
 );
 
