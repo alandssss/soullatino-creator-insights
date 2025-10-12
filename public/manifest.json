@@ -14,7 +14,70 @@
   "dir": "ltr",
   "categories": ["business", "productivity", "analytics"],
   "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=app.lovable.f8b38fe6e36c4ad5b1203b74ef284578",
+      "id": "app.lovable.f8b38fe6e36c4ad5b1203b74ef284578"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/soullatino-analytics/id123456789"
+    }
+  ],
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "scope_extensions": [
+    {
+      "origin": "*.soullatino.com"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/dashboard/upload",
+      "accept": {
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "application/vnd.ms-excel": [".xls"],
+        "text/csv": [".csv"]
+      },
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "512x512"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/dashboard/pending"
+  },
+  "widgets": [
+    {
+      "name": "Feedback Pendiente",
+      "short_name": "Pendiente",
+      "description": "Vista rápida del feedback pendiente",
+      "tag": "feedback-widget",
+      "template": "feedback-pending",
+      "ms_ac_template": "/widgets/feedback-pending.json",
+      "data": "/api/widgets/feedback-pending",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "/logo.png",
+          "sizes": "512x512",
+          "label": "Widget de feedback pendiente"
+        }
+      ],
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "512x512"
+        }
+      ],
+      "auth": true,
+      "update": 900
+    }
+  ],
   "icons": [
     {
       "src": "/logo.png",

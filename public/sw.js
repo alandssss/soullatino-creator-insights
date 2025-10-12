@@ -1,37 +1,47 @@
 const CACHE_NAME = 'soullatino-v1';
 const RUNTIME_CACHE = 'soullatino-runtime';
+const STATIC_CACHE = 'soullatino-static-v1';
 
 const urlsToCache = [
   '/',
   '/index.html',
   '/logo.png',
-  '/manifest.json'
+  '/manifest.json',
+  '/robots.txt'
+];
+
+const staticAssets = [
+  '/src/main.tsx',
+  '/src/index.css',
+  '/src/App.tsx'
 ];
 
 // Install event - cache essential resources
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
+    Promise.all([
+      caches.open(CACHE_NAME).then((cache) => {
         console.log('Opened cache');
         return cache.addAll(urlsToCache);
-      })
+      }),
+      caches.open(STATIC_CACHE).then((cache) => cache.addAll(staticAssets))
+    ])
   );
   self.skipWaiting();
 });
 
-// Fetch event - Cache-first strategy for assets, network-first for API calls
+// Fetch event - comprehensive offline-first caching
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip cross-origin requests
-  if (url.origin !== location.origin) {
+  // Skip cross-origin requests except Supabase
+  if (url.origin !== location.origin && !url.hostname.includes('supabase')) {
     return;
   }
 
-  // Network-first for API calls
-  if (url.pathname.includes('/api/') || url.pathname.includes('supabase')) {
+  // Network-first for API calls with offline fallback
+  if (url.pathname.includes('/api/') || url.hostname.includes('supabase')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -41,12 +51,62 @@ self.addEventListener('fetch', (event) => {
           });
           return response;
         })
-        .catch(() => caches.match(request))
+        .catch(() => 
+          caches.match(request).then((cached) => 
+            cached || new Response(JSON.stringify({ error: 'Offline' }), {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' }
+            })
+          )
+        )
     );
     return;
   }
 
-  // Cache-first for static assets
+  // Cache-first for images, fonts, and static files
+  if (
+    request.destination === 'image' ||
+    request.destination === 'font' ||
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.woff2')
+  ) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response && response.status === 200) {
+            caches.open(STATIC_CACHE).then((cache) => {
+              cache.put(request, response.clone());
+            });
+          }
+          return response;
+        }).catch(() => cached);
+      })
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for navigation
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        const fetchPromise = fetch(request).then((response) => {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, response.clone());
+          });
+          return response;
+        }).catch(() => caches.match('/index.html'));
+        return cached || fetchPromise;
+      })
+    );
+    return;
+  }
+
+  // Default: cache-first with network fallback
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
@@ -55,7 +115,6 @@ self.addEventListener('fetch', (event) => {
         }
 
         return fetch(request).then((response) => {
-          // Check if valid response
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
@@ -69,7 +128,6 @@ self.addEventListener('fetch', (event) => {
         });
       })
       .catch(() => {
-        // Return offline fallback if available
         if (request.destination === 'document') {
           return caches.match('/index.html');
         }
@@ -79,19 +137,21 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME, RUNTIME_CACHE];
+  const cacheWhitelist = [CACHE_NAME, RUNTIME_CACHE, STATIC_CACHE];
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    Promise.all([
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheWhitelist.indexOf(cacheName) === -1) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      self.clients.claim()
+    ])
   );
-  self.clients.claim();
 });
 
 // Background Sync - retry failed requests
