@@ -262,88 +262,93 @@ export const PanelPredictivoCreadores = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 p-4 md:p-0">
       {/* Encabezado y acciones */}
       <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
-        <CardHeader>
-          <div className="flex items-center justify-between flex-wrap gap-4">
+        <CardHeader className="p-4 md:p-6">
+          <div className="flex flex-col gap-4">
             <div>
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <Target className="h-6 w-6 text-primary" />
-                Panel Predictivo de Creadores
+              <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
+                <Target className="h-5 w-5 md:h-6 md:w-6 text-primary flex-shrink-0" />
+                <span className="text-base md:text-2xl">Panel Predictivo</span>
               </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Análisis y predicciones del mes actual
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                Análisis del mes actual
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 onClick={calcularTodasLasBonificaciones}
                 disabled={calculating}
                 variant="default"
+                size="sm"
+                className="w-full sm:w-auto text-xs md:text-sm"
               >
                 {calculating ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-3 w-3 md:h-4 md:w-4 mr-2 animate-spin" />
                     Calculando...
                   </>
                 ) : (
                   <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Recalcular Todo
+                    <RefreshCw className="h-3 w-3 md:h-4 md:w-4 mr-2" />
+                    Recalcular
                   </>
                 )}
               </Button>
               <Button
                 onClick={exportarExcel}
                 variant="outline"
+                size="sm"
                 disabled={bonificaciones.length === 0}
+                className="w-full sm:w-auto text-xs md:text-sm"
               >
-                <Download className="h-4 w-4 mr-2" />
-                Exportar Excel
+                <Download className="h-3 w-3 md:h-4 md:w-4 mr-2" />
+                Excel
               </Button>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 md:p-6">
           {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-              <p className="text-xs text-muted-foreground mb-1">Total Creadores</p>
-              <p className="text-2xl font-bold text-primary">{estadisticas.total}</p>
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-4 md:mb-6">
+            <div className="p-3 md:p-4 rounded-lg bg-primary/10 border border-primary/20">
+              <p className="text-[10px] md:text-xs text-muted-foreground mb-1">Total</p>
+              <p className="text-lg md:text-2xl font-bold text-primary">{estadisticas.total}</p>
             </div>
-            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-              <p className="text-xs text-muted-foreground mb-1">En Riesgo</p>
-              <p className="text-2xl font-bold text-red-500">{estadisticas.conAltoRiesgo}</p>
+            <div className="p-3 md:p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+              <p className="text-[10px] md:text-xs text-muted-foreground mb-1">Riesgo</p>
+              <p className="text-lg md:text-2xl font-bold text-red-500">{estadisticas.conAltoRiesgo}</p>
             </div>
-            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
-              <p className="text-xs text-muted-foreground mb-1">Cerca de Meta</p>
-              <p className="text-2xl font-bold text-green-500">{estadisticas.cercaDeObjetivo}</p>
+            <div className="p-3 md:p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+              <p className="text-[10px] md:text-xs text-muted-foreground mb-1">Cerca</p>
+              <p className="text-lg md:text-2xl font-bold text-green-500">{estadisticas.cercaDeObjetivo}</p>
             </div>
-            <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-              <p className="text-xs text-muted-foreground mb-1">Con Bono</p>
-              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{estadisticas.conBono}</p>
+            <div className="p-3 md:p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+              <p className="text-[10px] md:text-xs text-muted-foreground mb-1">Bono</p>
+              <p className="text-lg md:text-2xl font-bold text-yellow-600 dark:text-yellow-400">{estadisticas.conBono}</p>
             </div>
           </div>
 
           {/* Filtros */}
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex-1 min-w-[200px]">
+          <div className="flex flex-col gap-3">
+            <div className="w-full">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar creador..."
+                  placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 text-sm"
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant={filtroRiesgo === "todos" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFiltroRiesgo("todos")}
+                className="text-xs flex-1 sm:flex-none"
               >
                 Todos
               </Button>
@@ -351,7 +356,7 @@ export const PanelPredictivoCreadores = () => {
                 variant={filtroRiesgo === "verde" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFiltroRiesgo("verde")}
-                className={filtroRiesgo === "verde" ? "bg-green-500 hover:bg-green-600" : ""}
+                className={`text-xs flex-1 sm:flex-none ${filtroRiesgo === "verde" ? "bg-green-500 hover:bg-green-600" : ""}`}
               >
                 Alta
               </Button>
@@ -359,7 +364,7 @@ export const PanelPredictivoCreadores = () => {
                 variant={filtroRiesgo === "amarillo" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFiltroRiesgo("amarillo")}
-                className={filtroRiesgo === "amarillo" ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+                className={`text-xs flex-1 sm:flex-none ${filtroRiesgo === "amarillo" ? "bg-yellow-500 hover:bg-yellow-600" : ""}`}
               >
                 Media
               </Button>
@@ -367,7 +372,7 @@ export const PanelPredictivoCreadores = () => {
                 variant={filtroRiesgo === "rojo" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFiltroRiesgo("rojo")}
-                className={filtroRiesgo === "rojo" ? "bg-red-500 hover:bg-red-600" : ""}
+                className={`text-xs flex-1 sm:flex-none ${filtroRiesgo === "rojo" ? "bg-red-500 hover:bg-red-600" : ""}`}
               >
                 Baja
               </Button>
@@ -377,14 +382,14 @@ export const PanelPredictivoCreadores = () => {
       </Card>
 
       {/* Tabla de creadores */}
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         {bonificacionesFiltradas.length === 0 ? (
           <Card>
-            <CardContent className="text-center py-12">
-              <p className="text-muted-foreground">
+            <CardContent className="text-center py-8 md:py-12 px-4">
+              <p className="text-sm md:text-base text-muted-foreground">
                 {bonificaciones.length === 0 
-                  ? "No hay bonificaciones calculadas. Haz clic en 'Recalcular Todo' para generar los datos."
-                  : "No se encontraron creadores con los filtros seleccionados"}
+                  ? "No hay bonificaciones. Haz clic en 'Recalcular' para generar datos."
+                  : "No se encontraron creadores"}
               </p>
             </CardContent>
           </Card>
@@ -396,31 +401,31 @@ export const PanelPredictivoCreadores = () => {
 
             return (
               <Card key={bonif.id} className="bg-card/50 hover:bg-card/80 transition-all">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold">{bonif.nombre}</h3>
-                        <div className={`w-3 h-3 rounded-full ${prob.color}`} title={`Probabilidad: ${prob.label}`} />
+                <CardContent className="p-3 md:p-6">
+                  <div className="flex flex-col sm:flex-row items-start gap-3 md:gap-4 mb-3 md:mb-4">
+                    <div className="flex-1 w-full">
+                      <div className="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
+                        <h3 className="text-base md:text-lg font-semibold truncate">{bonif.nombre}</h3>
+                        <div className={`w-3 h-3 rounded-full ${prob.color} flex-shrink-0`} title={`Probabilidad: ${prob.label}`} />
                         {bonif.es_prioridad_300k && (
-                          <Badge variant="destructive">Prioridad 300K</Badge>
+                          <Badge variant="destructive" className="text-[10px] md:text-xs">Prioridad 300K</Badge>
                         )}
                         {bonif.cerca_de_objetivo && (
-                          <Badge variant="default">Cerca!</Badge>
+                          <Badge variant="default" className="text-[10px] md:text-xs">Cerca!</Badge>
                         )}
                       </div>
-                      <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div className="grid grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
                         <div>
-                          <p className="text-muted-foreground">Días LIVE</p>
-                          <p className="font-semibold">{bonif.dias_live_mes}</p>
+                          <p className="text-muted-foreground text-[10px] md:text-xs">Días</p>
+                          <p className="font-semibold text-sm md:text-base">{bonif.dias_live_mes}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">Horas LIVE</p>
-                          <p className="font-semibold">{bonif.horas_live_mes?.toFixed(1)}</p>
+                          <p className="text-muted-foreground text-[10px] md:text-xs">Horas</p>
+                          <p className="font-semibold text-sm md:text-base">{bonif.horas_live_mes?.toFixed(1)}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">Diamantes</p>
-                          <p className="font-semibold text-accent">{bonif.diam_live_mes?.toLocaleString()}</p>
+                          <p className="text-muted-foreground text-[10px] md:text-xs">Diam</p>
+                          <p className="font-semibold text-accent text-sm md:text-base">{bonif.diam_live_mes?.toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
@@ -429,66 +434,67 @@ export const PanelPredictivoCreadores = () => {
                         size="sm"
                         variant="success"
                         onClick={() => abrirWhatsApp(bonif)}
+                        className="w-full sm:w-auto text-xs"
                       >
-                        <MessageCircle className="h-4 w-4 mr-2" />
+                        <MessageCircle className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                         WhatsApp
                       </Button>
                     )}
                   </div>
 
-                  {/* Progreso hacia próxima graduación */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">
-                        Próximo: {bonif.proximo_objetivo_valor || "Completado"}
+                  {/* Progreso */}
+                  <div className="mb-3 md:mb-4">
+                    <div className="flex justify-between text-xs md:text-sm mb-2">
+                      <span className="text-muted-foreground truncate mr-2">
+                        {bonif.proximo_objetivo_valor || "Completado"}
                       </span>
-                      <span className="font-medium">
+                      <span className="font-medium flex-shrink-0">
                         {progresoGrad.toFixed(0)}%
                       </span>
                     </div>
-                    <Progress value={progresoGrad} className="h-2" />
+                    <Progress value={progresoGrad} className="h-1.5 md:h-2" />
                   </div>
 
-                  {/* Requerimientos y predicción */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                    <div className="p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1">Req. Diam/Día</p>
-                      <p className="font-semibold">{bonif.req_diam_por_dia?.toLocaleString() || 0}</p>
+                  {/* Requerimientos */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 text-xs md:text-sm">
+                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">Diam/Día</p>
+                      <p className="font-semibold text-xs md:text-sm">{bonif.req_diam_por_dia?.toLocaleString() || 0}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1">Req. Horas/Día</p>
-                      <p className="font-semibold">{bonif.req_horas_por_dia?.toFixed(1) || 0}</p>
+                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">H/Día</p>
+                      <p className="font-semibold text-xs md:text-sm">{bonif.req_horas_por_dia?.toFixed(1) || 0}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1">Días Restantes</p>
-                      <p className="font-semibold">{bonif.dias_restantes}</p>
+                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">Días Rest.</p>
+                      <p className="font-semibold text-xs md:text-sm">{bonif.dias_restantes}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1">Probabilidad</p>
-                      <p className="font-semibold flex items-center gap-1">
+                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">Probabilidad</p>
+                      <p className="font-semibold flex items-center gap-1 text-xs md:text-sm">
                         {prob.label}
-                        {prob.label === "Alta" && <TrendingUp className="h-4 w-4 text-green-500" />}
-                        {prob.label === "Media" && <AlertCircle className="h-4 w-4 text-yellow-500" />}
-                        {prob.label === "Baja" && <TrendingDown className="h-4 w-4 text-red-500" />}
+                        {prob.label === "Alta" && <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-green-500" />}
+                        {prob.label === "Media" && <AlertCircle className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />}
+                        {prob.label === "Baja" && <TrendingDown className="h-3 w-3 md:h-4 md:w-4 text-red-500" />}
                       </p>
                     </div>
                   </div>
 
-                  {/* Logros y bonos */}
-                  <div className="mt-4 flex items-center justify-between flex-wrap gap-2">
-                    <div className="flex gap-1">
-                      {bonif.grad_50k && <Badge variant="secondary" className="text-xs">50K</Badge>}
-                      {bonif.grad_100k && <Badge variant="secondary" className="text-xs">100K</Badge>}
-                      {bonif.grad_300k && <Badge variant="secondary" className="text-xs">300K</Badge>}
-                      {bonif.grad_500k && <Badge variant="secondary" className="text-xs">500K</Badge>}
-                      {bonif.grad_1m && <Badge variant="secondary" className="text-xs">1M</Badge>}
-                      {bonif.hito_12d_40h && <Badge variant="outline" className="text-xs">12d/40h</Badge>}
-                      {bonif.hito_20d_60h && <Badge variant="outline" className="text-xs">20d/60h</Badge>}
-                      {bonif.hito_22d_80h && <Badge variant="outline" className="text-xs">22d/80h</Badge>}
+                  {/* Logros */}
+                  <div className="mt-3 md:mt-4 flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex gap-1 flex-wrap">
+                      {bonif.grad_50k && <Badge variant="secondary" className="text-[10px] md:text-xs">50K</Badge>}
+                      {bonif.grad_100k && <Badge variant="secondary" className="text-[10px] md:text-xs">100K</Badge>}
+                      {bonif.grad_300k && <Badge variant="secondary" className="text-[10px] md:text-xs">300K</Badge>}
+                      {bonif.grad_500k && <Badge variant="secondary" className="text-[10px] md:text-xs">500K</Badge>}
+                      {bonif.grad_1m && <Badge variant="secondary" className="text-[10px] md:text-xs">1M</Badge>}
+                      {bonif.hito_12d_40h && <Badge variant="outline" className="text-[10px] md:text-xs">12d/40h</Badge>}
+                      {bonif.hito_20d_60h && <Badge variant="outline" className="text-[10px] md:text-xs">20d/60h</Badge>}
+                      {bonif.hito_22d_80h && <Badge variant="outline" className="text-[10px] md:text-xs">22d/80h</Badge>}
                     </div>
                     {bonif.bono_extra_usd > 0 && (
-                      <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
-                        <Award className="h-4 w-4" />
+                      <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm font-semibold text-green-600 dark:text-green-400">
+                        <Award className="h-3 w-3 md:h-4 md:w-4" />
                         +${bonif.bono_extra_usd} USD
                       </div>
                     )}

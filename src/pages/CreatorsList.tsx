@@ -96,73 +96,73 @@ const CreatorsList = () => {
         </>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(197,255,82,0.2)] hover:border-primary/50 transition-all duration-300 hover:translate-y-[-4px]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
+            <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Total Creadores
             </CardTitle>
-            <Users className="h-4 w-4 text-primary" />
+            <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-foreground">{totalCreators}</div>
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="text-2xl md:text-3xl font-bold text-foreground">{totalCreators}</div>
           </CardContent>
         </Card>
 
         <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(255,155,71,0.2)] hover:border-accent/50 transition-all duration-300 hover:translate-y-[-4px]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
+            <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Total Diamantes
             </CardTitle>
-            <Zap className="h-4 w-4 text-accent" />
+            <Zap className="h-3 w-3 md:h-4 md:w-4 text-accent" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">
               {totalDiamonds.toLocaleString()}
             </div>
           </CardContent>
         </Card>
 
         <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(197,255,82,0.2)] hover:border-primary/50 transition-all duration-300 hover:translate-y-[-4px]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
+            <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Total Vistas
             </CardTitle>
-            <Eye className="h-4 w-4 text-primary" />
+            <Eye className="h-3 w-3 md:h-4 md:w-4 text-primary" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-foreground">
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="text-2xl md:text-3xl font-bold text-foreground">
               {(totalViews / 1000000).toFixed(1)}M
             </div>
           </CardContent>
         </Card>
 
         <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(255,155,71,0.2)] hover:border-accent/50 transition-all duration-300 hover:translate-y-[-4px]">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
+            <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Hito Promedio
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-accent" />
+            <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-accent" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <CardContent className="p-4 md:p-6 pt-0">
+            <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               {(avgHito / 1000).toFixed(0)}K
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <LowActivityPanel />
         <WorkTimeTracker userEmail={user?.email} />
       </div>
 
       <Card className="glass-card border-primary/50">
-        <CardHeader>
-          <CardTitle className="text-xl font-bold text-foreground">Top Creadores</CardTitle>
+        <CardHeader className="p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl font-bold text-foreground">Top Creadores</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="p-4 md:p-6 pt-0">
+          <div className="space-y-3 md:space-y-4">
               {creators.map((creator, index) => (
                 <div
                   key={creator.id}
