@@ -1,4 +1,6 @@
 const CACHE_NAME = 'soullatino-v1';
+const RUNTIME_CACHE = 'soullatino-runtime';
+
 const urlsToCache = [
   '/',
   '/index.html',
@@ -18,36 +20,66 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch event - Cache-first strategy for assets, network-first for API calls
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // Check if we received a valid response
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip cross-origin requests
+  if (url.origin !== location.origin) {
+    return;
+  }
+
+  // Network-first for API calls
+  if (url.pathname.includes('/api/') || url.pathname.includes('supabase')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(RUNTIME_CACHE).then((cache) => {
+            cache.put(request, responseClone);
+          });
           return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Cache-first for static assets
+  event.respondWith(
+    caches.match(request)
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
 
-        // Clone the response
-        const responseToCache = response.clone();
+        return fetch(request).then((response) => {
+          // Check if valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
 
-        caches.open(CACHE_NAME)
-          .then((cache) => {
-            cache.put(event.request, responseToCache);
+          const responseToCache = response.clone();
+          caches.open(RUNTIME_CACHE).then((cache) => {
+            cache.put(request, responseToCache);
           });
 
-        return response;
+          return response;
+        });
       })
       .catch(() => {
-        // Network failed, try cache
-        return caches.match(event.request);
+        // Return offline fallback if available
+        if (request.destination === 'document') {
+          return caches.match('/index.html');
+        }
       })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
+  const cacheWhitelist = [CACHE_NAME, RUNTIME_CACHE];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -60,4 +92,21 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// Background Sync - retry failed requests
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-feedback') {
+    event.waitUntil(syncFeedback());
+  }
+});
+
+async function syncFeedback() {
+  // Implement background sync logic here
+  console.log('Background sync triggered');
+}
+
+// Handle shutdown
+addEventListener('beforeunload', (ev) => {
+  console.log('Service Worker shutdown:', ev.detail?.reason);
 });

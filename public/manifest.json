@@ -1,18 +1,33 @@
 {
+  "id": "/",
   "name": "Soullatino Analytics - Dashboard de Creadores TikTok",
   "short_name": "Soullatino",
   "description": "Plataforma de analytics para monitorear y optimizar el rendimiento de creadores de contenido en TikTok",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#0a0f1e",
   "theme_color": "#d4ff6a",
   "orientation": "portrait-primary",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "analytics"],
   "icons": [
     {
       "src": "/logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard de Analytics de Creadores TikTok"
     }
   ],
   "shortcuts": [
@@ -37,5 +52,15 @@
       "url": "/dashboard/creators",
       "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/dashboard/creators",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }
