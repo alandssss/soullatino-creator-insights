@@ -1,5 +1,8 @@
 project_id = "rgypfqxiqeymltbinkvs"
 
+[functions.calculate-bonificaciones]
+verify_jwt = false
+
 [functions.process-creator-analytics]
 verify_jwt = true
 

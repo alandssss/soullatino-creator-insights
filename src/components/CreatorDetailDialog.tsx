@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2, Clock, Award, ArrowUp, ArrowDown, Minus, Eye } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { z } from "zod";
+import { BonificacionesPanel } from "./BonificacionesPanel";
 
 const interactionSchema = z.object({
   tipo_interaccion: z.string().trim().min(1, "Tipo de interacción requerido").max(100, "Máximo 100 caracteres"),
@@ -502,8 +503,13 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="advice" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-2">
+          <Tabs defaultValue="bonificaciones" className="w-full">
+            <TabsList className="grid w-full grid-cols-5 mb-2">
+              <TabsTrigger value="bonificaciones" className="gap-2">
+                <Award className="h-4 w-4" />
+                <span className="hidden sm:inline">Bonificaciones</span>
+                <span className="sm:hidden">💎</span>
+              </TabsTrigger>
               <TabsTrigger value="advice" className="gap-2">
                 <Sparkles className="h-4 w-4" />
                 <span className="hidden sm:inline">Consejos IA</span>
@@ -523,6 +529,10 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <span className="hidden sm:inline">Agenda</span>
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="bonificaciones" className="space-y-4 mt-6">
+              <BonificacionesPanel creatorId={creator.id} creatorName={creator.nombre} />
+            </TabsContent>
 
             <TabsContent value="advice" className="space-y-4 mt-6">
               <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">

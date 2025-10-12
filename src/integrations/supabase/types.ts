@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      creator_bonificaciones: {
+        Row: {
+          bono_extra_usd: number | null
+          cerca_de_objetivo: boolean | null
+          created_at: string | null
+          creator_id: string
+          diam_live_mes: number
+          dias_extra_22: number | null
+          dias_live_mes: number
+          dias_restantes: number
+          es_prioridad_300k: boolean | null
+          fecha_calculo: string
+          grad_100k: boolean | null
+          grad_1m: boolean | null
+          grad_300k: boolean | null
+          grad_500k: boolean | null
+          grad_50k: boolean | null
+          hito_12d_40h: boolean | null
+          hito_20d_60h: boolean | null
+          hito_22d_80h: boolean | null
+          horas_live_mes: number
+          id: string
+          mes_referencia: string
+          proximo_objetivo_tipo: string | null
+          proximo_objetivo_valor: string | null
+          req_diam_por_dia: number | null
+          req_horas_por_dia: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          bono_extra_usd?: number | null
+          cerca_de_objetivo?: boolean | null
+          created_at?: string | null
+          creator_id: string
+          diam_live_mes?: number
+          dias_extra_22?: number | null
+          dias_live_mes?: number
+          dias_restantes?: number
+          es_prioridad_300k?: boolean | null
+          fecha_calculo?: string
+          grad_100k?: boolean | null
+          grad_1m?: boolean | null
+          grad_300k?: boolean | null
+          grad_500k?: boolean | null
+          grad_50k?: boolean | null
+          hito_12d_40h?: boolean | null
+          hito_20d_60h?: boolean | null
+          hito_22d_80h?: boolean | null
+          horas_live_mes?: number
+          id?: string
+          mes_referencia: string
+          proximo_objetivo_tipo?: string | null
+          proximo_objetivo_valor?: string | null
+          req_diam_por_dia?: number | null
+          req_horas_por_dia?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          bono_extra_usd?: number | null
+          cerca_de_objetivo?: boolean | null
+          created_at?: string | null
+          creator_id?: string
+          diam_live_mes?: number
+          dias_extra_22?: number | null
+          dias_live_mes?: number
+          dias_restantes?: number
+          es_prioridad_300k?: boolean | null
+          fecha_calculo?: string
+          grad_100k?: boolean | null
+          grad_1m?: boolean | null
+          grad_300k?: boolean | null
+          grad_500k?: boolean | null
+          grad_50k?: boolean | null
+          hito_12d_40h?: boolean | null
+          hito_20d_60h?: boolean | null
+          hito_22d_80h?: boolean | null
+          horas_live_mes?: number
+          id?: string
+          mes_referencia?: string
+          proximo_objetivo_tipo?: string | null
+          proximo_objetivo_valor?: string | null
+          req_diam_por_dia?: number | null
+          req_horas_por_dia?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_bonificaciones_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_daily_stats: {
         Row: {
           created_at: string
@@ -256,15 +351,19 @@ export type Database = {
         Row: {
           categoria: string | null
           created_at: string | null
+          diam_live_mes: number | null
           diamantes: number | null
           dias_desde_inicio: number | null
+          dias_en_agencia: number | null
           dias_live: number | null
+          dias_live_mes: number | null
           email: string | null
           engagement_rate: number | null
           followers: number | null
           graduacion: string | null
           hito_diamantes: number | null
           horas_live: number | null
+          horas_live_mes: number | null
           id: string
           instagram: string | null
           last_month_diamantes: number | null
@@ -275,21 +374,26 @@ export type Database = {
           status: string | null
           telefono: string | null
           tiktok_username: string | null
+          ultimo_calculo_mes: string | null
           updated_at: string | null
           views: number | null
         }
         Insert: {
           categoria?: string | null
           created_at?: string | null
+          diam_live_mes?: number | null
           diamantes?: number | null
           dias_desde_inicio?: number | null
+          dias_en_agencia?: number | null
           dias_live?: number | null
+          dias_live_mes?: number | null
           email?: string | null
           engagement_rate?: number | null
           followers?: number | null
           graduacion?: string | null
           hito_diamantes?: number | null
           horas_live?: number | null
+          horas_live_mes?: number | null
           id?: string
           instagram?: string | null
           last_month_diamantes?: number | null
@@ -300,21 +404,26 @@ export type Database = {
           status?: string | null
           telefono?: string | null
           tiktok_username?: string | null
+          ultimo_calculo_mes?: string | null
           updated_at?: string | null
           views?: number | null
         }
         Update: {
           categoria?: string | null
           created_at?: string | null
+          diam_live_mes?: number | null
           diamantes?: number | null
           dias_desde_inicio?: number | null
+          dias_en_agencia?: number | null
           dias_live?: number | null
+          dias_live_mes?: number | null
           email?: string | null
           engagement_rate?: number | null
           followers?: number | null
           graduacion?: string | null
           hito_diamantes?: number | null
           horas_live?: number | null
+          horas_live_mes?: number | null
           id?: string
           instagram?: string | null
           last_month_diamantes?: number | null
@@ -325,6 +434,7 @@ export type Database = {
           status?: string | null
           telefono?: string | null
           tiktok_username?: string | null
+          ultimo_calculo_mes?: string | null
           updated_at?: string | null
           views?: number | null
         }
