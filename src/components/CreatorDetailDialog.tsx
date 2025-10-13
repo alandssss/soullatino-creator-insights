@@ -140,10 +140,12 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   const generateAIAdvice = async () => {
     if (!creator) return;
     
+    console.log('[CreatorDetailDialog] Generando consejo para creator:', creator.id, creator.nombre);
     setLoadingAdvice(true);
     try {
       const response = await interactionService.generateAdvice(creator.id);
       
+      console.log('[CreatorDetailDialog] Consejo recibido:', response);
       setAiAdvice(response.advice);
       setMilestone(response.milestone || '');
       
@@ -154,7 +156,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           : "Recomendación creada exitosamente",
       });
     } catch (error: any) {
-      console.error('Error generando recomendación:', error);
+      console.error('[CreatorDetailDialog] Error completo al generar consejo:', error);
       toast({
         title: "Error",
         description: error.message || "No se pudo generar la recomendación. Verifica que existan datos históricos.",

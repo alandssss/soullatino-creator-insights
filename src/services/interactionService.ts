@@ -26,17 +26,30 @@ export class InteractionService {
    * Genera consejo de IA analizando datos del creador
    */
   static async generateAdvice(creatorId: string): Promise<AIAdviceResponse> {
+    console.log('[InteractionService] Llamando a process-creator-analytics con creatorId:', creatorId);
+    
     const { data, error } = await supabase.functions.invoke("process-creator-analytics", {
       body: { creatorId },
     });
 
+    console.log('[InteractionService] Respuesta de process-creator-analytics:', { data, error });
+
     if (error) {
+      console.error('[InteractionService] Error de la función:', error);
       throw new Error(`Error generando consejo IA: ${error.message}`);
     }
 
-    if (!data?.recommendation) {
-      throw new Error("No se recibió recomendación de la IA");
+    if (!data) {
+      console.error('[InteractionService] La función devolvió 200 pero sin datos');
+      throw new Error("La función de IA no devolvió datos. Verifica los logs de la función.");
     }
+
+    if (!data.recommendation) {
+      console.error('[InteractionService] Datos recibidos pero sin recommendation:', data);
+      throw new Error("No se recibió recomendación de la IA. Estructura de respuesta incorrecta.");
+    }
+
+    console.log('[InteractionService] Consejo generado exitosamente:', data.recommendation);
 
     return {
       advice: data.recommendation,
