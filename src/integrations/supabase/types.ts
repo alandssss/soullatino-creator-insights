@@ -1011,6 +1011,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      seed_demo_live_data: {
+        Args: { p_cantidad_creadores?: number; p_mes_inicio?: string }
+        Returns: {
+          creadores_procesados: number
+          registros_creados: number
+        }[]
+      }
       supervision_compute_score: {
         Args: {
           _audio_claro: boolean

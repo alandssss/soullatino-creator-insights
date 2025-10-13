@@ -3,12 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileSpreadsheet, Loader2 } from "lucide-react";
+import { Upload, FileSpreadsheet, Loader2, Database } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import * as XLSX from "xlsx";
 
 export const AdminUploadPanel = () => {
   const [uploading, setUploading] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const { toast } = useToast();
 
@@ -250,6 +251,52 @@ export const AdminUploadPanel = () => {
     }
   };
 
+  const seedDemoData = async () => {
+    setSeeding(true);
+    try {
+      // Crear datos demo para octubre 2025
+      const { data, error } = await supabase.rpc('seed_demo_live_data', {
+        p_mes_inicio: '2025-10-01',
+        p_cantidad_creadores: 15
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "✅ Datos demo creados",
+        description: `${data[0].registros_creados} registros para ${data[0].creadores_procesados} creadores`,
+      });
+
+      // Recalcular bonificaciones automáticamente
+      const { error: calcError } = await supabase.functions.invoke('calculate-bonificaciones-predictivo', {
+        body: { mes_referencia: '2025-10-01' }
+      });
+
+      if (calcError) {
+        console.error('Error recalculando bonificaciones:', calcError);
+        toast({
+          title: "⚠️ Advertencia",
+          description: "Datos creados pero no se pudieron calcular bonificaciones. Usa el botón de recalcular en el Panel Predictivo.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "🎯 Bonificaciones calculadas",
+          description: "Panel predictivo actualizado con los nuevos datos",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error creando datos demo:', error);
+      toast({
+        title: "Error",
+        description: error.message || "No se pudieron crear los datos demo",
+        variant: "destructive",
+      });
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   return (
     <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
       <CardHeader>
@@ -295,6 +342,32 @@ export const AdminUploadPanel = () => {
           <p>• El archivo debe ser Excel (.xlsx o .xls)</p>
           <p>• Columnas críticas: H (Diamantes), I (Duración LIVE), J (Días en LIVE), AB (Batallas PKO)</p>
           <p>• Los creadores existentes se actualizarán automáticamente</p>
+        </div>
+
+        {/* Botón temporal para crear datos demo */}
+        <div className="pt-4 border-t border-border/50">
+          <p className="text-sm font-medium mb-2">🧪 Datos de Prueba (Temporal)</p>
+          <Button
+            onClick={seedDemoData}
+            disabled={seeding}
+            variant="secondary"
+            className="w-full"
+          >
+            {seeding ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Creando datos demo...
+              </>
+            ) : (
+              <>
+                <Database className="h-4 w-4 mr-2" />
+                Generar Datos Demo (Oct 2025)
+              </>
+            )}
+          </Button>
+          <p className="text-xs text-muted-foreground mt-2">
+            Crea datos de ejemplo para 15 creadores con actividad realista de octubre 2025
+          </p>
         </div>
       </CardContent>
     </Card>

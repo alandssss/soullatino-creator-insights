@@ -13,6 +13,7 @@ import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2, 
 import { Tables } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { BonificacionesPanel } from "./BonificacionesPanel";
+import { openWhatsApp } from "@/utils/whatsapp";
 
 const interactionSchema = z.object({
   tipo_interaccion: z.string().trim().min(1, "Tipo de interacción requerido").max(100, "Máximo 100 caracteres"),
@@ -219,7 +220,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     }
   };
 
-  const openWhatsApp = async () => {
+  const handleOpenWhatsApp = async () => {
     if (!creator?.telefono) {
       toast({
         title: "Error",
@@ -229,14 +230,6 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       return;
     }
     
-    let cleanPhone = creator.telefono.replace(/\D/g, "");
-    
-    // Asegurar que el número tenga código de país
-    if (cleanPhone.length === 10) {
-      cleanPhone = "52" + cleanPhone;
-    }
-    
-    // Generar mensaje personalizado con el nombre del usuario
     const { data: { user } } = await supabase.auth.getUser();
     const userName = user?.email?.split('@')[0] || "el equipo";
     const message = generateWhatsAppSummary(userName);
@@ -250,24 +243,26 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       return;
     }
     
-    // Registrar la actividad
-    if (user) {
-      await supabase.from("whatsapp_activity").insert({
-        creator_id: creator.id,
-        user_email: user.email || "Unknown",
-        action_type: "whatsapp_click",
-        creator_name: creator.nombre,
-        message_preview: message.substring(0, 200),
+    try {
+      await openWhatsApp({
+        phone: creator.telefono,
+        message: message,
+        creatorId: creator.id,
+        creatorName: creator.nombre,
+        actionType: 'seguimiento'
+      });
+      
+      toast({
+        title: "✅ WhatsApp abierto",
+        description: "Mensaje enviado correctamente"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
       });
     }
-    
-    // Abrir WhatsApp directamente - formato simple que no se bloquea
-    window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
-    
-    toast({
-      title: "WhatsApp abierto",
-      description: "Se ha abierto WhatsApp con el mensaje personalizado",
-    });
   };
 
   const generateWhatsAppSummary = (userName: string = "el equipo") => {
@@ -370,16 +365,30 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[var(--glass-bg)] backdrop-blur-xl border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
-        <DialogHeader className="pb-4 border-b border-[var(--glass-border)]">
-          <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex items-center gap-3">
-            {creator.nombre}
-            {milestone && (
-              <span className="text-sm font-normal text-muted-foreground bg-muted/30 px-3 py-1 rounded-full backdrop-blur-sm">
-                {milestone}
-              </span>
-            )}
-          </DialogTitle>
+      <DialogContent className="w-[95vw] sm:w-full max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 bg-[var(--glass-bg)] backdrop-blur-xl border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
+        <DialogHeader className="pb-4 border-b border-[var(--glass-border)] space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <DialogTitle className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex flex-wrap items-center gap-2 sm:gap-3">
+              {creator.nombre}
+              {milestone && (
+                <span className="text-xs sm:text-sm font-normal text-muted-foreground bg-muted/30 px-2 sm:px-3 py-1 rounded-full backdrop-blur-sm">
+                  {milestone}
+                </span>
+              )}
+            </DialogTitle>
+            
+            {/* Botón de IA prominente en header */}
+            <Button 
+              onClick={generateAIAdvice}
+              disabled={loadingAdvice}
+              variant="default"
+              size="sm"
+              className="gap-2 w-full sm:w-auto shrink-0"
+            >
+              <Sparkles className="h-4 w-4" />
+              {loadingAdvice ? "Generando..." : "Generar Consejos IA"}
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6 pt-4">
@@ -392,7 +401,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 Información del Creador
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-6">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
               <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Usuario TikTok</p>
                 <p className="font-semibold text-base">@{creator.tiktok_username || "No especificado"}</p>
@@ -425,7 +434,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                           <Button 
                             className="w-full"
                             variant="success"
-                            onClick={openWhatsApp}
+                            onClick={handleOpenWhatsApp}
                           >
                             <MessageSquare className="h-4 w-4 mr-2" />
                             Enviar por WhatsApp
@@ -486,7 +495,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                       <Button 
                         className="w-full"
                         variant="success"
-                        onClick={openWhatsApp}
+                        onClick={handleOpenWhatsApp}
                       >
                         <MessageSquare className="h-5 w-5 mr-2" />
                         Enviar por WhatsApp

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { openWhatsApp } from "@/utils/whatsapp";
 import { 
   Loader2, 
   RefreshCw, 
@@ -221,31 +222,26 @@ export const PanelPredictivoCreadores = () => {
       return;
     }
 
-    let cleanPhone = bonif.telefono.replace(/\D/g, "");
-    if (cleanPhone.length === 10) {
-      cleanPhone = "52" + cleanPhone;
-    }
-
-    const mensaje = generarMensajeWhatsApp(bonif);
-    
-    // Registrar actividad
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from('whatsapp_activity').insert({
-          creator_id: bonif.creator_id,
-          user_email: user.email || '',
-          action_type: 'mensaje_bonificaciones',
-          message_preview: mensaje.substring(0, 100),
-          creator_name: bonif.nombre
-        });
-      }
-    } catch (error) {
-      console.error('Error registrando actividad:', error);
+      await openWhatsApp({
+        phone: bonif.telefono,
+        message: generarMensajeWhatsApp(bonif),
+        creatorId: bonif.creator_id,
+        creatorName: bonif.nombre,
+        actionType: 'bonificaciones'
+      });
+      
+      toast({
+        title: "✅ WhatsApp abierto",
+        description: "Mensaje enviado correctamente"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
     }
-
-    // Abrir WhatsApp Web
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
   const bonificacionesFiltradas = bonificaciones.filter(b => {
