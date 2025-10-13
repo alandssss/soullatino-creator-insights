@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,12 +12,61 @@ serve(async (req) => {
   }
 
   try {
+    // Extract and verify JWT token
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('[generate-creator-advice] No authorization header');
+      return new Response(
+        JSON.stringify({ error: 'No autorizado. Token requerido.' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Create authenticated client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const token = authHeader.replace('Bearer ', '');
+    
+    const supabaseAuth = createClient(supabaseUrl, supabaseServiceKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    // Get current user
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(token);
+    if (userError || !user) {
+      console.error('[generate-creator-advice] Invalid token:', userError);
+      return new Response(
+        JSON.stringify({ error: 'Token inválido' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check if user has admin or manager role
+    const { data: hasAdminRole } = await supabaseAuth
+      .rpc('has_role', { _user_id: user.id, _role: 'admin' });
+    
+    const { data: hasManagerRole } = await supabaseAuth
+      .rpc('has_role', { _user_id: user.id, _role: 'manager' });
+
+    if (!hasAdminRole && !hasManagerRole) {
+      console.error('[generate-creator-advice] User lacks required role');
+      return new Response(
+        JSON.stringify({ error: 'No autorizado. Se requiere rol de admin o manager.' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('[generate-creator-advice] User authorized:', user.email);
+
     const { creatorData } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
+      console.error('[generate-creator-advice] LOVABLE_API_KEY not configured');
       throw new Error("LOVABLE_API_KEY is not configured");
     }
+
+    console.log('[generate-creator-advice] Processing for creator:', creatorData.nombre);
 
     const systemPrompt = `Eres un asesor de TikTok LIVE. 
 
@@ -121,13 +171,15 @@ Sé específico con números, realista y motivador.`;
     const data = await response.json();
     const advice = data.choices[0].message.content;
 
+    console.log('[generate-creator-advice] Successfully generated advice');
+
     return new Response(JSON.stringify({ advice }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("[Server] Error in generate-creator-advice:", error);
+    console.error("[generate-creator-advice] Error:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }), 
+      JSON.stringify({ error: error instanceof Error ? error.message : "Internal server error" }), 
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

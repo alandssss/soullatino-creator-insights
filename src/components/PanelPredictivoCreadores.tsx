@@ -211,7 +211,7 @@ export const PanelPredictivoCreadores = () => {
     return mensaje;
   };
 
-  const abrirWhatsApp = (bonif: CreatorBonificacion) => {
+  const abrirWhatsApp = async (bonif: CreatorBonificacion) => {
     if (!bonif.telefono) {
       toast({
         title: "Sin teléfono",
@@ -227,7 +227,25 @@ export const PanelPredictivoCreadores = () => {
     }
 
     const mensaje = generarMensajeWhatsApp(bonif);
-    window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(mensaje)}`;
+    
+    // Registrar actividad
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('whatsapp_activity').insert({
+          creator_id: bonif.creator_id,
+          user_email: user.email || '',
+          action_type: 'mensaje_bonificaciones',
+          message_preview: mensaje.substring(0, 100),
+          creator_name: bonif.nombre
+        });
+      }
+    } catch (error) {
+      console.error('Error registrando actividad:', error);
+    }
+
+    // Abrir WhatsApp Web
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
   const bonificacionesFiltradas = bonificaciones.filter(b => {
