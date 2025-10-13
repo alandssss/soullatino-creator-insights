@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': Deno.env.get('SUPABASE_URL') || '*',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
@@ -12,27 +12,33 @@ serve(async (req) => {
   }
 
   try {
+    console.log('=== INICIO process-creator-analytics ===');
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
     // Extract and verify JWT token
     const authHeader = req.headers.get('Authorization');
+    console.log('Auth header presente:', !!authHeader);
+    
     if (!authHeader) {
+      console.error('No auth header');
       return new Response(
         JSON.stringify({ error: 'No autorizado. Token requerido.' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Create authenticated client to check user role
+    // Create authenticated client to check user
     const token = authHeader.replace('Bearer ', '');
-    const supabaseAuth = createClient(supabaseUrl, supabaseServiceKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
+    const supabaseAuth = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get current user
     const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(token);
+    console.log('User obtenido:', user?.id, 'Error:', userError?.message);
+    
     if (userError || !user) {
+      console.error('Token inválido:', userError);
       return new Response(
         JSON.stringify({ error: 'Token inválido' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -45,11 +51,11 @@ serve(async (req) => {
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     console.log('Rol obtenido:', userRole, 'Error:', roleError);
 
-    if (roleError || !userRole || (userRole.role !== 'admin' && userRole.role !== 'manager')) {
+    if (!userRole || (userRole.role !== 'admin' && userRole.role !== 'manager')) {
       console.error('Usuario sin permisos:', user.id, userRole);
       return new Response(
         JSON.stringify({ error: 'No autorizado. Se requiere rol de admin o manager.' }),
@@ -72,6 +78,7 @@ serve(async (req) => {
     }
 
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    console.log('Lovable API Key presente:', !!lovableApiKey);
     
     // Use service role client for admin operations (after authorization check)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
