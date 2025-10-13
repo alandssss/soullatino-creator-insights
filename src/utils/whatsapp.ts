@@ -1,4 +1,22 @@
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+
+// Security: Strict validation schemas to prevent injection attacks
+const phoneSchema = z.string()
+  .regex(/^[1-9]\d{9,14}$/, "Número de teléfono inválido")
+  .max(15, "Número de teléfono demasiado largo");
+
+const messageSchema = z.string()
+  .min(1, "El mensaje no puede estar vacío")
+  .max(2000, "El mensaje es demasiado largo")
+  .refine(
+    (msg) => !msg.toLowerCase().includes('javascript:') && !msg.includes('<script'),
+    "El mensaje contiene contenido no permitido"
+  );
+
+const creatorIdSchema = z.string().uuid("ID de creador inválido");
+const creatorNameSchema = z.string().min(1).max(200);
+const actionTypeSchema = z.enum(['bonificaciones', 'reclutamiento', 'seguimiento', 'general']);
 
 interface WhatsAppOptions {
   phone: string;
@@ -20,17 +38,36 @@ export const openWhatsApp = async ({
   creatorName,
   actionType
 }: WhatsAppOptions): Promise<void> => {
+  // Security: Validate all inputs with Zod schemas
+  try {
+    creatorIdSchema.parse(creatorId);
+    creatorNameSchema.parse(creatorName);
+    actionTypeSchema.parse(actionType);
+    messageSchema.parse(message);
+  } catch (validationError) {
+    if (validationError instanceof z.ZodError) {
+      throw new Error(validationError.errors[0].message);
+    }
+    throw validationError;
+  }
+  
   // Validación y limpieza del teléfono
   const cleanPhone = phone.replace(/\D/g, "");
-  
-  if (cleanPhone.length < 10 || cleanPhone.length > 15) {
-    throw new Error('Número de teléfono inválido. Debe tener entre 10 y 15 dígitos.');
-  }
   
   // Agregar código de país si falta (México = 52)
   const phoneWithCode = cleanPhone.length === 10 
     ? `52${cleanPhone}` 
     : cleanPhone;
+  
+  // Security: Validate final phone number format
+  try {
+    phoneSchema.parse(phoneWithCode);
+  } catch (validationError) {
+    if (validationError instanceof z.ZodError) {
+      throw new Error('Número de teléfono inválido. Debe tener entre 10 y 15 dígitos.');
+    }
+    throw validationError;
+  }
 
   // Registrar actividad ANTES de abrir WhatsApp
   try {
@@ -49,7 +86,9 @@ export const openWhatsApp = async ({
     // No bloquear el flujo principal si falla el registro
   }
 
-  // Usar wa.me que funciona en TODOS los dispositivos (web y app)
-  const url = `https://wa.me/${phoneWithCode}?text=${encodeURIComponent(message)}`;
-  window.open(url, '_blank');
+  // Security: Use URL constructor to prevent parameter injection
+  const url = new URL(`https://wa.me/${phoneWithCode}`);
+  url.searchParams.set('text', message);
+  
+  window.open(url.toString(), '_blank');
 };

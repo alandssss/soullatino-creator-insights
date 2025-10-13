@@ -127,12 +127,19 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error('Error in supervision-quicklog:', error);
+    // Log detailed error server-side only (for debugging)
+    console.error('Error in supervision-quicklog:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    // Return generic error to client (prevents information disclosure)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      JSON.stringify({ error: 'Unable to process supervision log' }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
   }

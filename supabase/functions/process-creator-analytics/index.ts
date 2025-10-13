@@ -285,9 +285,16 @@ Genera la retro en 4 oraciones exactas según el formato.`;
     );
 
   } catch (error) {
-    console.error('Error en process-creator-analytics:', error);
+    // Log detailed error server-side only (for debugging)
+    console.error('Error in process-creator-analytics:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    
+    // Return generic error to client (prevents information disclosure)
     return new Response(
-      JSON.stringify({ error: 'Ocurrió un error al procesar el análisis' }),
+      JSON.stringify({ error: 'Unable to process analytics' }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
