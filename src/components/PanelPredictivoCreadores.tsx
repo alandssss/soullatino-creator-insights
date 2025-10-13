@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { openWhatsApp } from "@/utils/whatsapp";
+import { creatorAnalytics } from "@/services/creatorAnalytics";
 import { 
   Loader2, 
   RefreshCw, 
@@ -65,36 +65,15 @@ export const PanelPredictivoCreadores = () => {
     setLoading(true);
     try {
       const mesActual = new Date();
-      const mesReferencia = `${mesActual.getFullYear()}-${String(mesActual.getMonth() + 1).padStart(2, '0')}-01`;
-
-      const { data: bonifs, error: bonifError } = await supabase
-        .from('creator_bonificaciones')
-        .select('*')
-        .eq('mes_referencia', mesReferencia)
-        .order('diam_live_mes', { ascending: false });
-
-      if (bonifError) throw bonifError;
-
-      // Obtener nombres y teléfonos de creadores
-      const { data: creators } = await supabase
-        .from('creators')
-        .select('id, nombre, telefono');
-
-      type Creator = { id: string; nombre: string; telefono?: string };
-      const creatorsMap = new Map((creators as Creator[] || []).map(c => [c.id, c]));
-
-      const enriched = (bonifs || []).map(b => ({
-        ...b,
-        nombre: creatorsMap.get(b.creator_id)?.nombre || 'Sin nombre',
-        telefono: creatorsMap.get(b.creator_id)?.telefono
-      }));
-
-      setBonificaciones(enriched);
-    } catch (error) {
+      const mesRef = `${mesActual.getFullYear()}-${String(mesActual.getMonth() + 1).padStart(2, '0')}-01`;
+      
+      const data = await creatorAnalytics.getBonificaciones(mesRef);
+      setBonificaciones(data);
+    } catch (error: any) {
       console.error('Error cargando bonificaciones:', error);
       toast({
         title: "Error",
-        description: "No se pudieron cargar las bonificaciones",
+        description: error.message || "No se pudieron cargar las bonificaciones",
         variant: "destructive",
       });
     } finally {
@@ -105,21 +84,19 @@ export const PanelPredictivoCreadores = () => {
   const calcularTodasLasBonificaciones = async () => {
     setCalculating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('calculate-all-bonificaciones');
-
-      if (error) throw error;
-
+      const result = await creatorAnalytics.calcularBonificaciones();
+      
       toast({
         title: "✅ Bonificaciones calculadas",
-        description: `Se procesaron ${data?.total || 0} creadores`,
+        description: `Se procesaron ${result?.total_creadores || 0} creadores`,
       });
 
       await loadBonificaciones();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error calculando bonificaciones:', error);
       toast({
         title: "Error",
-        description: "No se pudieron calcular las bonificaciones",
+        description: error.message || "No se pudieron calcular las bonificaciones",
         variant: "destructive",
       });
     } finally {
@@ -127,25 +104,15 @@ export const PanelPredictivoCreadores = () => {
     }
   };
 
-  const calcularProbabilidad = (bonif: CreatorBonificacion): { color: string; label: string; porcentaje: number } => {
-    const fechaActual = new Date();
-    const diaDelMes = fechaActual.getDate();
-    const ultimoDia = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0).getDate();
-    const tiempoTranscurrido = (diaDelMes / ultimoDia) * 100;
-
-    // Encontrar próxima graduación
-    const graduaciones = [50000, 100000, 300000, 500000, 1000000];
-    const proximaGrad = graduaciones.find(g => bonif.diam_live_mes < g) || 1000000;
-    const avance = (bonif.diam_live_mes / proximaGrad) * 100;
-
-    if (avance >= tiempoTranscurrido * 0.9) {
-      return { color: "bg-green-500", label: "Alta", porcentaje: 85 };
-    } else if (avance >= tiempoTranscurrido * 0.6) {
-      return { color: "bg-yellow-500", label: "Media", porcentaje: 50 };
-    } else {
-      return { color: "bg-red-500", label: "Baja", porcentaje: 20 };
-    }
+  const calcularProbabilidad = (bonif: CreatorBonificacion) => {
+    return creatorAnalytics.calcularProbabilidad(
+      bonif.diam_live_mes,
+      300000,
+      bonif.dias_restantes,
+      bonif.dias_live_mes
+    );
   };
+
 
   const exportarExcel = () => {
     const dataParaExcel = bonificaciones.map(b => {
@@ -185,31 +152,7 @@ export const PanelPredictivoCreadores = () => {
   };
 
   const generarMensajeWhatsApp = (bonif: CreatorBonificacion): string => {
-    const prob = calcularProbabilidad(bonif);
-    
-    let mensaje = `🎯 *Reporte del Mes - ${bonif.nombre}*\n\n`;
-    mensaje += `📊 *Avance actual:*\n`;
-    mensaje += `📅 ${bonif.dias_live_mes} días • ⏰ ${bonif.horas_live_mes}h • 💎 ${bonif.diam_live_mes.toLocaleString()}\n\n`;
-    mensaje += `🎯 *Próximo objetivo:* ${bonif.proximo_objetivo_valor}\n`;
-    mensaje += `📈 *Necesitas:* ${bonif.req_diam_por_dia?.toLocaleString() || 0} diam/día • ${bonif.req_horas_por_dia?.toFixed(1) || 0}h/día\n`;
-    mensaje += `📅 *Días restantes:* ${bonif.dias_restantes}\n`;
-    mensaje += `🎲 *Probabilidad:* ${prob.label}\n\n`;
-
-    if (bonif.es_prioridad_300k) {
-      mensaje += `⭐ *PRIORIDAD:* Alcanzar 300K este mes\n\n`;
-    }
-
-    if (bonif.cerca_de_objetivo) {
-      mensaje += `🔥 *¡Estás muy cerca!* Un último empujón y lo logras\n\n`;
-    }
-
-    if (bonif.bono_extra_usd > 0) {
-      mensaje += `💰 *Bono extra:* $${bonif.bono_extra_usd} USD (${bonif.dias_extra_22} días)\n\n`;
-    }
-
-    mensaje += `¡Sigue así! 💪`;
-
-    return mensaje;
+    return creatorAnalytics.formatBonificacionesMessage(bonif);
   };
 
   const abrirWhatsApp = async (bonif: CreatorBonificacion) => {
