@@ -39,24 +39,32 @@ serve(async (req) => {
       );
     }
 
-    // Check if user has admin or manager role using RLS-safe function
-    const { data: hasAdminRole } = await supabaseAuth
-      .rpc('has_role', { _user_id: user.id, _role: 'admin' });
-    
-    const { data: hasManagerRole } = await supabaseAuth
-      .rpc('has_role', { _user_id: user.id, _role: 'manager' });
+    // Check if user has admin or manager role
+    console.log('Verificando rol del usuario:', user.id);
+    const { data: userRole, error: roleError } = await supabaseAuth
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
 
-    if (!hasAdminRole && !hasManagerRole) {
+    console.log('Rol obtenido:', userRole, 'Error:', roleError);
+
+    if (roleError || !userRole || (userRole.role !== 'admin' && userRole.role !== 'manager')) {
+      console.error('Usuario sin permisos:', user.id, userRole);
       return new Response(
         JSON.stringify({ error: 'No autorizado. Se requiere rol de admin o manager.' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Usuario autorizado con rol:', userRole.role);
+
     // User is authorized, proceed with the request
     const { creatorId } = await req.json();
+    console.log('Procesando creatorId:', creatorId);
     
     if (!creatorId) {
+      console.error('creatorId no proporcionado');
       return new Response(
         JSON.stringify({ error: 'creatorId es requerido' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
