@@ -13,7 +13,7 @@ import { MessageSquare, Phone, Calendar, TrendingUp, Target, Sparkles, Loader2, 
 import { Tables } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { BonificacionesPanel } from "./BonificacionesPanel";
-import { openWhatsApp } from "@/utils/whatsapp";
+import { interactionService } from "@/services/interactionService";
 
 const interactionSchema = z.object({
   tipo_interaccion: z.string().trim().min(1, "Tipo de interacción requerido").max(100, "Máximo 100 caracteres"),
@@ -105,20 +105,15 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   const fetchInteractions = async () => {
     if (!creator) return;
 
-    const { data, error } = await supabase
-      .from("creator_interactions")
-      .select("*")
-      .eq("creator_id", creator.id)
-      .order("fecha", { ascending: false });
-
-    if (error) {
+    try {
+      const data = await interactionService.getInteractions(creator.id);
+      setInteractions(data);
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "No se pudieron cargar las interacciones",
+        description: error.message || "No se pudieron cargar las interacciones",
         variant: "destructive",
       });
-    } else {
-      setInteractions(data || []);
     }
   };
 
@@ -128,22 +123,13 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
     setLoadingAdvice(true);
     try {
-      const { data, error } = await supabase
-        .from('creator_recommendations')
-        .select('descripcion, tipo, titulo')
-        .eq('creator_id', creator.id)
-        .eq('activa', true)
-        .order('fecha_creacion', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
-
+      const data = await interactionService.getLatestRecommendation(creator.id);
+      
       if (data) {
-        setAiAdvice(data.descripcion);
-        setMilestone(data.tipo || '');
+        setAiAdvice(data.advice);
+        setMilestone(data.milestone);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cargando recomendación:', error);
     } finally {
       setLoadingAdvice(false);
@@ -156,25 +142,22 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     
     setLoadingAdvice(true);
     try {
-      const { data, error } = await supabase.functions.invoke("process-creator-analytics", {
-        body: { creatorId: creator.id },
+      const response = await interactionService.generateAdvice(creator.id);
+      
+      setAiAdvice(response.advice);
+      setMilestone(response.milestone || '');
+      
+      toast({
+        title: "✨ Recomendación generada",
+        description: response.milestoneDescription 
+          ? `Hito: ${response.milestoneDescription}` 
+          : "Recomendación creada exitosamente",
       });
-
-      if (error) throw error;
-
-      if (data?.recommendation) {
-        setAiAdvice(data.recommendation);
-        setMilestone(data.milestone || '');
-        toast({
-          title: "✨ Recomendación generada",
-          description: `Hito: ${data.milestoneDescription}`,
-        });
-      }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generando recomendación:', error);
       toast({
         title: "Error",
-        description: "No se pudo generar la recomendación. Verifica que existan datos históricos.",
+        description: error.message || "No se pudo generar la recomendación. Verifica que existan datos históricos.",
         variant: "destructive",
       });
     } finally {
@@ -188,19 +171,17 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
     try {
       const validated = interactionSchema.parse(newInteraction);
 
-      const { error } = await supabase.from("creator_interactions").insert({
-        creator_id: creator.id,
+      await interactionService.recordInteraction(creator.id, {
         tipo_interaccion: validated.tipo_interaccion,
         notas: validated.notas,
-        admin_nombre: validated.admin_nombre || "Admin",
+        admin_nombre: validated.admin_nombre,
       });
-
-      if (error) throw error;
 
       toast({
-        title: "Éxito",
+        title: "✅ Éxito",
         description: "Interacción guardada correctamente",
       });
+      
       setNewInteraction({ tipo_interaccion: "", notas: "", admin_nombre: "" });
       fetchInteractions();
     } catch (error) {
@@ -213,7 +194,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       } else {
         toast({
           title: "Error",
-          description: "No se pudo guardar la interacción",
+          description: error instanceof Error ? error.message : "No se pudo guardar la interacción",
           variant: "destructive",
         });
       }
@@ -221,40 +202,18 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   };
 
   const handleOpenWhatsApp = async () => {
-    if (!creator?.telefono) {
-      toast({
-        title: "Error",
-        description: "Este creador no tiene número de teléfono registrado",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const { data: { user } } = await supabase.auth.getUser();
-    const userName = user?.email?.split('@')[0] || "el equipo";
-    const message = generateWhatsAppSummary(userName);
-    
-    if (!message || message.trim() === "") {
-      toast({
-        title: "Error",
-        description: "No se pudo generar el mensaje",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!creator) return;
     
     try {
-      await openWhatsApp({
-        phone: creator.telefono,
-        message: message,
-        creatorId: creator.id,
-        creatorName: creator.nombre,
-        actionType: 'seguimiento'
-      });
+      const { data: { user } } = await supabase.auth.getUser();
+      const userName = user?.email?.split('@')[0] || "el equipo";
+      const message = interactionService.generateWhatsAppMessage(creator, userName);
+      
+      await interactionService.sendWhatsAppMessage(creator, message, 'seguimiento');
       
       toast({
         title: "✅ WhatsApp abierto",
-        description: "Mensaje enviado correctamente"
+        description: "Mensaje listo para enviar"
       });
     } catch (error: any) {
       toast({
@@ -267,10 +226,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
   const generateWhatsAppSummary = (userName: string = "el equipo") => {
     if (!creator) return "";
-    
-    const message = `Hola soy ${userName} de SoulLatino, tus estadisticas al dia de ayer son:\n\n📅 ${creator.dias_live || 0} Dias Live\n⏰ ${(creator.horas_live || 0).toFixed(1)} Horas Live\n💎 ${(creator.diamantes || 0).toLocaleString()} Diamantes\n\n¿Podemos hablar para ayudarte en como mejorar ese desempeño?`;
-    
-    return message;
+    return interactionService.generateWhatsAppMessage(creator, userName);
   };
 
   const getMonthlyGrowth = () => {
