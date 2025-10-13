@@ -13,21 +13,28 @@ export class CreatorAnalyticsService {
       .from('creator_bonificaciones')
       .select(`
         *,
-        creators(nombre, telefono)
+        creators!inner(nombre, telefono)
       `)
       .eq('mes_referencia', mesReferencia)
       .order('diam_live_mes', { ascending: false });
     
     if (error) {
+      console.error('Error en getBonificaciones:', error);
       throw new Error(`Error cargando bonificaciones: ${error.message}`);
     }
 
+    console.log('Bonificaciones cargadas:', data?.length, 'registros');
+    
     // Enriquecer datos con información del creador
-    return data.map(bonif => ({
+    const enrichedData = data?.map(bonif => ({
       ...bonif,
       nombre: bonif.creators?.nombre || 'Sin nombre',
       telefono: bonif.creators?.telefono || null
-    }));
+    })) || [];
+    
+    console.log('Datos enriquecidos con teléfonos:', enrichedData.filter(b => b.telefono).length);
+    
+    return enrichedData;
   }
 
   /**
