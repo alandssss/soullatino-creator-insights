@@ -59,11 +59,11 @@ serve(async (req) => {
     console.log('[generate-creator-advice] User authorized:', user.email);
 
     const { creatorData } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
     
-    if (!LOVABLE_API_KEY) {
-      console.error('[generate-creator-advice] LOVABLE_API_KEY not configured');
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (!GEMINI_API_KEY) {
+      console.error('[generate-creator-advice] GEMINI_API_KEY not configured');
+      throw new Error("GEMINI_API_KEY is not configured");
     }
 
     console.log('[generate-creator-advice] Processing for creator:', creatorData.nombre);
@@ -131,34 +131,31 @@ INSTRUCCIONES:
 
 Sé específico con números, realista y motivador.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
+        contents: [{
+          parts: [{
+            text: `${systemPrompt}\n\n${userPrompt}`
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 600
+        }
       }),
     });
 
     if (!response.ok) {
-      console.error("[Server] AI gateway error:", response.status);
+      console.error("[Server] Gemini API error:", response.status);
       
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limits exceeded, please try again later." }), 
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Payment required, please add funds to your Lovable AI workspace." }), 
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
@@ -169,7 +166,7 @@ Sé específico con números, realista y motivador.`;
     }
 
     const data = await response.json();
-    const advice = data.choices[0].message.content;
+    const advice = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No se pudo generar consejo';
 
     console.log('[generate-creator-advice] Successfully generated advice');
 

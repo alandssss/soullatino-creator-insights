@@ -77,8 +77,8 @@ serve(async (req) => {
       );
     }
 
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-    console.log('Lovable API Key presente:', !!lovableApiKey);
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    console.log('Gemini API Key presente:', !!geminiApiKey);
     
     // Use service role client for admin operations (after authorization check)
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -211,31 +211,35 @@ Genera la retro en 4 oraciones exactas según el formato.`;
 
     let recommendation = '';
 
-    if (lovableApiKey) {
+    // Try Gemini AI service with API key if available
+    if (geminiApiKey) {
       try {
-        const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${geminiApiKey}`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${lovableApiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'google/gemini-2.5-flash',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userPrompt }
-            ],
-          }),
+            contents: [{
+              parts: [{
+                text: `${systemPrompt}\n\n${userPrompt}`
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 500
+            }
+          })
         });
 
         if (aiResponse.ok) {
           const aiData = await aiResponse.json();
-          recommendation = aiData.choices[0]?.message?.content || '';
+          recommendation = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
         } else {
-          console.error('Error en IA gateway:', await aiResponse.text());
+          console.error('Error en Gemini API:', await aiResponse.text());
         }
       } catch (error) {
-        console.error('Error llamando a IA:', error);
+        console.error('Error llamando a Gemini:', error);
       }
     }
 
