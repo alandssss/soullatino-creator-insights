@@ -90,5 +90,12 @@ export const openWhatsApp = async ({
   const url = new URL(`https://wa.me/${phoneWithCode}`);
   url.searchParams.set('text', message);
   
-  window.open(url.toString(), '_blank');
+  // Usar un enlace temporal para evitar bloqueos del navegador
+  const link = document.createElement('a');
+  link.href = url.toString();
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
