@@ -431,6 +431,68 @@ export type Database = {
           },
         ]
       }
+      creator_metas: {
+        Row: {
+          completada: boolean | null
+          created_at: string | null
+          created_by_email: string | null
+          created_by_user_id: string | null
+          creator_id: string
+          descripcion: string | null
+          fecha_completada: string | null
+          fecha_finalizacion: string
+          fecha_inicio: string
+          id: string
+          metrica_tipo: string
+          notas: string | null
+          progreso_actual: number | null
+          updated_at: string | null
+          valor_objetivo: number
+        }
+        Insert: {
+          completada?: boolean | null
+          created_at?: string | null
+          created_by_email?: string | null
+          created_by_user_id?: string | null
+          creator_id: string
+          descripcion?: string | null
+          fecha_completada?: string | null
+          fecha_finalizacion: string
+          fecha_inicio?: string
+          id?: string
+          metrica_tipo: string
+          notas?: string | null
+          progreso_actual?: number | null
+          updated_at?: string | null
+          valor_objetivo: number
+        }
+        Update: {
+          completada?: boolean | null
+          created_at?: string | null
+          created_by_email?: string | null
+          created_by_user_id?: string | null
+          creator_id?: string
+          descripcion?: string | null
+          fecha_completada?: string | null
+          fecha_finalizacion?: string
+          fecha_inicio?: string
+          id?: string
+          metrica_tipo?: string
+          notas?: string | null
+          progreso_actual?: number | null
+          updated_at?: string | null
+          valor_objetivo?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_metas_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_metrics: {
         Row: {
           comments: number | null

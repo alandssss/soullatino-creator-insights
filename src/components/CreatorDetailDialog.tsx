@@ -14,6 +14,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { BonificacionesPanel } from "./BonificacionesPanel";
 import { interactionService } from "@/services/interactionService";
+import { AsignarMetaDialog } from "./AsignarMetaDialog";
 
 const interactionSchema = z.object({
   tipo_interaccion: z.string().trim().min(1, "Tipo de interacción requerido").max(100, "Máximo 100 caracteres"),
@@ -42,6 +43,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   const [milestone, setMilestone] = useState("");
   const [userRole, setUserRole] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [metaDialogOpen, setMetaDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -471,11 +473,16 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           </Card>
 
           <Tabs defaultValue="bonificaciones" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-2">
+            <TabsList className="grid w-full grid-cols-6 mb-2">
               <TabsTrigger value="bonificaciones" className="gap-2">
                 <Award className="h-4 w-4" />
                 <span className="hidden sm:inline">Bonificaciones</span>
                 <span className="sm:hidden">💎</span>
+              </TabsTrigger>
+              <TabsTrigger value="metas" className="gap-2">
+                <Target className="h-4 w-4" />
+                <span className="hidden sm:inline">Metas</span>
+                <span className="sm:hidden">🎯</span>
               </TabsTrigger>
               <TabsTrigger value="advice" className="gap-2">
                 <Sparkles className="h-4 w-4" />
@@ -499,6 +506,37 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
             <TabsContent value="bonificaciones" className="space-y-4 mt-6">
               <BonificacionesPanel creatorId={creator.id} creatorName={creator.nombre} />
+            </TabsContent>
+
+            <TabsContent value="metas" className="space-y-4 mt-6">
+              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl font-semibold flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
+                        <Target className="h-5 w-5 text-primary" />
+                      </div>
+                      Metas Asignadas
+                    </CardTitle>
+                    {(userRole === 'admin' || userRole === 'manager') && (
+                      <Button
+                        onClick={() => setMetaDialogOpen(true)}
+                        variant="default"
+                        size="sm"
+                        className="gap-2"
+                      >
+                        <Target className="h-4 w-4" />
+                        Asignar Meta
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Las metas asignadas aparecerán aquí próximamente.
+                  </p>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="advice" className="space-y-4 mt-6">
@@ -718,6 +756,21 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           </Tabs>
         </div>
       </DialogContent>
+      
+      {/* Dialog para asignar meta */}
+      <AsignarMetaDialog
+        open={metaDialogOpen}
+        onOpenChange={setMetaDialogOpen}
+        creatorId={creator.id}
+        creatorName={creator.nombre}
+        onMetaAsignada={() => {
+          // Aquí podrías recargar las metas si las estuvieras mostrando
+          toast({
+            title: "Meta asignada correctamente",
+            description: `Se ha asignado una nueva meta a ${creator.nombre}`,
+          });
+        }}
+      />
     </Dialog>
   );
 };
