@@ -997,7 +997,7 @@ export type Database = {
     }
     Functions: {
       calcular_bonificaciones_mes: {
-        Args: { mes_referencia: string }
+        Args: { p_mes_referencia: string }
         Returns: undefined
       }
       get_user_role: {
