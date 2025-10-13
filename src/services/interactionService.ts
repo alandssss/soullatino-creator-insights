@@ -28,14 +28,34 @@ export class InteractionService {
   static async generateAdvice(creatorId: string): Promise<AIAdviceResponse> {
     console.log('[InteractionService] Llamando a process-creator-analytics con creatorId:', creatorId);
     
+    // CRITICAL: Get auth session to pass token to edge function
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      console.error('[InteractionService] Usuario no autenticado');
+      throw new Error("Debes iniciar sesión para generar consejos de IA");
+    }
+
     const { data, error } = await supabase.functions.invoke("process-creator-analytics", {
       body: { creatorId },
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
     });
 
     console.log('[InteractionService] Respuesta de process-creator-analytics:', { data, error });
 
     if (error) {
       console.error('[InteractionService] Error de la función:', error);
+      
+      // Better error messages based on status
+      if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+        throw new Error("No autorizado. Verifica que tengas los permisos necesarios.");
+      }
+      if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+        throw new Error("No tienes permisos para generar consejos. Contacta al administrador.");
+      }
+      
       throw new Error(`Error generando consejo IA: ${error.message}`);
     }
 
