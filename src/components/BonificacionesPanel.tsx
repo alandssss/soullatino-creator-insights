@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Award, Calendar, Target, TrendingUp, Zap, Loader2 } from "lucide-react";
+import { Award, Calendar, Target, Zap, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { creatorAnalytics } from "@/services/creatorAnalytics";
+import { MetricCard } from "@/components/MetricCard";
 
 interface BonificacionesPanelProps {
   creatorId: string;
@@ -27,19 +28,16 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
       const mesActual = new Date();
       const mesReferencia = `${mesActual.getFullYear()}-${String(mesActual.getMonth() + 1).padStart(2, '0')}-01`;
 
-      const { data, error } = await supabase
-        .from('creator_bonificaciones')
-        .select('*')
-        .eq('creator_id', creatorId)
-        .eq('mes_referencia', mesReferencia)
-        .order('fecha_calculo', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
-      setBonificacion(data);
+      const bonificaciones = await creatorAnalytics.getBonificaciones(mesReferencia);
+      const bonifCreator = bonificaciones.find(b => b.creator_id === creatorId);
+      setBonificacion(bonifCreator || null);
     } catch (error) {
       console.error('Error cargando bonificación:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "No se pudo cargar la bonificación",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -48,11 +46,7 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
   const calcularBonificacion = async () => {
     setCalculating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('calculate-bonificaciones', {
-        body: { creatorId }
-      });
-
-      if (error) throw error;
+      await creatorAnalytics.calcularBonificaciones();
 
       toast({
         title: "✅ Bonificación calculada",
@@ -64,7 +58,7 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
       console.error('Error calculando bonificación:', error);
       toast({
         title: "Error",
-        description: "No se pudo calcular la bonificación",
+        description: error instanceof Error ? error.message : "No se pudo calcular la bonificación",
         variant: "destructive",
       });
     } finally {
@@ -128,18 +122,21 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
                 LIVE del Mes (hasta ayer)
               </h3>
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                  <p className="text-xs text-muted-foreground mb-1">Días</p>
-                  <p className="text-2xl font-bold text-primary">{bonificacion.dias_live_mes}</p>
-                </div>
-                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                  <p className="text-xs text-muted-foreground mb-1">Horas</p>
-                  <p className="text-2xl font-bold text-primary">{bonificacion.horas_live_mes?.toFixed(1)}</p>
-                </div>
-                <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
-                  <p className="text-xs text-muted-foreground mb-1">Diamantes</p>
-                  <p className="text-xl font-bold text-accent">{bonificacion.diam_live_mes?.toLocaleString()}</p>
-                </div>
+                <MetricCard 
+                  label="Días" 
+                  value={bonificacion.dias_live_mes} 
+                  variant="primary"
+                />
+                <MetricCard 
+                  label="Horas" 
+                  value={bonificacion.horas_live_mes?.toFixed(1)} 
+                  variant="primary"
+                />
+                <MetricCard 
+                  label="Diamantes" 
+                  value={bonificacion.diam_live_mes?.toLocaleString()} 
+                  variant="accent"
+                />
               </div>
             </div>
 
