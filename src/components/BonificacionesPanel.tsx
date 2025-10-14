@@ -140,66 +140,65 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
               </div>
             </div>
 
-            {/* Próximo Objetivo */}
+            {/* Meta Recomendada */}
             <div>
               <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
                 <Target className="h-4 w-4" />
-                Próximo Objetivo
+                Meta Recomendada
               </h3>
               <div className="p-4 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="font-semibold">{bonificacion.proximo_objetivo_valor || "Sin objetivo"}</p>
+                  <p className="font-semibold text-lg">{bonificacion.meta_recomendada || "Sin meta"}</p>
                   {bonificacion.cerca_de_objetivo && (
                     <Badge variant="default">¡Cerca!</Badge>
                   )}
                 </div>
-                {bonificacion.dias_restantes > 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    {bonificacion.req_diam_por_dia > 0 && (
-                      <>💎 {bonificacion.req_diam_por_dia.toLocaleString()} diamantes/día</>
-                    )}
-                    {bonificacion.req_horas_por_dia > 0 && (
-                      <>⏰ {bonificacion.req_horas_por_dia.toFixed(1)} horas/día</>
-                    )}
-                    {' '}en {bonificacion.dias_restantes} días restantes
+                <p className="text-sm text-muted-foreground mb-2">
+                  {bonificacion.texto_creador || "Calculando progreso..."}
+                </p>
+                {bonificacion.texto_manager && (
+                  <p className="text-xs text-muted-foreground/80 italic border-t border-border/30 pt-2">
+                    📋 Manager: {bonificacion.texto_manager}
                   </p>
                 )}
               </div>
-              {bonificacion.es_prioridad_300k && (
-                <div className="mt-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-                  <p className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
-                    ⭐ Prioridad: Alcanzar 300K este mes
-                  </p>
-                </div>
-              )}
             </div>
 
-            {/* Graduaciones */}
+            {/* Semáforos de Metas */}
             <div>
               <h3 className="text-sm font-semibold text-muted-foreground mb-3">
-                Graduaciones Diamantes
+                Estado de Metas Diamantes
               </h3>
               <div className="grid grid-cols-5 gap-2">
                 {[
-                  { key: 'grad_50k', label: '50K' },
-                  { key: 'grad_100k', label: '100K' },
-                  { key: 'grad_300k', label: '300K' },
-                  { key: 'grad_500k', label: '500K' },
-                  { key: 'grad_1m', label: '1M' },
-                ].map((grad) => (
-                  <div
-                    key={grad.key}
-                    className={`p-2 rounded-lg text-center border ${
-                      bonificacion[grad.key]
-                        ? 'bg-green-500/20 border-green-500/50'
-                        : 'bg-muted/30 border-border'
-                    }`}
-                  >
-                    <p className="text-xs font-medium">
-                      {bonificacion[grad.key] ? '✅' : '⭕'} {grad.label}
-                    </p>
-                  </div>
-                ))}
+                  { key: 'semaforo_50k', label: '50K', faltan: bonificacion.faltan_50k, req: bonificacion.req_diam_por_dia_50k, fecha: bonificacion.fecha_estimada_50k },
+                  { key: 'semaforo_100k', label: '100K', faltan: bonificacion.faltan_100k, req: bonificacion.req_diam_por_dia_100k, fecha: bonificacion.fecha_estimada_100k },
+                  { key: 'semaforo_300k', label: '300K', faltan: bonificacion.faltan_300k, req: bonificacion.req_diam_por_dia_300k, fecha: bonificacion.fecha_estimada_300k },
+                  { key: 'semaforo_500k', label: '500K', faltan: bonificacion.faltan_500k, req: bonificacion.req_diam_por_dia_500k, fecha: bonificacion.fecha_estimada_500k },
+                  { key: 'semaforo_1m', label: '1M', faltan: bonificacion.faltan_1m, req: bonificacion.req_diam_por_dia_1m, fecha: bonificacion.fecha_estimada_1m },
+                ].map((meta) => {
+                  const semaforo = bonificacion[meta.key];
+                  const bgColor = semaforo === 'verde' ? 'bg-green-500/20 border-green-500/50' :
+                                 semaforo === 'amarillo' ? 'bg-yellow-500/20 border-yellow-500/50' :
+                                 'bg-red-500/20 border-red-500/50';
+                  const icon = semaforo === 'verde' ? '🟢' : semaforo === 'amarillo' ? '🟡' : '🔴';
+                  return (
+                    <div
+                      key={meta.key}
+                      className={`p-2 rounded-lg text-center border ${bgColor}`}
+                      title={`Faltan: ${meta.faltan?.toLocaleString() || 0} | Req/día: ${meta.req?.toLocaleString() || 0}`}
+                    >
+                      <p className="text-xs font-medium">
+                        {icon} {meta.label}
+                      </p>
+                      {meta.faltan > 0 && (
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          -{(meta.faltan / 1000).toFixed(0)}k
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -210,9 +209,9 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { key: 'hito_12d_40h', label: '12d/40h' },
-                  { key: 'hito_20d_60h', label: '20d/60h' },
-                  { key: 'hito_22d_80h', label: '22d/80h' },
+                  { key: 'hito_12_40', label: '12d/40h' },
+                  { key: 'hito_20_60', label: '20d/60h' },
+                  { key: 'hito_22_80', label: '22d/80h' },
                 ].map((hito) => (
                   <div
                     key={hito.key}
@@ -231,7 +230,7 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
             </div>
 
             {/* Bono Extra */}
-            {bonificacion.dias_extra_22 > 0 && (
+            {(bonificacion.bono_dias_extra_usd > 0 || bonificacion.bono_extra_usd > 0) && (
               <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
                 <div className="flex items-center justify-between">
                   <div>
@@ -239,16 +238,25 @@ export const BonificacionesPanel = ({ creatorId, creatorName }: BonificacionesPa
                       🎁 Bono por Constancia
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {bonificacion.dias_extra_22} días por encima de 22
+                      Días por encima de 22
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      ${bonificacion.bono_extra_usd}
+                      ${(bonificacion.bono_dias_extra_usd || bonificacion.bono_extra_usd || 0).toFixed(2)}
                     </p>
                     <p className="text-xs text-muted-foreground">USD</p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Indicador de creador nuevo */}
+            {bonificacion.es_nuevo_menos_90_dias && (
+              <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                  🌟 Creador Nuevo (menos de 90 días)
+                </p>
               </div>
             )}
 
