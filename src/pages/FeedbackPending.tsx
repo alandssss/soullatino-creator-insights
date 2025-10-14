@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Calendar, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { MessageCircle, Calendar, Clock, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { Tables } from "@/integrations/supabase/types";
 import { CreatorDetailDialog } from "@/components/CreatorDetailDialog";
 import { WorkTimeTracker } from "@/components/WorkTimeTracker";
@@ -29,6 +30,7 @@ const FeedbackPending = () => {
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -117,18 +119,25 @@ const FeedbackPending = () => {
     );
   }
 
+  // Filtrar creadores por búsqueda
+  const filteredCreators = creators.filter(creator =>
+    creator.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    creator.categoria?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    creator.telefono?.includes(searchTerm)
+  );
+
   return (
     <div className="space-y-6">
       <WorkTimeTracker userEmail={user?.email} />
       
       <LowActivityPanel />
       
-      <Card className="glass-card border-border/50">
+      <Card className="neo-card">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              Creadores Pendientes de Feedback ({creators.length})
+              Creadores Pendientes de Feedback ({filteredCreators.length})
             </CardTitle>
             <Button
               variant="ghost"
@@ -149,20 +158,31 @@ const FeedbackPending = () => {
               )}
             </Button>
           </div>
+          
+          {/* Buscador */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nombre, categoría o teléfono..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 neo-input"
+            />
+          </div>
         </CardHeader>
         <CardContent>
-          {creators.length === 0 ? (
+          {filteredCreators.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              No hay creadores pendientes de feedback
+              {searchTerm ? "No se encontraron creadores" : "No hay creadores pendientes de feedback"}
             </p>
           ) : (
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
               {/* Vista previa - Primeros 3 creadores */}
               <div className="space-y-4">
-                {creators.slice(0, 3).map((creator, index) => (
+                {filteredCreators.slice(0, 3).map((creator, index) => (
                   <div
                     key={creator.id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-300 border border-border/50 hover:border-primary/30 cursor-pointer"
+                    className="flex items-center justify-between p-4 rounded-lg neo-card-sm hover:neo-card-pressed cursor-pointer transition-all"
                     onClick={() => {
                       setSelectedCreator(creator);
                       setDialogOpen(true);
@@ -212,12 +232,12 @@ const FeedbackPending = () => {
               </div>
 
               {/* Resto de creadores - Colapsables */}
-              {creators.length > 3 && (
+              {filteredCreators.length > 3 && (
                 <CollapsibleContent className="mt-4 space-y-4">
-                  {creators.slice(3).map((creator, index) => (
+                  {filteredCreators.slice(3).map((creator, index) => (
                     <div
                       key={creator.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all duration-300 border border-border/50 hover:border-primary/30 cursor-pointer animate-fade-in"
+                      className="flex items-center justify-between p-4 rounded-lg neo-card-sm hover:neo-card-pressed cursor-pointer transition-all animate-fade-in"
                       onClick={() => {
                         setSelectedCreator(creator);
                         setDialogOpen(true);
