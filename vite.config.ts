@@ -18,12 +18,14 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    exclude: ['react', 'react-dom'],
+    include: ['react', 'react-dom', 'react/jsx-runtime'],
   },
   build: {
     rollupOptions: {
       output: {
-        manualChunks: undefined,
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        },
       },
     },
   },
