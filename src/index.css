@@ -11,46 +11,50 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 220 14% 96%;
-    --foreground: 220 9% 13%;
+    --foreground: 0 0% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 9% 13%;
+    /* Tarjetas con fondo claro cálido suave #F2F3F5 */
+    --card: 225 13% 96%;
+    --card-foreground: 0 0% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 9% 13%;
+    --popover: 225 13% 96%;
+    --popover-foreground: 0 0% 11%;
 
+    /* Amarillo suave para acentos */
     --primary: 48 100% 64%;
-    --primary-foreground: 220 9% 13%;
+    --primary-foreground: 0 0% 11%;
 
-    --secondary: 175 61% 56%;
-    --secondary-foreground: 0 0% 100%;
+    /* Verde suave para botones #7EC97D */
+    --secondary: 119 38% 66%;
+    --secondary-foreground: 0 0% 11%;
 
-    --muted: 210 11% 91%;
-    --muted-foreground: 220 8% 46%;
+    --muted: 220 13% 94%;
+    --muted-foreground: 0 0% 29%;
 
+    /* Azul grisáceo suave #6C8AE4 */
     --accent: 222 71% 66%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 8% 79%;
-    --input: 210 11% 91%;
+    --border: 220 13% 88%;
+    --input: 220 13% 94%;
     --ring: 48 100% 64%;
 
     --radius: 1rem;
 
-    /* Neomorphic shadows - Light Mode */
+    /* Neomorphic shadows - Light Mode - Más suaves */
     --neo-shadow-light: -6px -6px 12px rgba(255, 255, 255, 0.7);
-    --neo-shadow-dark: 6px 6px 12px rgba(0, 0, 0, 0.15);
+    --neo-shadow-dark: 6px 6px 12px rgba(0, 0, 0, 0.12);
     --neo-shadow-inset-light: inset -3px -3px 6px rgba(255, 255, 255, 0.7);
-    --neo-shadow-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.15);
+    --neo-shadow-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.12);
     
     --neo-shadow-sm-light: -3px -3px 6px rgba(255, 255, 255, 0.7);
-    --neo-shadow-sm-dark: 3px 3px 6px rgba(0, 0, 0, 0.15);
+    --neo-shadow-sm-dark: 3px 3px 6px rgba(0, 0, 0, 0.12);
     
     --neo-shadow-pressed-light: inset -2px -2px 4px rgba(255, 255, 255, 0.7);
-    --neo-shadow-pressed-dark: inset 2px 2px 4px rgba(0, 0, 0, 0.15);
+    --neo-shadow-pressed-dark: inset 2px 2px 4px rgba(0, 0, 0, 0.12);
 
     --neo-glow-primary: 0 0 20px rgba(255, 217, 69, 0.5);
     --neo-glow-accent: 0 0 20px rgba(108, 138, 228, 0.5);
@@ -58,58 +62,72 @@ All colors MUST be HSL.
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 9% 13%;
+    --sidebar-background: 225 13% 96%;
+    --sidebar-foreground: 0 0% 11%;
     --sidebar-primary: 48 100% 64%;
-    --sidebar-primary-foreground: 220 9% 13%;
-    --sidebar-accent: 210 11% 91%;
-    --sidebar-accent-foreground: 220 9% 13%;
-    --sidebar-border: 220 8% 79%;
+    --sidebar-primary-foreground: 0 0% 11%;
+    --sidebar-accent: 220 13% 94%;
+    --sidebar-accent-foreground: 0 0% 11%;
+    --sidebar-border: 220 13% 88%;
     --sidebar-ring: 48 100% 64%;
   }
 
   .dark {
-    --background: 225 9% 13%;
-    --foreground: 210 11% 91%;
-    --card: 220 8% 18%;
-    --card-foreground: 210 11% 91%;
-    --popover: 220 8% 18%;
-    --popover-foreground: 210 11% 91%;
+    /* Fondo oscuro suave #1E1F23 en lugar de negro puro */
+    --background: 220 8% 13%;
+    --foreground: 0 0% 93%;
+    
+    /* Tarjetas en modo oscuro con tono gris profundo #2A2C31 */
+    --card: 220 7% 18%;
+    --card-foreground: 0 0% 93%;
+    
+    --popover: 220 7% 18%;
+    --popover-foreground: 0 0% 93%;
+    
+    /* Amarillo suave */
     --primary: 48 100% 64%;
-    --primary-foreground: 225 9% 13%;
-    --secondary: 255 33% 61%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 220 8% 25%;
+    --primary-foreground: 220 8% 13%;
+    
+    /* Verde suave para botones */
+    --secondary: 119 38% 66%;
+    --secondary-foreground: 0 0% 11%;
+    
+    --muted: 220 7% 23%;
     --muted-foreground: 220 8% 79%;
+    
+    /* Turquesa suave #45D6C9 */
     --accent: 175 61% 56%;
     --accent-foreground: 0 0% 100%;
+    
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 8% 25%;
-    --input: 220 8% 25%;
+    
+    --border: 220 7% 25%;
+    --input: 220 7% 23%;
     --ring: 48 100% 64%;
     
-    --neo-shadow-light: -6px -6px 12px rgba(255, 255, 255, 0.09);
-    --neo-shadow-dark: 6px 6px 12px rgba(0, 0, 0, 0.5);
-    --neo-shadow-inset-light: inset -3px -3px 6px rgba(255, 255, 255, 0.09);
-    --neo-shadow-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.5);
+    /* Sombras neomórficas suavizadas para modo oscuro */
+    --neo-shadow-light: -6px -6px 12px rgba(255, 255, 255, 0.08);
+    --neo-shadow-dark: 6px 6px 12px rgba(0, 0, 0, 0.4);
+    --neo-shadow-inset-light: inset -3px -3px 6px rgba(255, 255, 255, 0.08);
+    --neo-shadow-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.4);
     
-    --neo-shadow-sm-light: -3px -3px 6px rgba(255, 255, 255, 0.09);
-    --neo-shadow-sm-dark: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    --neo-shadow-sm-light: -3px -3px 6px rgba(255, 255, 255, 0.08);
+    --neo-shadow-sm-dark: 3px 3px 6px rgba(0, 0, 0, 0.4);
     
-    --neo-shadow-pressed-light: inset -2px -2px 4px rgba(255, 255, 255, 0.09);
-    --neo-shadow-pressed-dark: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+    --neo-shadow-pressed-light: inset -2px -2px 4px rgba(255, 255, 255, 0.08);
+    --neo-shadow-pressed-dark: inset 2px 2px 4px rgba(0, 0, 0, 0.4);
 
     --neo-glow-primary: 0 0 20px rgba(255, 217, 69, 0.5);
     --neo-glow-accent: 0 0 20px rgba(69, 214, 201, 0.5);
 
-    --sidebar-background: 220 8% 18%;
-    --sidebar-foreground: 210 11% 91%;
+    --sidebar-background: 220 7% 18%;
+    --sidebar-foreground: 0 0% 93%;
     --sidebar-primary: 48 100% 64%;
-    --sidebar-primary-foreground: 225 9% 13%;
-    --sidebar-accent: 220 8% 25%;
-    --sidebar-accent-foreground: 210 11% 91%;
-    --sidebar-border: 220 8% 25%;
+    --sidebar-primary-foreground: 220 8% 13%;
+    --sidebar-accent: 220 7% 23%;
+    --sidebar-accent-foreground: 0 0% 93%;
+    --sidebar-border: 220 7% 25%;
     --sidebar-ring: 48 100% 64%;
   }
 }
