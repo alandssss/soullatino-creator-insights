@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { openWhatsApp } from "@/utils/whatsapp";
 import { creatorAnalytics } from "@/services/creatorAnalytics";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Loader2, 
   RefreshCw, 
@@ -16,10 +17,13 @@ import {
   CheckCircle2,
   Target,
   Award,
-  MessageCircle
+  MessageCircle,
+  Phone,
+  Edit
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import * as XLSX from "xlsx";
 
 interface CreatorBonificacion {
@@ -55,6 +59,9 @@ export const PanelPredictivoCreadores = () => {
   const [calculating, setCalculating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtroRiesgo, setFiltroRiesgo] = useState<"todos" | "verde" | "amarillo" | "rojo">("todos");
+  const [editingPhone, setEditingPhone] = useState<{ creatorId: string; nombre: string; currentPhone?: string } | null>(null);
+  const [newPhone, setNewPhone] = useState("");
+  const [savingPhone, setSavingPhone] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -184,6 +191,58 @@ export const PanelPredictivoCreadores = () => {
         description: error.message,
         variant: "destructive"
       });
+    }
+  };
+
+  const abrirDialogoTelefono = (bonif: CreatorBonificacion) => {
+    setEditingPhone({
+      creatorId: bonif.creator_id,
+      nombre: bonif.nombre || "Creador",
+      currentPhone: bonif.telefono
+    });
+    setNewPhone(bonif.telefono || "");
+  };
+
+  const guardarTelefono = async () => {
+    if (!editingPhone) return;
+
+    const phoneRegex = /^\+?[1-9]\d{9,14}$/;
+    const cleanPhone = newPhone.replace(/\s/g, "");
+
+    if (!phoneRegex.test(cleanPhone)) {
+      toast({
+        title: "Teléfono inválido",
+        description: "Debe tener entre 10 y 15 dígitos (ej: +5215512345678)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavingPhone(true);
+    try {
+      const { error } = await supabase
+        .from('creators')
+        .update({ telefono: cleanPhone })
+        .eq('id', editingPhone.creatorId);
+
+      if (error) throw error;
+
+      toast({
+        title: "✅ Teléfono actualizado",
+        description: `Teléfono guardado para ${editingPhone.nombre}`,
+      });
+
+      setEditingPhone(null);
+      setNewPhone("");
+      await loadBonificaciones();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo actualizar el teléfono",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingPhone(false);
     }
   };
 
@@ -372,21 +431,38 @@ export const PanelPredictivoCreadores = () => {
                             <Badge variant="default" className="text-[10px] md:text-xs">Cerca!</Badge>
                           )}
                         </div>
-                        {bonif.telefono ? (
-                          <Button
-                            size="sm"
-                            onClick={() => abrirWhatsApp(bonif)}
-                            className="bg-green-600 hover:bg-green-700 text-white flex-shrink-0"
-                          >
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            <span className="hidden sm:inline">{bonif.telefono}</span>
-                            <span className="sm:hidden">WhatsApp</span>
-                          </Button>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px] md:text-xs flex-shrink-0 text-muted-foreground">
-                            Sin teléfono
-                          </Badge>
-                        )}
+                        <div className="flex gap-2 items-center flex-shrink-0">
+                          {bonif.telefono ? (
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={() => abrirWhatsApp(bonif)}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                              >
+                                <MessageCircle className="h-4 w-4 mr-1" />
+                                <span className="hidden sm:inline">{bonif.telefono}</span>
+                                <span className="sm:hidden">WhatsApp</span>
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => abrirDialogoTelefono(bonif)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => abrirDialogoTelefono(bonif)}
+                              className="text-xs"
+                            >
+                              <Phone className="h-4 w-4 mr-1" />
+                              Agregar teléfono
+                            </Button>
+                          )}
+                        </div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
                         <div>
@@ -468,6 +544,50 @@ export const PanelPredictivoCreadores = () => {
           })
         )}
       </div>
+
+      {/* Dialog para editar teléfono */}
+      <Dialog open={!!editingPhone} onOpenChange={(open) => !open && setEditingPhone(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingPhone?.currentPhone ? "Editar" : "Agregar"} Teléfono
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Creador</label>
+              <Input value={editingPhone?.nombre || ""} disabled />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Teléfono (con código de país)</label>
+              <Input
+                placeholder="+5215512345678"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                disabled={savingPhone}
+              />
+              <p className="text-xs text-muted-foreground">
+                Formato: +52 (México) seguido de 10 dígitos
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingPhone(null)} disabled={savingPhone}>
+              Cancelar
+            </Button>
+            <Button onClick={guardarTelefono} disabled={savingPhone || !newPhone.trim()}>
+              {savingPhone ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                "Guardar"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
