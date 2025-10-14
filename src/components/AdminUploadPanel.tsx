@@ -213,6 +213,20 @@ export const AdminUploadPanel = () => {
             console.warn("Error creando snapshot:", snapshotError);
           }
 
+          // 3. UPSERT en creator_live_daily (datos diarios para bonificaciones)
+          const { error: liveError } = await supabase
+            .from("creator_live_daily")
+            .upsert({
+              creator_id: upsertedCreator.id,
+              fecha: new Date().toISOString().split('T')[0], // Fecha de hoy
+              horas: creatorData.horas_live,                 // Columna I del Excel
+              diamantes: creatorData.diamantes,              // Columna H del Excel
+            }, { onConflict: 'creator_id,fecha' });
+
+          if (liveError && !liveError.message?.includes('duplicate key')) {
+            console.warn("Error guardando datos live:", liveError);
+          }
+
           successCount++;
         } catch (err) {
           console.error("Error con creador:", creatorData.nombre, err);
@@ -229,10 +243,27 @@ export const AdminUploadPanel = () => {
           processed: true,
         });
 
-      toast({
-        title: "Éxito",
-        description: `Se procesaron ${successCount} creadores correctamente${errorCount > 0 ? `. ${errorCount} con errores.` : ''}`,
+      // Calcular bonificaciones automáticamente después de la carga
+      console.log("Calculando bonificaciones para el mes actual...");
+      const mesActual = new Date().toISOString().slice(0, 7) + '-01'; // '2025-10-01'
+
+      const { error: calcError } = await supabase.functions.invoke('calculate-bonificaciones-predictivo', {
+        body: { mes_referencia: mesActual }
       });
+
+      if (calcError) {
+        console.error('Error calculando bonificaciones:', calcError);
+        toast({
+          title: "⚠️ Datos guardados, pero...",
+          description: "No se pudieron calcular bonificaciones. Usa el botón Recalcular en el Panel.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "✅ Carga Completa",
+          description: `${successCount} creadores actualizados | Datos diarios guardados | Bonificaciones recalculadas`,
+        });
+      }
 
       setFile(null);
       const fileInput = document.getElementById("file-upload") as HTMLInputElement;
