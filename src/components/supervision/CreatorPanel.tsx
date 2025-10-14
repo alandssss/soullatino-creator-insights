@@ -3,19 +3,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetClose,
 } from "@/components/ui/sheet";
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerClose,
-  DrawerFooter,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -29,12 +20,13 @@ import {
   AlertCircle,
   Loader2,
   X,
-  TrendingUp,
-  Calendar,
+  MessageCircle,
   Clock,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CreatorBriefSummary } from "@/components/CreatorBriefSummary";
+import { openWhatsApp } from "@/utils/whatsapp";
 
 interface Creator {
   id: string;
@@ -42,6 +34,11 @@ interface Creator {
   telefono?: string;
   dias_en_agencia?: number;
   diam_live_mes?: number;
+  tiktok_username?: string;
+  horas_live_mes?: number;
+  dias_live_mes?: number;
+  graduacion?: string;
+  manager?: string;
 }
 
 interface SupervisionLog {
@@ -171,30 +168,48 @@ export function CreatorPanel({
       {/* Content */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-6">
-          {/* Métricas rápidas */}
+          {/* Resumen del creador */}
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              📊 Métricas Rápidas
+              📊 Resumen
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="neo-card-sm p-3 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <Calendar className="h-3 w-3 text-primary" />
-                  <p className="text-xs text-muted-foreground">Días en agencia</p>
-                </div>
-                <p className="text-lg font-bold">
-                  {creator.dias_en_agencia || 0}
-                </p>
-              </div>
-              <div className="neo-card-sm p-3 rounded-lg">
-                <div className="flex items-center gap-2 mb-1">
-                  <TrendingUp className="h-3 w-3 text-accent" />
-                  <p className="text-xs text-muted-foreground">Diamantes mes</p>
-                </div>
-                <p className="text-lg font-bold">
-                  {creator.diam_live_mes?.toLocaleString() || 0}
-                </p>
-              </div>
+            <CreatorBriefSummary creator={creator} />
+          </div>
+
+          <Separator />
+
+          {/* Batallas Oficiales */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              ⚔️ Batallas Oficiales
+            </h3>
+            <div className="neo-card-sm p-3 rounded-lg space-y-2">
+              <p className="text-xs text-muted-foreground">No hay batallas programadas</p>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full neo-button"
+                onClick={async () => {
+                  if (creator.telefono) {
+                    await openWhatsApp({
+                      phone: creator.telefono,
+                      message: `Hola ${creator.nombre}, ¿tienes alguna batalla oficial programada próximamente?`,
+                      creatorId: creator.id,
+                      creatorName: creator.nombre,
+                      actionType: 'seguimiento'
+                    });
+                  } else {
+                    toast({
+                      title: "Sin teléfono",
+                      description: "Este creador no tiene número registrado",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Consultar por WhatsApp
+              </Button>
             </div>
           </div>
 
