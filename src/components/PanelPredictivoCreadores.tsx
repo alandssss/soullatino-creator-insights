@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import * as XLSX from "xlsx";
 
 interface CreatorBonificacion {
@@ -455,28 +455,30 @@ export const PanelPredictivoCreadores = () => {
                         <Button
                           size="sm"
                           onClick={() => abrirWhatsApp(bonif)}
-                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
+                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none text-xs md:text-sm"
                         >
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          WhatsApp
+                          <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-2" />
+                          <span className="hidden sm:inline">WhatsApp</span>
+                          <span className="sm:hidden">WA</span>
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => abrirDialogoTelefono(bonif)}
+                          className="text-xs md:text-sm"
                         >
                           <Edit className="h-4 w-4" />
+                          <span className="hidden md:inline ml-2">Editar</span>
                         </Button>
                       </>
                     ) : (
                       <Button
                         size="sm"
-                        variant="outline"
                         onClick={() => abrirDialogoTelefono(bonif)}
-                        className="flex-1 sm:flex-none"
+                        className="bg-green-600 hover:bg-green-700 text-white flex-1 text-xs md:text-sm"
                       >
-                        <Phone className="h-4 w-4 mr-2" />
-                        Agregar teléfono
+                        <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-2" />
+                        📱 Agregar WhatsApp
                       </Button>
                     )}
                   </div>
@@ -553,6 +555,9 @@ export const PanelPredictivoCreadores = () => {
             <DialogTitle>
               {editingPhone?.currentPhone ? "Editar" : "Agregar"} Teléfono
             </DialogTitle>
+            <DialogDescription>
+              Agrega o actualiza el número de WhatsApp para contactar al creador
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">

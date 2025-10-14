@@ -25,28 +25,6 @@ const AppLayout = () => {
     checkUserRole();
   }, []);
 
-  // Prevenir scroll cuando hay dialogs abiertos
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      const hasDialog = document.querySelector('[role="dialog"]');
-      if (hasDialog) {
-        document.body.classList.add('dialog-open');
-      } else {
-        document.body.classList.remove('dialog-open');
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => {
-      observer.disconnect();
-      document.body.classList.remove('dialog-open');
-    };
-  }, []);
-
   const checkUserRole = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
