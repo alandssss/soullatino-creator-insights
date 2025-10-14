@@ -115,10 +115,13 @@ export const AdminUploadPanel = () => {
         const manager = row["Creator Network manager"] || null;
         const graduacion = row["Graduation status"] || null;
         
+        // EXTRAER TELÉFONO - Buscar en columnas comunes
+        const telefono = row["Phone"] || row["Teléfono"] || row["Telefono"] || row["WhatsApp"] || row["Whatsapp"] || null;
+        
         return {
           nombre: tiktokUsername,
           tiktok_username: tiktokUsername,
-          telefono: null,
+          telefono: telefono,
           email: null,
           instagram: null,
           categoria: row["Group"] !== "Not in a group" ? row["Group"] : null,
