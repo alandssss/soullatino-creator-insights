@@ -552,7 +552,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                     <Button
                       onClick={generateAIAdvice}
                       disabled={loadingAdvice}
-                      variant="glass"
+                      variant="outline"
                       size="sm"
                     >
                       {loadingAdvice ? (

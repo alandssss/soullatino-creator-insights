@@ -19,17 +19,17 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border/50 glass-panel sticky top-0 z-50">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-3">
-              <img src={logo} alt="Soullatino" className="h-10 w-10 object-contain" width="40" height="40" loading="eager" />
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+      <header className="border-b border-border/50 neo-card sticky top-0 z-50 backdrop-blur-md">
+        <div className="container mx-auto px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3 md:space-x-6">
+            <div className="flex items-center space-x-2 md:space-x-3">
+              <img src={logo} alt="Soullatino" className="h-8 w-8 md:h-10 md:w-10 object-contain" width="40" height="40" loading="eager" />
+              <h1 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Soullatino Analytics
               </h1>
             </div>
             
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg glass-panel border border-primary/30">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg neo-card-sm border border-primary/30">
               <Building2 className="h-4 w-4 text-primary" />
               <span className="text-sm text-muted-foreground">Agencia:</span>
               <span className="text-sm font-semibold text-primary">Soullatino</span>
@@ -39,10 +39,10 @@ const AppLayout = () => {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="border-border/50 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 transition-all"
+            className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50"
           >
-            <LogOut className="h-4 w-4 mr-2" />
-            Salir
+            <LogOut className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Salir</span>
           </Button>
         </div>
       </header>

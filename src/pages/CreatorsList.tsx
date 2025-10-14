@@ -97,7 +97,7 @@ const CreatorsList = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(197,255,82,0.2)] hover:border-primary/50 transition-all duration-300 hover:translate-y-[-4px]">
+        <Card className="neo-card hover:neo-card-pressed hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),var(--neo-glow-primary)] transition-all duration-300 hover:translate-y-[-2px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
             <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Total Creadores
@@ -109,7 +109,7 @@ const CreatorsList = () => {
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(255,155,71,0.2)] hover:border-accent/50 transition-all duration-300 hover:translate-y-[-4px]">
+        <Card className="neo-card hover:neo-card-pressed hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),var(--neo-glow-accent)] transition-all duration-300 hover:translate-y-[-2px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
             <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Total Diamantes
@@ -123,7 +123,7 @@ const CreatorsList = () => {
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(197,255,82,0.2)] hover:border-primary/50 transition-all duration-300 hover:translate-y-[-4px]">
+        <Card className="neo-card hover:neo-card-pressed hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),var(--neo-glow-primary)] transition-all duration-300 hover:translate-y-[-2px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
             <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Total Vistas
@@ -137,7 +137,7 @@ const CreatorsList = () => {
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border/50 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(255,155,71,0.2)] hover:border-accent/50 transition-all duration-300 hover:translate-y-[-4px]">
+        <Card className="neo-card hover:neo-card-pressed hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),var(--neo-glow-accent)] transition-all duration-300 hover:translate-y-[-2px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-4 md:p-6">
             <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground">
               Hito Promedio
@@ -157,7 +157,7 @@ const CreatorsList = () => {
         <WorkTimeTracker userEmail={user?.email} />
       </div>
 
-      <Card className="glass-card border-primary/50">
+      <Card className="neo-card border-primary/30">
         <CardHeader className="p-4 md:p-6">
           <CardTitle className="text-lg md:text-xl font-bold text-foreground">Top Creadores</CardTitle>
         </CardHeader>
@@ -166,7 +166,7 @@ const CreatorsList = () => {
               {creators.map((creator, index) => (
                 <div
                   key={creator.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all border-2 border-border/50 hover:border-primary/30 cursor-pointer shadow-[0_4px_16px_rgba(0,0,0,0.3),0_1px_4px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.03)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.4),0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] hover:translate-y-[-2px]"
+                  className="flex items-center justify-between p-4 rounded-lg neo-card-sm hover:neo-card-pressed cursor-pointer transition-all hover:translate-y-[-2px]"
                   onClick={() => {
                     setSelectedCreator(creator);
                     setDialogOpen(true);
