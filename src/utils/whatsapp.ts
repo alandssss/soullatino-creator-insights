@@ -100,28 +100,31 @@ export const openWhatsApp = async ({
   document.body.removeChild(link);
 };
 
-export function normalizePhoneE164(raw: string, defaultCountry = "MX"): string | null {
+export function normalizePhoneE164(raw: string, def = "MX"): string | null {
   if (!raw) return null;
-  // quita todo lo que no sea dígito
   const digits = raw.replace(/\D/g, "");
   if (!digits) return null;
-
-  // Si ya trae "+", asúmelo válido
-  if (raw.trim().startsWith("+")) return digits;
-
-  // Reglas rápidas (ajusta según tus países)
-  const countryCode: Record<string, string> = { MX: "52", CO: "57", VE: "58" };
-  const code = countryCode[defaultCountry] || "52";
-  
-  // Si viene a 10 dígitos (ej: MX), antepone lada país
+  if (raw.trim().startsWith("+")) return digits.replace(/\D/g,"");
+  const cc: Record<string, string> = {MX:"52",CO:"57",VE:"58"};
+  const code = cc[def] || "52";
   if (digits.length === 10) return code + digits;
-  // Si ya viene con lada (11+), úsalo
   if (digits.length >= 11) return digits;
-
   return null;
 }
 
-export function waLink(phoneE164: string, message: string) {
-  const txt = encodeURIComponent(message);
-  return `https://wa.me/${phoneE164}?text=${txt}`;
+export function waLink(e164: string, message: string) {
+  return `https://wa.me/${e164}?text=${encodeURIComponent(message)}`;
+}
+
+export function buildWaMessage(c: any) {
+  const nombre = c?.tiktok_username || c?.nombre || "";
+  const dias   = c?.dias_live ?? 0;
+  const horas  = c?.horas_live ?? 0;
+  const diam   = c?.diamantes ?? 0;
+  return `Hola ${nombre}, soy tu manager de Soullatino.
+Métricas al momento:
+• Días: ${dias}
+• Horas: ${horas}
+• Diamantes: ${diam}
+¿Listo para el plan de hoy?`;
 }
