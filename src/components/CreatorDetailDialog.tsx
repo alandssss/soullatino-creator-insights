@@ -325,13 +325,13 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:w-full max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 bg-[var(--glass-bg)] backdrop-blur-xl border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
-        <DialogHeader className="pb-4 border-b border-[var(--glass-border)] space-y-3">
+      <DialogContent className="w-[95vw] sm:w-full max-w-4xl max-h-[90vh] overflow-y-auto p-3 sm:p-6 neo-card">
+        <DialogHeader className="pb-4 border-b border-border/50 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <DialogTitle className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex flex-wrap items-center gap-2 sm:gap-3">
               {creator.nombre}
               {milestone && (
-                <span className="text-xs sm:text-sm font-normal text-muted-foreground bg-muted/30 px-2 sm:px-3 py-1 rounded-full backdrop-blur-sm">
+                <span className="text-xs sm:text-sm font-normal text-muted-foreground neo-card-sm px-2 sm:px-3 py-1 rounded-full">
                   {milestone}
                 </span>
               )}
@@ -352,7 +352,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
         </DialogHeader>
 
         <div className="space-y-6 pt-4">
-          <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+          <Card className="neo-card-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl font-semibold">
                 <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
@@ -362,11 +362,11 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
-              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+              <div className="p-4 rounded-lg neo-card-sm">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Usuario TikTok</p>
                 <p className="font-semibold text-base">@{creator.tiktok_username || "No especificado"}</p>
               </div>
-              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+              <div className="p-4 rounded-lg neo-card-sm">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Teléfono</p>
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-base">{creator.telefono || "No especificado"}</p>
@@ -385,7 +385,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                         <div className="space-y-4">
                           <div className="space-y-2">
                             <h4 className="font-semibold text-sm">Mensaje de WhatsApp</h4>
-                            <div className="p-3 bg-muted/50 rounded-lg border border-border">
+                            <div className="p-3 neo-card-sm rounded-lg border border-border">
                               <p className="text-sm whitespace-pre-wrap font-display">
                                 {generateWhatsAppSummary(user?.email?.split('@')[0] || "el equipo")}
                               </p>
@@ -405,11 +405,11 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                   )}
                 </div>
               </div>
-              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+              <div className="p-4 rounded-lg neo-card-sm">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Categoría</p>
                 <p className="font-semibold text-base">{creator.categoria || "No especificada"}</p>
               </div>
-              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+              <div className="p-4 rounded-lg neo-card-sm">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Manager</p>
                 <p className="font-semibold text-base">{creator.manager || "No asignado"}</p>
               </div>
@@ -425,7 +425,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <p className="text-xs uppercase tracking-wider text-accent mb-1 font-medium">Diamantes</p>
                 <p className="font-bold text-2xl text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
               </div>
-              <div className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+              <div className="p-4 rounded-lg neo-card-sm">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Engagement</p>
                 <p className="font-bold text-xl">{(creator.engagement_rate || 0).toFixed(1)}%</p>
               </div>
@@ -446,7 +446,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <h4 className="font-semibold">Mensaje que se enviará</h4>
-                        <div className="p-4 bg-muted/50 rounded-lg border border-border max-h-60 overflow-y-auto">
+                        <div className="p-4 neo-card-sm rounded-lg border border-border max-h-60 overflow-y-auto">
                           <p className="text-sm whitespace-pre-wrap font-display">
                             {generateWhatsAppSummary(user?.email?.split('@')[0] || "el equipo")}
                           </p>
@@ -509,7 +509,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
 
             <TabsContent value="metas" className="space-y-4 mt-6">
-              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+              <Card className="neo-card-sm">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xl font-semibold flex items-center gap-3">
@@ -540,7 +540,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
 
             <TabsContent value="advice" className="space-y-4 mt-6">
-              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+              <Card className="neo-card-sm">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xl font-semibold flex items-center gap-3">
@@ -574,7 +574,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                     value={loadingAdvice ? "Cargando recomendación..." : aiAdvice}
                     onChange={(e) => setAiAdvice(e.target.value)}
                     placeholder="Haz clic en 'Generar Nueva' para obtener una recomendación personalizada basada en datos históricos..."
-                    className="min-h-[180px] text-base bg-background/30 backdrop-blur-sm border-[var(--glass-border)] focus:border-primary/50 transition-colors leading-relaxed"
+                    className="min-h-[180px] text-base neo-input focus:border-primary/50 transition-colors leading-relaxed"
                     disabled={loadingAdvice}
                   />
                   <div className="flex items-start gap-2 mt-3 p-3 rounded-lg bg-primary/5 backdrop-blur-sm border border-primary/10">
@@ -588,7 +588,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
 
             <TabsContent value="milestones" className="space-y-4 mt-6">
-              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+              <Card className="neo-card-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl font-semibold flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-accent/10 backdrop-blur-sm">
@@ -599,19 +599,19 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 </CardHeader>
                 <CardContent className="space-y-5">
                   {getMilestones().map((milestone, idx) => (
-                    <div key={idx} className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)] space-y-3">
+                    <div key={idx} className="p-4 rounded-lg neo-card-sm space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold text-base flex items-center gap-2">
                           <span className="text-xl">{milestone.icon}</span>
                           {milestone.label}
                         </span>
-                        <span className="text-sm font-medium text-muted-foreground bg-muted/30 px-3 py-1 rounded-full">
+                        <span className="text-sm font-medium text-muted-foreground neo-card-sm px-3 py-1 rounded-full">
                           Faltan {milestone.remaining.toLocaleString()}
                         </span>
                       </div>
-                      <div className="h-3 bg-background/50 rounded-full overflow-hidden shadow-inner">
+                      <div className="h-3 neo-input rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-500 shadow-[var(--shadow-glow)]"
+                          className="h-full bg-gradient-to-r from-primary via-primary to-accent transition-all duration-500"
                           style={{ width: `${milestone.progress}%` }}
                         />
                       </div>
@@ -625,7 +625,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
 
             <TabsContent value="growth" className="space-y-4 mt-6">
-              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+              <Card className="neo-card-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl font-semibold flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
@@ -644,7 +644,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                     ];
 
                     return metrics.map((metric, idx) => (
-                      <div key={idx} className="p-5 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)]">
+                      <div key={idx} className="p-5 rounded-lg neo-card-sm">
                         <div className="flex justify-between items-center mb-3">
                           <span className="font-semibold text-base">{metric.label}</span>
                           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/50 backdrop-blur-sm">
@@ -672,7 +672,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
 
             <TabsContent value="agenda" className="space-y-4 mt-6">
-              <Card className="bg-gradient-to-br from-[var(--glass-bg)] to-[var(--glass-highlight)] border-[var(--glass-border)] shadow-[var(--shadow-card)]">
+              <Card className="neo-card-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-xl font-semibold flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
@@ -684,7 +684,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <CardContent>
                   <div className="space-y-5">
                     {(userRole === "admin" || userRole === "manager") && (
-                      <div className="space-y-4 p-5 bg-background/30 backdrop-blur-sm rounded-lg border border-[var(--glass-border)]">
+                      <div className="space-y-4 p-5 neo-card-sm rounded-lg border border-border">
                         <div className="space-y-2">
                           <Label>Tipo de Interacción</Label>
                           <Input
@@ -729,11 +729,11 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                         interactions.map((interaction) => (
                           <div
                             key={interaction.id}
-                            className="p-4 rounded-lg bg-background/30 backdrop-blur-sm border border-[var(--glass-border)] hover:border-primary/30 transition-colors"
+                            className="p-4 rounded-lg neo-card-sm hover:neo-card-pressed transition-all cursor-pointer"
                           >
                             <div className="flex justify-between items-start mb-2">
                               <span className="font-semibold text-base">{interaction.tipo_interaccion}</span>
-                              <span className="text-xs font-medium text-muted-foreground bg-muted/30 px-2 py-1 rounded-full">
+                              <span className="text-xs font-medium text-muted-foreground neo-card-sm px-2 py-1 rounded-full">
                                 {new Date(interaction.fecha).toLocaleDateString()}
                               </span>
                             </div>
