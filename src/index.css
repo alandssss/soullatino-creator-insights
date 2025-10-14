@@ -8,111 +8,107 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Neomorphic base colors - soft, subtle palette */
-    --background: 220 15% 92%;
-    --foreground: 220 10% 15%;
+    --background: 222 20% 5%;
+    --foreground: 0 0% 98%;
 
-    --card: 220 15% 95%;
-    --card-foreground: 220 10% 15%;
+    --card: 222 18% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 220 15% 95%;
-    --popover-foreground: 220 10% 15%;
+    --popover: 222 18% 10%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 85 80% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 85 95% 65%;
+    --primary-foreground: 222 20% 10%;
 
-    --secondary: 220 10% 85%;
-    --secondary-foreground: 220 10% 15%;
+    --secondary: 222 12% 22%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 10% 88%;
-    --muted-foreground: 220 8% 45%;
+    --muted: 222 10% 18%;
+    --muted-foreground: 222 5% 70%;
 
-    --accent: 25 85% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 25 95% 60%;
+    --accent-foreground: 222 20% 10%;
 
-    --destructive: 0 65% 55%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 82%;
-    --input: 220 15% 95%;
-    --ring: 85 80% 55%;
+    --border: 222 15% 25%;
+    --input: 222 15% 20%;
+    --ring: 85 95% 65%;
 
     --radius: 1rem;
 
-    /* Neomorphic shadows - soft, layered */
-    --neo-shadow-light: -8px -8px 16px hsl(0 0% 100% / 0.8);
-    --neo-shadow-dark: 8px 8px 16px hsl(220 15% 70% / 0.5);
-    --neo-shadow-inset-light: inset -4px -4px 8px hsl(0 0% 100% / 0.6);
-    --neo-shadow-inset-dark: inset 4px 4px 8px hsl(220 15% 75% / 0.4);
+    /* Neomorphic shadows adaptadas al tema oscuro */
+    --neo-shadow-light: -6px -6px 12px hsl(222 15% 15% / 0.8);
+    --neo-shadow-dark: 6px 6px 12px hsl(222 20% 3% / 0.9);
+    --neo-shadow-inset-light: inset -3px -3px 6px hsl(222 15% 15% / 0.6);
+    --neo-shadow-inset-dark: inset 3px 3px 6px hsl(222 20% 3% / 0.8);
     
-    --neo-shadow-sm-light: -4px -4px 8px hsl(0 0% 100% / 0.7);
-    --neo-shadow-sm-dark: 4px 4px 8px hsl(220 15% 75% / 0.4);
+    --neo-shadow-sm-light: -3px -3px 6px hsl(222 15% 12% / 0.6);
+    --neo-shadow-sm-dark: 3px 3px 6px hsl(222 20% 2% / 0.7);
     
-    --neo-shadow-pressed-light: inset -2px -2px 6px hsl(0 0% 100% / 0.5);
-    --neo-shadow-pressed-dark: inset 2px 2px 6px hsl(220 15% 80% / 0.3);
+    --neo-shadow-pressed-light: inset -2px -2px 4px hsl(222 15% 15% / 0.4);
+    --neo-shadow-pressed-dark: inset 2px 2px 4px hsl(222 20% 2% / 0.6);
+
+    --neo-glow-primary: 0 0 20px hsl(85 95% 65% / 0.3);
+    --neo-glow-accent: 0 0 20px hsl(25 95% 60% / 0.3);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 220 15% 92%;
-    --sidebar-foreground: 220 10% 15%;
-    --sidebar-primary: 85 80% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 10% 88%;
-    --sidebar-accent-foreground: 220 10% 15%;
-    --sidebar-border: 220 10% 82%;
-    --sidebar-ring: 85 80% 55%;
+    --sidebar-background: 222 18% 8%;
+    --sidebar-foreground: 222 5% 84%;
+    --sidebar-primary: 85 95% 65%;
+    --sidebar-primary-foreground: 222 20% 10%;
+    --sidebar-accent: 222 10% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 222 15% 25%;
+    --sidebar-ring: 85 95% 65%;
   }
 
   .dark {
-    --background: 220 15% 12%;
-    --foreground: 220 5% 92%;
-
-    --card: 220 15% 15%;
-    --card-foreground: 220 5% 92%;
-
-    --popover: 220 15% 15%;
-    --popover-foreground: 220 5% 92%;
-
-    --primary: 85 80% 55%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 10% 20%;
-    --secondary-foreground: 220 5% 92%;
-
-    --muted: 220 10% 18%;
-    --muted-foreground: 220 8% 60%;
-
-    --accent: 25 85% 60%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 65% 55%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 10% 22%;
-    --input: 220 15% 15%;
-    --ring: 85 80% 55%;
-
-    /* Dark neomorphic shadows */
-    --neo-shadow-light: -6px -6px 12px hsl(220 15% 18% / 0.5);
-    --neo-shadow-dark: 6px 6px 12px hsl(220 20% 5% / 0.8);
-    --neo-shadow-inset-light: inset -3px -3px 6px hsl(220 15% 18% / 0.4);
-    --neo-shadow-inset-dark: inset 3px 3px 6px hsl(220 20% 5% / 0.6);
+    --background: 222 20% 5%;
+    --foreground: 0 0% 98%;
+    --card: 222 18% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 222 18% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 85 95% 65%;
+    --primary-foreground: 222 20% 10%;
+    --secondary: 222 12% 22%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 222 10% 18%;
+    --muted-foreground: 222 5% 70%;
+    --accent: 25 95% 60%;
+    --accent-foreground: 222 20% 10%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 15% 25%;
+    --input: 222 15% 20%;
+    --ring: 85 95% 65%;
     
-    --neo-shadow-sm-light: -3px -3px 6px hsl(220 15% 18% / 0.4);
-    --neo-shadow-sm-dark: 3px 3px 6px hsl(220 20% 5% / 0.6);
+    --neo-shadow-light: -6px -6px 12px hsl(222 15% 15% / 0.8);
+    --neo-shadow-dark: 6px 6px 12px hsl(222 20% 3% / 0.9);
+    --neo-shadow-inset-light: inset -3px -3px 6px hsl(222 15% 15% / 0.6);
+    --neo-shadow-inset-dark: inset 3px 3px 6px hsl(222 20% 3% / 0.8);
     
-    --neo-shadow-pressed-light: inset -2px -2px 4px hsl(220 15% 18% / 0.3);
-    --neo-shadow-pressed-dark: inset 2px 2px 4px hsl(220 20% 5% / 0.5);
+    --neo-shadow-sm-light: -3px -3px 6px hsl(222 15% 12% / 0.6);
+    --neo-shadow-sm-dark: 3px 3px 6px hsl(222 20% 2% / 0.7);
+    
+    --neo-shadow-pressed-light: inset -2px -2px 4px hsl(222 15% 15% / 0.4);
+    --neo-shadow-pressed-dark: inset 2px 2px 4px hsl(222 20% 2% / 0.6);
 
-    --sidebar-background: 220 15% 12%;
-    --sidebar-foreground: 220 5% 92%;
-    --sidebar-primary: 85 80% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 10% 18%;
-    --sidebar-accent-foreground: 220 5% 92%;
-    --sidebar-border: 220 10% 22%;
-    --sidebar-ring: 85 80% 55%;
+    --neo-glow-primary: 0 0 20px hsl(85 95% 65% / 0.3);
+    --neo-glow-accent: 0 0 20px hsl(25 95% 60% / 0.3);
+
+    --sidebar-background: 222 18% 8%;
+    --sidebar-foreground: 222 5% 84%;
+    --sidebar-primary: 85 95% 65%;
+    --sidebar-primary-foreground: 222 20% 10%;
+    --sidebar-accent: 222 10% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 222 15% 25%;
+    --sidebar-ring: 85 95% 65%;
   }
 }
 
@@ -123,15 +119,21 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background: linear-gradient(180deg, hsl(222 20% 8%) 0%, hsl(222 20% 5%) 100%);
     min-height: 100vh;
   }
 
-  /* Neomorphic utility classes */
+  /* Neomorphic utility classes con tema oscuro */
   .neo-card {
     background: hsl(var(--card));
     border-radius: var(--radius);
     box-shadow: var(--neo-shadow-light), var(--neo-shadow-dark);
     transition: var(--transition-smooth);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  .neo-card:hover {
+    box-shadow: var(--neo-shadow-light), var(--neo-shadow-dark), var(--neo-glow-primary);
   }
 
   .neo-card-pressed {
@@ -140,13 +142,15 @@ All colors MUST be HSL.
 
   .neo-card-sm {
     box-shadow: var(--neo-shadow-sm-light), var(--neo-shadow-sm-dark);
+    border: 1px solid hsl(var(--border) / 0.2);
   }
 
   .neo-button {
-    background: hsl(var(--background));
+    background: hsl(var(--card));
     border-radius: calc(var(--radius) * 0.7);
     box-shadow: var(--neo-shadow-sm-light), var(--neo-shadow-sm-dark);
     transition: var(--transition-fast);
+    border: 1px solid hsl(var(--border) / 0.3);
   }
 
   .neo-button:hover {
@@ -160,5 +164,6 @@ All colors MUST be HSL.
   .neo-input {
     background: hsl(var(--input));
     box-shadow: var(--neo-shadow-inset-light), var(--neo-shadow-inset-dark);
+    border: 1px solid hsl(var(--border) / 0.3);
   }
 }
