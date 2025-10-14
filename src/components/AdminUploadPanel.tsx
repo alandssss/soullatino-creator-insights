@@ -115,15 +115,9 @@ export const AdminUploadPanel = () => {
         const manager = row["Creator Network manager"] || null;
         const graduacion = row["Graduation status"] || null;
         
-        // EXTRAER TELÉFONO - Buscar en columnas comunes
-        const telefono = row["Phone"] || row["Teléfono"] || row["Telefono"] || row["WhatsApp"] || row["Whatsapp"] || null;
-        
         return {
           nombre: tiktokUsername,
           tiktok_username: tiktokUsername,
-          telefono: telefono,
-          email: null,
-          instagram: null,
           categoria: row["Group"] !== "Not in a group" ? row["Group"] : null,
           manager: manager,
           status: "activo",
@@ -171,14 +165,13 @@ export const AdminUploadPanel = () => {
       for (const creatorData of creatorsData) {
         try {
           // 1. UPSERT en tabla creators usando tiktok_username como clave única
+          // IMPORTANTE: NO actualizar telefono, email, instagram (son datos de registro permanentes)
           const { data: upsertedCreator, error: upsertError } = await supabase
             .from("creators")
             .upsert({
               tiktok_username: creatorData.tiktok_username,
               nombre: creatorData.nombre,
-              telefono: creatorData.telefono,
-              email: creatorData.email,
-              instagram: creatorData.instagram,
+              // NO incluir: telefono, email, instagram (se preservan los valores existentes)
               categoria: creatorData.categoria,
               manager: creatorData.manager,
               status: creatorData.status,
