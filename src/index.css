@@ -10,7 +10,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 14% 96%;
+    --background: 220 14% 93%;
     --foreground: 0 0% 11%;
 
     /* Tarjetas con fondo claro cálido suave #F2F3F5 */
