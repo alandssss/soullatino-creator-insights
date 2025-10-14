@@ -1,4 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Premium Dark Neumorphic Colors */
+    --background: 220 15% 8%;
+    --foreground: 220 10% 98%;
+    
+    --card: 220 15% 10%;
+    --card-foreground: 220 10% 98%;
+    
+    --popover: 220 15% 12%;
+    --popover-foreground: 220 10% 98%;
+    
+    /* Premium Primary Gradient */
+    --primary: 260 85% 65%;
+    --primary-light: 260 85% 75%;
+    --primary-dark: 260 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Accent Neon */
+    --accent: 180 85% 60%;
+    --accent-light: 180 85% 70%;
+    --accent-dark: 180 85% 50%;
+    --accent-foreground: 220 15% 10%;
+    
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 60%;
+    
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 260 85% 65%;
+    
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 142 76% 56%;
+    --warning: 38 92% 50%;
+    
+    /* Neumorphic Shadows - REAL depth */
+    --shadow-neu-1: 8px 8px 16px rgba(0, 0, 0, 0.5), 
+                     -8px -8px 16px rgba(255, 255, 255, 0.02);
+    --shadow-neu-2: 12px 12px 24px rgba(0, 0, 0, 0.6), 
+                     -12px -12px 24px rgba(255, 255, 255, 0.03);
+    --shadow-neu-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.4),
+                         inset -4px -4px 8px rgba(255, 255, 255, 0.02);
+    --shadow-neu-pressed: inset 6px 6px 12px rgba(0, 0, 0, 0.5),
+                           inset -6px -6px 12px rgba(255, 255, 255, 0.01);
+    
+    /* Glow Effects */
+    --glow-primary: 0 0 20px hsla(260, 85%, 65%, 0.3);
+    --glow-accent: 0 0 20px hsla(180, 85%, 60%, 0.3);
+    
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Premium Neumorphic Cards */
+  .neo-card {
+    @apply bg-card rounded-xl border border-border/50 backdrop-blur-sm;
+    box-shadow: var(--shadow-neu-1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .neo-card:hover {
+    box-shadow: var(--shadow-neu-2), var(--glow-primary);
+    transform: translateY(-2px);
+  }
+  
+  .neo-card-sm {
+    @apply bg-card/50 rounded-lg border border-border/30 backdrop-blur-sm;
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.4), 
+                -6px -6px 12px rgba(255, 255, 255, 0.02);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .neo-card-pressed {
+    box-shadow: var(--shadow-neu-pressed);
+    transform: scale(0.98);
+  }
+  
+  /* Premium Inputs */
+  .neo-input {
+    @apply bg-background/50 border border-border rounded-lg px-4 py-2.5;
+    @apply text-foreground placeholder:text-muted-foreground;
+    @apply transition-all duration-300;
+    box-shadow: var(--shadow-neu-inset);
+  }
+  
+  .neo-input:focus {
+    @apply outline-none ring-2 ring-primary/50 border-primary/50;
+    box-shadow: var(--shadow-neu-inset), var(--glow-primary);
+  }
+  
+  /* Premium Buttons */
+  .neo-button {
+    @apply relative overflow-hidden;
+    @apply transition-all duration-300;
+    box-shadow: var(--shadow-neu-1);
+  }
+  
+  .neo-button:hover:not(:disabled) {
+    box-shadow: var(--shadow-neu-2), var(--glow-primary);
+    transform: translateY(-1px);
+  }
+  
+  .neo-button:active:not(:disabled) {
+    box-shadow: var(--shadow-neu-pressed);
+    transform: translateY(0);
+  }
+  
+  .neo-button::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: linear-gradient(135deg, 
+                hsla(260, 85%, 75%, 0.1) 0%, 
+                transparent 50%);
+  }
+  
+  .neo-button:hover::before {
+    @apply opacity-100;
+  }
+  
+  /* Gradient Backgrounds */
+  .bg-gradient-premium {
+    background: linear-gradient(135deg, 
+                hsl(var(--primary)) 0%, 
+                hsl(var(--accent)) 100%);
+  }
+  
+  .bg-gradient-dark {
+    background: linear-gradient(180deg,
+                hsl(var(--card)) 0%,
+                hsl(var(--background)) 100%);
+  }
+  
+  /* Glass Effect */
+  .glass-effect {
+    @apply backdrop-blur-xl bg-card/30 border border-border/40;
+    box-shadow: var(--shadow-neu-1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Smooth Animations */
+  .animate-slide-up {
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+    transition: background 0.2s;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
 @tailwind components;
 @tailwind utilities;
 
