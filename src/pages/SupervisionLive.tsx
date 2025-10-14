@@ -18,6 +18,7 @@ import {
   Shield
 } from "lucide-react";
 import { CreatorCard } from "@/components/supervision/CreatorCard";
+import { CreatorDrawer } from "@/components/supervision/CreatorDrawer";
 import { IncidentDialog } from "@/components/supervision/IncidentDialog";
 import * as XLSX from "xlsx";
 
@@ -56,6 +57,7 @@ export default function SupervisionLive() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filtroRiesgo, setFiltroRiesgo] = useState<"todos" | "verde" | "amarillo" | "rojo">("todos");
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [incidentDialogOpen, setIncidentDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -203,134 +205,141 @@ export default function SupervisionLive() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <CardTitle className="text-3xl flex items-center gap-2">
-                <Shield className="h-8 w-8 text-primary" />
-                Supervisión Live
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Monitoreo en tiempo real del desempeño de creadores
-              </p>
+    <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6 max-h-screen overflow-y-auto">
+      {/* Header compacto */}
+      <div className="neo-card p-4 md:p-6">
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+              <Shield className="h-6 w-6 text-primary" />
+              Supervisión Live
+            </h1>
+            <p className="text-xs md:text-sm text-muted-foreground mt-1">
+              Supervisando: <span className="font-semibold">{creators.length}</span> creadores
+            </p>
+          </div>
+          <Button onClick={exportarCSV} variant="outline" size="sm" className="neo-button">
+            <Download className="h-4 w-4 mr-2" />
+            Exportar
+          </Button>
+        </div>
+
+        {/* KPIs compactos */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4">
+          <div className="neo-card-sm p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Video className="h-3 w-3 text-green-500" />
+              <p className="text-xs text-muted-foreground">En Vivo</p>
             </div>
-            <Button onClick={exportarCSV} variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar CSV
+            <p className="text-lg md:text-xl font-bold text-green-500">{kpis.enVivoAhora}</p>
+          </div>
+          <div className="neo-card-sm p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Swords className="h-3 w-3 text-purple-500" />
+              <p className="text-xs text-muted-foreground">En PK</p>
+            </div>
+            <p className="text-lg md:text-xl font-bold text-purple-500">{kpis.enBatallaAhora}</p>
+          </div>
+          <div className="neo-card-sm p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <AlertCircle className="h-3 w-3 text-red-500" />
+              <p className="text-xs text-muted-foreground">Alertas</p>
+            </div>
+            <p className="text-lg md:text-xl font-bold text-red-500">{kpis.alertasActivas}</p>
+          </div>
+          <div className="neo-card-sm p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <Lightbulb className="h-3 w-3 text-yellow-600" />
+              <p className="text-xs text-muted-foreground">Buena Luz</p>
+            </div>
+            <p className="text-lg md:text-xl font-bold text-yellow-600">{kpis.buenaIluminacion}</p>
+          </div>
+        </div>
+
+        {/* Filtros compactos */}
+        <div className="flex gap-2 flex-wrap">
+          <div className="flex-1 min-w-[150px]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 neo-input h-9 text-sm"
+              />
+            </div>
+          </div>
+          <div className="flex gap-1.5">
+            <Button
+              variant={filtroRiesgo === "todos" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFiltroRiesgo("todos")}
+              className="neo-button text-xs px-3"
+            >
+              Todos
+            </Button>
+            <Button
+              variant={filtroRiesgo === "verde" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFiltroRiesgo("verde")}
+              className={`neo-button text-xs px-3 ${filtroRiesgo === "verde" ? "bg-green-500 hover:bg-green-600 text-white" : ""}`}
+            >
+              🟢
+            </Button>
+            <Button
+              variant={filtroRiesgo === "amarillo" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFiltroRiesgo("amarillo")}
+              className={`neo-button text-xs px-3 ${filtroRiesgo === "amarillo" ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}`}
+            >
+              🟡
+            </Button>
+            <Button
+              variant={filtroRiesgo === "rojo" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFiltroRiesgo("rojo")}
+              className={`neo-button text-xs px-3 ${filtroRiesgo === "rojo" ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
+            >
+              🔴
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          {/* KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
-              <div className="flex items-center gap-2 mb-1">
-                <Video className="h-4 w-4 text-green-500" />
-                <p className="text-xs text-muted-foreground">En Vivo Ahora</p>
-              </div>
-              <p className="text-2xl font-bold text-green-500">{kpis.enVivoAhora}</p>
-            </div>
-            <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
-              <div className="flex items-center gap-2 mb-1">
-                <Swords className="h-4 w-4 text-purple-500" />
-                <p className="text-xs text-muted-foreground">En PK/PKO</p>
-              </div>
-              <p className="text-2xl font-bold text-purple-500">{kpis.enBatallaAhora}</p>
-            </div>
-            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-              <div className="flex items-center gap-2 mb-1">
-                <AlertCircle className="h-4 w-4 text-red-500" />
-                <p className="text-xs text-muted-foreground">Alertas Activas</p>
-              </div>
-              <p className="text-2xl font-bold text-red-500">{kpis.alertasActivas}</p>
-            </div>
-            <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-              <div className="flex items-center gap-2 mb-1">
-                <Lightbulb className="h-4 w-4 text-yellow-600" />
-                <p className="text-xs text-muted-foreground">Buena Iluminación</p>
-              </div>
-              <p className="text-2xl font-bold text-yellow-600">{kpis.buenaIluminacion}</p>
-            </div>
-          </div>
+        </div>
+      </div>
 
-          {/* Filtros */}
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex-1 min-w-[200px]">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar creador..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant={filtroRiesgo === "todos" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFiltroRiesgo("todos")}
-              >
-                Todos
-              </Button>
-              <Button
-                variant={filtroRiesgo === "verde" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFiltroRiesgo("verde")}
-                className={filtroRiesgo === "verde" ? "bg-green-500 hover:bg-green-600" : ""}
-              >
-                Verde
-              </Button>
-              <Button
-                variant={filtroRiesgo === "amarillo" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFiltroRiesgo("amarillo")}
-                className={filtroRiesgo === "amarillo" ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-              >
-                Amarillo
-              </Button>
-              <Button
-                variant={filtroRiesgo === "rojo" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setFiltroRiesgo("rojo")}
-                className={filtroRiesgo === "rojo" ? "bg-red-500 hover:bg-red-600" : ""}
-              >
-                Rojo
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Grid de creadores */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Grid compacto de creadores */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {creatorsFiltrados.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="text-center py-12">
-              <p className="text-muted-foreground">
-                No se encontraron creadores con los filtros seleccionados
-              </p>
-            </CardContent>
-          </Card>
+          <div className="col-span-full neo-card p-8 text-center">
+            <p className="text-muted-foreground text-sm">
+              No se encontraron creadores
+            </p>
+          </div>
         ) : (
           creatorsFiltrados.map((creator) => (
             <CreatorCard
               key={creator.id}
               creator={creator}
               latestLog={getLatestLogForCreator(creator.id)}
-              onReload={loadData}
-              onOpenIncident={() => {
+              onClick={() => {
                 setSelectedCreator(creator);
-                setIncidentDialogOpen(true);
+                setDrawerOpen(true);
               }}
             />
           ))
         )}
       </div>
+
+      {/* Drawer lateral con acciones */}
+      <CreatorDrawer
+        creator={selectedCreator}
+        latestLog={selectedCreator ? getLatestLogForCreator(selectedCreator.id) : undefined}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        onReload={loadData}
+        onOpenIncident={() => {
+          setIncidentDialogOpen(true);
+        }}
+      />
 
       {/* Dialog de incidente */}
       {selectedCreator && (
