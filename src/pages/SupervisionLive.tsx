@@ -18,7 +18,7 @@ import {
   Shield
 } from "lucide-react";
 import { CreatorCard } from "@/components/supervision/CreatorCard";
-import { CreatorDrawer } from "@/components/supervision/CreatorDrawer";
+import { CreatorPanel } from "@/components/supervision/CreatorPanel";
 import { IncidentDialog } from "@/components/supervision/IncidentDialog";
 import * as XLSX from "xlsx";
 
@@ -329,8 +329,8 @@ export default function SupervisionLive() {
         )}
       </div>
 
-      {/* Drawer lateral con acciones */}
-      <CreatorDrawer
+      {/* Panel lateral/drawer con acciones */}
+      <CreatorPanel
         creator={selectedCreator}
         latestLog={selectedCreator ? getLatestLogForCreator(selectedCreator.id) : undefined}
         open={drawerOpen}
