@@ -393,4 +393,23 @@ All colors MUST be HSL.
     box-shadow: var(--neo-shadow-inset-light), var(--neo-shadow-inset-dark);
     border: 1px solid hsl(var(--border) / 0.3);
   }
+
+  .btn-neo {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    font-weight: 700;
+    padding: 0.7rem 1rem;
+    border-radius: 14px;
+    box-shadow: 6px 6px 14px rgba(0, 0, 0, 0.55), -4px -4px 10px rgba(60, 60, 80, 0.18);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+
+  .btn-neo:active:not([aria-disabled="true"]) {
+    box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.55),
+                inset -4px -4px 10px rgba(60, 60, 80, 0.18);
+  }
+
+  .btn-neo:hover:not([aria-disabled="true"]) {
+    transform: translateY(-1px);
+  }
 }

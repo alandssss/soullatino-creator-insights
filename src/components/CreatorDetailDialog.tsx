@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import WhatsappButton from "@/components/WhatsappButton";
 import { 
   Drawer,
   DrawerContent,
@@ -435,45 +436,63 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
                 <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1 font-medium">Engagement</p>
                 <p className="font-bold text-xl">{(creator.engagement_rate || 0).toFixed(1)}%</p>
               </div>
-              <div className="col-span-2 pt-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button 
-                      variant="success"
-                      disabled={!creator.telefono}
-                      size="lg"
-                      className="w-full text-base font-semibold"
-                    >
-                      <Eye className="h-5 w-5 mr-2" />
-                      Vista Previa del Mensaje
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <h4 className="font-semibold">Mensaje que se enviará</h4>
-                        <div className="p-4 neo-card-sm rounded-lg border border-border max-h-60 overflow-y-auto">
-                          <p className="text-sm whitespace-pre-wrap font-display">
-                            {generateWhatsAppSummary(user?.email?.split('@')[0] || "el equipo")}
-                          </p>
-                        </div>
-                      </div>
+              
+              {/* Sección de Acciones - Grid de 3 columnas */}
+              <div className="col-span-2 pt-2 grid grid-cols-3 gap-3">
+                {/* Botón WhatsApp nuevo */}
+                <WhatsappButton
+                  phone={creator.telefono}
+                  country="MX"
+                  message={`Hola ${creator.tiktok_username || creator.nombre || ""}, soy tu manager de Soullatino. 
+Te comparto tus métricas: 
+• Días en Live: ${creator.dias_live || 0} 
+• Horas en Live: ${creator.horas_live || 0} 
+• Diamantes: ${(creator.diamantes || 0).toLocaleString()} 💎
+¿Listo para el plan de hoy?`}
+                  className="col-span-3"
+                />
+                
+                {/* Botón Vista Previa del Mensaje existente */}
+                <div className="col-span-3">
+                  <Popover>
+                    <PopoverTrigger asChild>
                       <Button 
+                        variant="outline"
+                        disabled={!creator.telefono}
+                        size="sm"
                         className="w-full"
-                        variant="success"
-                        onClick={handleOpenWhatsApp}
                       >
-                        <MessageSquare className="h-5 w-5 mr-2" />
-                        Enviar por WhatsApp
+                        <Eye className="h-4 w-4 mr-2" />
+                        Vista Previa del Mensaje
                       </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                {!creator.telefono && (
-                  <p className="text-sm text-muted-foreground text-center mt-3">
-                    No hay número de teléfono registrado
-                  </p>
-                )}
+                    </PopoverTrigger>
+                    <PopoverContent className="w-96">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <h4 className="font-semibold">Mensaje que se enviará</h4>
+                          <div className="p-4 neo-card-sm rounded-lg border border-border max-h-60 overflow-y-auto">
+                            <p className="text-sm whitespace-pre-wrap font-display">
+                              {generateWhatsAppSummary(user?.email?.split('@')[0] || "el equipo")}
+                            </p>
+                          </div>
+                        </div>
+                        <Button 
+                          className="w-full"
+                          variant="success"
+                          onClick={handleOpenWhatsApp}
+                        >
+                          <MessageSquare className="h-5 w-5 mr-2" />
+                          Enviar por WhatsApp
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  {!creator.telefono && (
+                    <p className="text-sm text-muted-foreground text-center mt-3">
+                      No hay número de teléfono registrado
+                    </p>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

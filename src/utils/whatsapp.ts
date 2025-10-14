@@ -99,3 +99,29 @@ export const openWhatsApp = async ({
   link.click();
   document.body.removeChild(link);
 };
+
+export function normalizePhoneE164(raw: string, defaultCountry = "MX"): string | null {
+  if (!raw) return null;
+  // quita todo lo que no sea dígito
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return null;
+
+  // Si ya trae "+", asúmelo válido
+  if (raw.trim().startsWith("+")) return digits;
+
+  // Reglas rápidas (ajusta según tus países)
+  const countryCode: Record<string, string> = { MX: "52", CO: "57", VE: "58" };
+  const code = countryCode[defaultCountry] || "52";
+  
+  // Si viene a 10 dígitos (ej: MX), antepone lada país
+  if (digits.length === 10) return code + digits;
+  // Si ya viene con lada (11+), úsalo
+  if (digits.length >= 11) return digits;
+
+  return null;
+}
+
+export function waLink(phoneE164: string, message: string) {
+  const txt = encodeURIComponent(message);
+  return `https://wa.me/${phoneE164}?text=${txt}`;
+}
