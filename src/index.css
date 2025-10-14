@@ -412,4 +412,10 @@ All colors MUST be HSL.
   .btn-neo:hover:not([aria-disabled="true"]) {
     transform: translateY(-1px);
   }
+
+  /* Oculta el chat-widget genérico si estorba */
+  #chat-widget-container,
+  [id*="chat-widget"] {
+    display: none !important;
+  }
 }

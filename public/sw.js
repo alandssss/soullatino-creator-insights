@@ -35,8 +35,17 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Solo cachea GET y mismo origen. Nunca POST/PUT/DELETE.
+  const isGET = request.method === 'GET';
+  const sameOrigin = url.origin === location.origin;
+
   // Skip cross-origin requests except Supabase
-  if (url.origin !== location.origin && !url.hostname.includes('supabase')) {
+  if (!sameOrigin && !url.hostname.includes('supabase')) {
+    return;
+  }
+
+  // NO cachear métodos que no sean GET
+  if (!isGET) {
     return;
   }
 
@@ -45,10 +54,17 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const responseClone = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => {
-            cache.put(request, responseClone);
-          });
+          // Solo cachea respuestas OK
+          if (response && response.ok && (response.type === 'basic' || response.type === 'opaque')) {
+            const responseClone = response.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => {
+              try {
+                cache.put(request, responseClone);
+              } catch (_) {
+                // Ignora errores de cache
+              }
+            });
+          }
           return response;
         })
         .catch(() => 
@@ -78,9 +94,14 @@ self.addEventListener('fetch', (event) => {
       caches.match(request).then((cached) => {
         if (cached) return cached;
         return fetch(request).then((response) => {
-          if (response && response.status === 200) {
+          if (response && response.status === 200 && (response.type === 'basic' || response.type === 'opaque')) {
+            const responseClone = response.clone();
             caches.open(STATIC_CACHE).then((cache) => {
-              cache.put(request, response.clone());
+              try {
+                cache.put(request, responseClone);
+              } catch (_) {
+                // Ignora errores de cache
+              }
             });
           }
           return response;
@@ -95,9 +116,16 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(request).then((cached) => {
         const fetchPromise = fetch(request).then((response) => {
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, response.clone());
-          });
+          if (response && response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              try {
+                cache.put(request, responseClone);
+              } catch (_) {
+                // Ignora errores de cache
+              }
+            });
+          }
           return response;
         }).catch(() => caches.match('/index.html'));
         return cached || fetchPromise;
@@ -121,7 +149,11 @@ self.addEventListener('fetch', (event) => {
 
           const responseToCache = response.clone();
           caches.open(RUNTIME_CACHE).then((cache) => {
-            cache.put(request, responseToCache);
+            try {
+              cache.put(request, responseToCache);
+            } catch (_) {
+              // Ignora errores de cache
+            }
           });
 
           return response;
