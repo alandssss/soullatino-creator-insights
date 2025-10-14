@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileSpreadsheet, Loader2, Database } from "lucide-react";
+import { Upload, FileSpreadsheet, Loader2, Database, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import * as XLSX from "xlsx";
 
@@ -11,6 +12,9 @@ export const AdminUploadPanel = () => {
   const [uploading, setUploading] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [importingPhones, setImportingPhones] = useState(false);
+  const [phoneText, setPhoneText] = useState("");
+  const [showPhoneImport, setShowPhoneImport] = useState(false);
   const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -278,6 +282,67 @@ export const AdminUploadPanel = () => {
     }
   };
 
+  const importarTelefonos = async () => {
+    if (!phoneText.trim()) {
+      toast({
+        title: "Error",
+        description: "Pega la lista de teléfonos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setImportingPhones(true);
+    try {
+      const lineas = phoneText.trim().split('\n');
+      let exitosos = 0;
+      let errores = 0;
+      let noEncontrados = 0;
+
+      for (const linea of lineas) {
+        const partes = linea.split('\t');
+        if (partes.length !== 2) continue;
+
+        const [username, telefono] = partes.map(p => p.trim());
+        
+        // Saltar si es [No Data]
+        if (telefono === '[No Data]' || !telefono) {
+          noEncontrados++;
+          continue;
+        }
+
+        try {
+          const { error } = await supabase
+            .from('creators')
+            .update({ telefono })
+            .eq('tiktok_username', username);
+
+          if (error) throw error;
+          exitosos++;
+        } catch (err) {
+          console.error(`Error actualizando ${username}:`, err);
+          errores++;
+        }
+      }
+
+      toast({
+        title: "✅ Teléfonos importados",
+        description: `Exitosos: ${exitosos} | Sin datos: ${noEncontrados} | Errores: ${errores}`,
+      });
+
+      setPhoneText("");
+      setShowPhoneImport(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setImportingPhones(false);
+    }
+  };
+
   const seedDemoData = async () => {
     setSeeding(true);
     try {
@@ -398,6 +463,64 @@ export const AdminUploadPanel = () => {
           <p className="text-xs text-muted-foreground mt-2">
             Crea datos de ejemplo para 15 creadores con actividad realista de octubre 2025
           </p>
+        </div>
+
+        {/* Importar teléfonos */}
+        <div className="pt-4 border-t border-border/50">
+          <p className="text-sm font-medium mb-2">📱 Importar Teléfonos</p>
+          {!showPhoneImport ? (
+            <Button
+              onClick={() => setShowPhoneImport(true)}
+              variant="outline"
+              className="w-full"
+            >
+              <Phone className="h-4 w-4 mr-2" />
+              Cargar Teléfonos de Creadores
+            </Button>
+          ) : (
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Pega aquí la lista (username[TAB]telefono)&#10;nicolminda	+5216147531946&#10;acharromztm	+5216692609693"
+                value={phoneText}
+                onChange={(e) => setPhoneText(e.target.value)}
+                rows={6}
+                className="text-xs font-mono"
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={importarTelefonos}
+                  disabled={importingPhones}
+                  className="flex-1"
+                  size="sm"
+                >
+                  {importingPhones ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Importando...
+                    </>
+                  ) : (
+                    <>
+                      <Phone className="h-4 w-4 mr-2" />
+                      Importar
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowPhoneImport(false);
+                    setPhoneText("");
+                  }}
+                  variant="outline"
+                  size="sm"
+                >
+                  Cancelar
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Formato: username TAB teléfono (uno por línea)
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
