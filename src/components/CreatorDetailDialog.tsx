@@ -359,8 +359,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           </div>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-6">
-          <div className="space-y-6 pt-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-6 space-y-6 pt-4">
           <Card className="neo-card-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl font-semibold">
@@ -777,7 +776,6 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
           </Tabs>
         </div>
-      </div>
       </DrawerContent>
       
       {/* Dialog para asignar meta */}
