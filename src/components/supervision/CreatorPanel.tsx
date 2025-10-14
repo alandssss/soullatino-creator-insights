@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Sheet,
   SheetContent,
@@ -73,10 +74,19 @@ export function CreatorPanel({
 }: CreatorPanelProps) {
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
+  const [selectedFlags, setSelectedFlags] = useState<Record<string, boolean>>({});
+  const [notes, setNotes] = useState("");
   const isMobile = useIsMobile();
   const isDesktop = !isMobile;
 
   if (!creator) return null;
+
+  const toggleFlag = (flag: string) => {
+    setSelectedFlags(prev => ({
+      ...prev,
+      [flag]: !prev[flag]
+    }));
+  };
 
   const getRiesgoColor = (riesgo?: string) => {
     switch (riesgo) {
@@ -87,13 +97,23 @@ export function CreatorPanel({
     }
   };
 
-  const quickLog = async (flags: Record<string, boolean>) => {
+  const quickLog = async () => {
+    if (Object.keys(selectedFlags).length === 0) {
+      toast({
+        title: "Sin selección",
+        description: "Selecciona al menos una acción para registrar",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke('supervision-quicklog', {
         body: {
           creator_id: creator.id,
-          flags
+          flags: selectedFlags,
+          notas: notes.trim() || undefined
         }
       });
 
@@ -106,7 +126,7 @@ export function CreatorPanel({
           user_email: user.email || "Unknown",
           action_type: "supervision_log",
           creator_name: creator.nombre,
-          message_preview: `Supervisión: ${Object.keys(flags).join(', ')}`,
+          message_preview: `Supervisión: ${Object.keys(selectedFlags).join(', ')}${notes ? ' - ' + notes.substring(0, 50) : ''}`,
         });
       }
 
@@ -115,6 +135,9 @@ export function CreatorPanel({
         description: `Evento registrado para ${creator.nombre}`,
       });
 
+      // Limpiar selección y notas
+      setSelectedFlags({});
+      setNotes("");
       onReload();
     } catch (error: any) {
       console.error('Error logging:', error);
@@ -238,14 +261,14 @@ export function CreatorPanel({
           {/* Acciones */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              🛠 Acciones Disponibles
+              🛠 Selecciona Acciones
             </h3>
             
             <div className="grid grid-cols-3 gap-2">
               <Button
                 size="sm"
-                variant={latestLog?.en_vivo ? "default" : "outline"}
-                onClick={() => quickLog({ en_vivo: true })}
+                variant={selectedFlags.en_vivo ? "default" : "outline"}
+                onClick={() => toggleFlag('en_vivo')}
                 disabled={submitting}
                 className="neo-button flex-col h-auto py-3"
               >
@@ -254,8 +277,8 @@ export function CreatorPanel({
               </Button>
               <Button
                 size="sm"
-                variant={latestLog?.en_batalla ? "default" : "outline"}
-                onClick={() => quickLog({ en_batalla: true })}
+                variant={selectedFlags.en_batalla ? "default" : "outline"}
+                onClick={() => toggleFlag('en_batalla')}
                 disabled={submitting}
                 className="neo-button flex-col h-auto py-3"
               >
@@ -264,8 +287,8 @@ export function CreatorPanel({
               </Button>
               <Button
                 size="sm"
-                variant={latestLog?.buena_iluminacion ? "default" : "outline"}
-                onClick={() => quickLog({ buena_iluminacion: true })}
+                variant={selectedFlags.buena_iluminacion ? "default" : "outline"}
+                onClick={() => toggleFlag('buena_iluminacion')}
                 disabled={submitting}
                 className="neo-button flex-col h-auto py-3"
               >
@@ -277,8 +300,8 @@ export function CreatorPanel({
             <div className="grid grid-cols-3 gap-2">
               <Button
                 size="sm"
-                variant={latestLog?.audio_claro ? "default" : "outline"}
-                onClick={() => quickLog({ audio_claro: true })}
+                variant={selectedFlags.audio_claro ? "default" : "outline"}
+                onClick={() => toggleFlag('audio_claro')}
                 disabled={submitting}
                 className="neo-button flex-col h-auto py-3"
               >
@@ -287,8 +310,8 @@ export function CreatorPanel({
               </Button>
               <Button
                 size="sm"
-                variant={latestLog?.set_profesional ? "default" : "outline"}
-                onClick={() => quickLog({ set_profesional: true })}
+                variant={selectedFlags.set_profesional ? "default" : "outline"}
+                onClick={() => toggleFlag('set_profesional')}
                 disabled={submitting}
                 className="neo-button flex-col h-auto py-3"
               >
@@ -310,11 +333,39 @@ export function CreatorPanel({
               </Button>
             </div>
 
-            {submitting && (
-              <div className="flex items-center justify-center text-xs text-muted-foreground py-2">
-                <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                Guardando...
-              </div>
+            {/* Campo de notas */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Notas adicionales (opcional)</label>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Escribe observaciones adicionales..."
+                className="neo-input min-h-[80px] resize-none"
+                disabled={submitting}
+              />
+            </div>
+
+            {/* Botón para guardar */}
+            <Button
+              onClick={quickLog}
+              disabled={submitting || Object.keys(selectedFlags).length === 0}
+              className="w-full neo-button bg-gradient-to-r from-primary to-accent"
+              size="lg"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Guardando...
+                </>
+              ) : (
+                `Guardar Registro (${Object.keys(selectedFlags).length} accion${Object.keys(selectedFlags).length !== 1 ? 'es' : ''})`
+              )}
+            </Button>
+
+            {Object.keys(selectedFlags).length === 0 && (
+              <p className="text-xs text-center text-muted-foreground">
+                Selecciona al menos una acción para continuar
+              </p>
             )}
           </div>
         </div>
@@ -338,7 +389,7 @@ export function CreatorPanel({
   if (isDesktop) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="w-full sm:w-[400px] p-0 neo-card flex flex-col">
+        <SheetContent side="right" className="w-full sm:w-[450px] sm:max-w-[450px] p-0 neo-card flex flex-col overflow-y-auto">
           <PanelContent />
         </SheetContent>
       </Sheet>
@@ -347,7 +398,7 @@ export function CreatorPanel({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[85vh] neo-card flex flex-col">
+      <DrawerContent className="max-h-[90vh] neo-card flex flex-col">
         <PanelContent />
       </DrawerContent>
     </Drawer>

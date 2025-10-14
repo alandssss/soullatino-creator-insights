@@ -16,6 +16,7 @@ interface QuickLogRequest {
     audio_claro?: boolean;
     set_profesional?: boolean;
   };
+  notas?: string;
   reporte?: string;
   severidad?: 'baja' | 'media' | 'alta';
   accion_sugerida?: string;
@@ -66,7 +67,7 @@ serve(async (req) => {
 
     // Rate limiting: máximo 1 log por creador cada 60s
     const body: QuickLogRequest = await req.json();
-    const { creator_id, flags, reporte, severidad, accion_sugerida } = body;
+    const { creator_id, flags, notas, reporte, severidad, accion_sugerida } = body;
 
     if (!creator_id) {
       throw new Error('creator_id is required');
@@ -92,23 +93,31 @@ serve(async (req) => {
     const observerName = user.email || user.user_metadata?.name || 'Supervisor';
 
     // Insertar log
+    const logData: any = {
+      creator_id,
+      observer_user_id: user.id,
+      observer_name: observerName,
+      fecha_evento: new Date().toISOString(),
+      en_vivo: flags.en_vivo || false,
+      en_batalla: flags.en_batalla || false,
+      buena_iluminacion: flags.buena_iluminacion || false,
+      cumple_normas: flags.cumple_normas !== undefined ? flags.cumple_normas : true,
+      audio_claro: flags.audio_claro || false,
+      set_profesional: flags.set_profesional || false,
+      severidad: severidad || null,
+      accion_sugerida: accion_sugerida || null
+    };
+
+    // Añadir notas o reporte según lo que venga
+    if (notas && notas.trim()) {
+      logData.reporte = notas.trim();
+    } else if (reporte) {
+      logData.reporte = reporte;
+    }
+
     const { data: newLog, error: insertError } = await supabase
       .from('supervision_live_logs')
-      .insert({
-        creator_id,
-        observer_user_id: user.id,
-        observer_name: observerName,
-        fecha_evento: new Date().toISOString(),
-        en_vivo: flags.en_vivo || false,
-        en_batalla: flags.en_batalla || false,
-        buena_iluminacion: flags.buena_iluminacion || false,
-        cumple_normas: flags.cumple_normas !== undefined ? flags.cumple_normas : true,
-        audio_claro: flags.audio_claro || false,
-        set_profesional: flags.set_profesional || false,
-        reporte: reporte || null,
-        severidad: severidad || null,
-        accion_sugerida: accion_sugerida || null
-      })
+      .insert(logData)
       .select()
       .single();
 
