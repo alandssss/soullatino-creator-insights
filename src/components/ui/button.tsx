@@ -5,23 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 neo-button",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),var(--neo-glow-primary)] hover:scale-[1.02] active:scale-[0.98]",
-        destructive: "bg-destructive text-destructive-foreground hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark)] hover:bg-destructive/90",
-        outline: "border border-input bg-card hover:bg-accent hover:text-accent-foreground hover:border-accent",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-[var(--neo-shadow-sm-light),var(--neo-shadow-sm-dark)]",
-        ghost: "hover:bg-accent hover:text-accent-foreground shadow-none",
-        link: "text-primary underline-offset-4 hover:underline shadow-none",
-        success: "bg-green-600 text-white hover:bg-green-700 hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark)] hover:scale-[1.02] active:scale-[0.98]",
+        default: "bg-card text-primary border border-border/40 neo-card-sm hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),var(--neo-glow-primary)] hover:scale-[1.02] active:neo-card-pressed active:scale-[0.98]",
+        destructive: "bg-card text-destructive border border-destructive/30 neo-card-sm hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark)] hover:border-destructive/50 active:neo-card-pressed",
+        outline: "border border-border/40 bg-card text-foreground neo-card-sm hover:text-primary hover:border-primary/40 active:neo-card-pressed",
+        secondary: "bg-card text-secondary-foreground border border-border/30 neo-card-sm hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark)] active:neo-card-pressed",
+        ghost: "hover:bg-muted/50 hover:text-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+        success: "bg-card text-green-400 border border-green-500/30 neo-card-sm hover:shadow-[var(--neo-shadow-light),var(--neo-shadow-dark),0_0_20px_hsl(142_76%_56%/0.3)] hover:scale-[1.02] active:neo-card-pressed active:scale-[0.98]",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "h-11 px-5 py-2.5",
+        sm: "h-9 rounded-lg px-4 text-xs",
+        lg: "h-12 rounded-lg px-6 text-base",
+        icon: "h-11 w-11",
       },
     },
     defaultVariants: {

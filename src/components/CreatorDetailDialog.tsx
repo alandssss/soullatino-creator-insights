@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { 
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -324,18 +330,18 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
   if (!creator) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:w-full max-w-4xl max-h-[85vh] overflow-y-auto p-3 sm:p-6 neo-card">
-        <DialogHeader className="pb-4 border-b border-border/50 space-y-3">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="h-full overflow-y-auto p-4 sm:p-6">
+        <DrawerHeader className="pb-4 border-b border-border/50 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <DialogTitle className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex flex-wrap items-center gap-2 sm:gap-3">
+            <DrawerTitle className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex flex-wrap items-center gap-2 sm:gap-3">
               {creator.nombre}
               {milestone && (
                 <span className="text-xs sm:text-sm font-normal text-muted-foreground neo-card-sm px-2 sm:px-3 py-1 rounded-full">
                   {milestone}
                 </span>
               )}
-            </DialogTitle>
+            </DrawerTitle>
             
             {/* Botón de IA prominente en header */}
             <Button 
@@ -349,7 +355,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               {loadingAdvice ? "Generando..." : "Generar Consejos IA"}
             </Button>
           </div>
-        </DialogHeader>
+        </DrawerHeader>
 
         <div className="space-y-6 pt-4">
           <Card className="neo-card-sm">
@@ -755,7 +761,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
           </Tabs>
         </div>
-      </DialogContent>
+      </DrawerContent>
       
       {/* Dialog para asignar meta */}
       <AsignarMetaDialog
@@ -771,6 +777,6 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           });
         }}
       />
-    </Dialog>
+    </Drawer>
   );
 };

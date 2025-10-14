@@ -54,7 +54,7 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen bg-gradient-dark w-full overflow-x-hidden">
-      <header className="border-b border-border/50 glass-effect sticky top-0 z-50 backdrop-blur-xl">
+      <header className="border-b border-border/50 neo-card-sm sticky top-0 z-50">
         <div className="container mx-auto px-3 md:px-6 py-2 md:py-4 max-w-full">
           <div className="flex items-center justify-between gap-2">
             {/* Logo & Title */}
