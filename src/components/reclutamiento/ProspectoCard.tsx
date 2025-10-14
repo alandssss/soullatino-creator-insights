@@ -218,7 +218,7 @@ export const ProspectoCard = ({ prospecto, onUpdate }: ProspectoCardProps) => {
 
       {/* Diálogo de edición */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] sm:w-full max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{prospecto.nombre_completo}</DialogTitle>
             <p className="text-sm text-muted-foreground">@{prospecto.usuario_tiktok} • {prospecto.pais}</p>

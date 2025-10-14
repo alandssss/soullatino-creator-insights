@@ -548,7 +548,7 @@ export const PanelPredictivoCreadores = () => {
 
       {/* Dialog para editar teléfono */}
       <Dialog open={!!editingPhone} onOpenChange={(open) => !open && setEditingPhone(null)}>
-        <DialogContent>
+        <DialogContent className="w-[90vw] sm:w-full max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editingPhone?.currentPhone ? "Editar" : "Agregar"} Teléfono

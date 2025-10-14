@@ -89,7 +89,7 @@ export function IncidentDialog({ open, onOpenChange, creator, onSuccess }: Incid
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[90vw] sm:w-full max-w-lg">
         <DialogHeader>
           <DialogTitle>Reportar Incidente - {creator.nombre}</DialogTitle>
           <DialogDescription>
