@@ -199,8 +199,9 @@ export class CreatorAnalyticsService {
     req_diam_por_dia_300k?: number;
     dias_restantes: number;
   }): string {
-    const objetivo = bonif.faltan_300k && bonif.faltan_300k > 0 ? 300000 :
-                     bonif.faltan_100k && bonif.faltan_100k > 0 ? 100000 : 50000;
+    // Determinar el objetivo más cercano alcanzable
+    const objetivo = bonif.diam_live_mes >= 100000 && bonif.faltan_300k && bonif.faltan_300k > 0 ? 300000 :
+                     bonif.diam_live_mes >= 50000 && bonif.faltan_100k && bonif.faltan_100k > 0 ? 100000 : 50000;
     
     const faltantes = objetivo === 300000 ? bonif.faltan_300k :
                      objetivo === 100000 ? bonif.faltan_100k : bonif.faltan_50k;
@@ -209,20 +210,21 @@ export class CreatorAnalyticsService {
                      objetivo === 100000 ? bonif.req_diam_por_dia_100k : bonif.req_diam_por_dia_50k;
 
     const nombreCreador = bonif.nombre || 'Creador';
+    const promedioHorasDia = bonif.dias_live_mes > 0 ? (bonif.horas_live_mes / bonif.dias_live_mes).toFixed(1) : '0';
 
     return `Hola ${nombreCreador}! 👋
 
-📊 *Resumen del mes (hasta ayer)*
-📅 Días en LIVE: ${bonif.dias_live_mes}
-⏰ Horas totales: ${bonif.horas_live_mes.toFixed(1)}h
-💎 Diamantes: ${bonif.diam_live_mes.toLocaleString()}
+📊 *Tu Avance del Mes (hasta ayer)*
+📅 Días en LIVE: ${bonif.dias_live_mes} días
+⏰ Horas totales: ${bonif.horas_live_mes.toFixed(1)}h (promedio ${promedioHorasDia}h/día)
+💎 Diamantes acumulados: ${bonif.diam_live_mes.toLocaleString()}
 
-🎯 *Meta ${(objetivo / 1000)}K*
-Faltan: ${faltantes?.toLocaleString()} 💎
-Necesitas: ${reqDiario?.toLocaleString()} 💎/día
-Días restantes: ${bonif.dias_restantes}
+🎯 *Objetivo ${(objetivo / 1000)}K*
+Te faltan: ${faltantes?.toLocaleString()} 💎
+Necesitas ganar: ~${reqDiario?.toLocaleString()} 💎 por día
+⏳ Días restantes: ${bonif.dias_restantes}
 
-¡Vamos por esa meta! 💪`;
+${bonif.dias_restantes > 0 ? '¡Vamos con todo! 🔥 Tú puedes lograrlo 💪' : '¡El mes está por terminar! Da el último empujón 🚀'}`;
   }
 }
 
