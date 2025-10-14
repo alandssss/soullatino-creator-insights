@@ -10,54 +10,55 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 14% 93%;
-    --foreground: 0 0% 11%;
+    /* Fondo gris azulado claro neomórfico similar a la imagen #dfe4ed */
+    --background: 220 18% 92%;
+    --foreground: 220 10% 15%;
 
-    /* Tarjetas con fondo claro cálido suave #F2F3F5 */
-    --card: 225 13% 96%;
-    --card-foreground: 0 0% 11%;
+    /* Tarjetas con fondo similar al background para efecto neomórfico */
+    --card: 220 18% 92%;
+    --card-foreground: 220 10% 15%;
 
-    --popover: 225 13% 96%;
-    --popover-foreground: 0 0% 11%;
+    --popover: 220 18% 92%;
+    --popover-foreground: 220 10% 15%;
 
-    /* Amarillo suave para acentos */
-    --primary: 48 100% 64%;
-    --primary-foreground: 0 0% 11%;
+    /* Azul brillante para elementos activos #4A90E2 */
+    --primary: 211 75% 59%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Verde suave para botones #7EC97D */
+    /* Verde suave para botones */
     --secondary: 119 38% 66%;
     --secondary-foreground: 0 0% 11%;
 
-    --muted: 220 13% 94%;
-    --muted-foreground: 0 0% 29%;
+    --muted: 220 15% 88%;
+    --muted-foreground: 220 10% 40%;
 
-    /* Azul grisáceo suave #6C8AE4 */
-    --accent: 222 71% 66%;
+    /* Azul vibrante para acentos #5B9FED */
+    --accent: 211 80% 64%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 63% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 88%;
-    --input: 220 13% 94%;
-    --ring: 48 100% 64%;
+    --border: 220 15% 85%;
+    --input: 220 18% 92%;
+    --ring: 211 75% 59%;
 
-    --radius: 1rem;
+    --radius: 1.2rem;
 
-    /* Neomorphic shadows - Light Mode - Más suaves */
-    --neo-shadow-light: -6px -6px 12px rgba(255, 255, 255, 0.7);
-    --neo-shadow-dark: 6px 6px 12px rgba(0, 0, 0, 0.12);
-    --neo-shadow-inset-light: inset -3px -3px 6px rgba(255, 255, 255, 0.7);
-    --neo-shadow-inset-dark: inset 3px 3px 6px rgba(0, 0, 0, 0.12);
+    /* Sombras neomórficas suaves como en la imagen de referencia */
+    --neo-shadow-light: -8px -8px 16px rgba(255, 255, 255, 0.8);
+    --neo-shadow-dark: 8px 8px 16px rgba(163, 177, 198, 0.6);
+    --neo-shadow-inset-light: inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+    --neo-shadow-inset-dark: inset 4px 4px 8px rgba(163, 177, 198, 0.6);
     
-    --neo-shadow-sm-light: -3px -3px 6px rgba(255, 255, 255, 0.7);
-    --neo-shadow-sm-dark: 3px 3px 6px rgba(0, 0, 0, 0.12);
+    --neo-shadow-sm-light: -4px -4px 8px rgba(255, 255, 255, 0.8);
+    --neo-shadow-sm-dark: 4px 4px 8px rgba(163, 177, 198, 0.6);
     
-    --neo-shadow-pressed-light: inset -2px -2px 4px rgba(255, 255, 255, 0.7);
-    --neo-shadow-pressed-dark: inset 2px 2px 4px rgba(0, 0, 0, 0.12);
+    --neo-shadow-pressed-light: inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+    --neo-shadow-pressed-dark: inset 3px 3px 6px rgba(163, 177, 198, 0.6);
 
-    --neo-glow-primary: 0 0 20px rgba(255, 217, 69, 0.5);
-    --neo-glow-accent: 0 0 20px rgba(108, 138, 228, 0.5);
+    --neo-glow-primary: 0 0 24px rgba(74, 144, 226, 0.4);
+    --neo-glow-accent: 0 0 24px rgba(91, 159, 237, 0.4);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
