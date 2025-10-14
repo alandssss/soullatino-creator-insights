@@ -333,8 +333,8 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-full overflow-y-auto p-4 sm:p-6">
-        <DrawerHeader className="pb-4 border-b border-border/50 space-y-3">
+      <DrawerContent className="max-h-[95vh] flex flex-col">
+        <DrawerHeader className="pb-4 border-b border-border/50 space-y-3 flex-shrink-0 px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <DrawerTitle className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent flex flex-wrap items-center gap-2 sm:gap-3">
               {creator.nombre}
@@ -359,7 +359,8 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
           </div>
         </DrawerHeader>
 
-        <div className="space-y-6 pt-4">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-6">
+          <div className="space-y-6 pt-4">
           <Card className="neo-card-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl font-semibold">
@@ -776,6 +777,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
             </TabsContent>
           </Tabs>
         </div>
+      </div>
       </DrawerContent>
       
       {/* Dialog para asignar meta */}
