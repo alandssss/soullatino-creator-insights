@@ -418,72 +418,72 @@ export const PanelPredictivoCreadores = () => {
             return (
               <Card key={bonif.id} className="bg-card/50 hover:bg-card/80 transition-all">
                 <CardContent className="p-3 md:p-6">
-                  <div className="flex flex-col gap-3 md:gap-4 mb-3 md:mb-4">
-                    <div className="flex-1 w-full">
-                      <div className="flex items-start justify-between gap-2 mb-2 w-full">
-                        <div className="flex items-center gap-2 md:gap-3 flex-wrap flex-1 min-w-0">
-                          <h3 className="text-base md:text-lg font-semibold truncate">{bonif.nombre}</h3>
-                          <div className={`w-3 h-3 rounded-full ${prob.color} flex-shrink-0`} title={`Probabilidad: ${prob.label}`} />
-                          {bonif.es_prioridad_300k && (
-                            <Badge variant="destructive" className="text-[10px] md:text-xs">Prioridad 300K</Badge>
-                          )}
-                          {bonif.cerca_de_objetivo && (
-                            <Badge variant="default" className="text-[10px] md:text-xs">Cerca!</Badge>
-                          )}
-                        </div>
-                        <div className="flex gap-2 items-center flex-shrink-0">
-                          {bonif.telefono ? (
-                            <>
-                              <Button
-                                size="sm"
-                                onClick={() => abrirWhatsApp(bonif)}
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                              >
-                                <MessageCircle className="h-4 w-4 mr-1" />
-                                <span className="hidden sm:inline">{bonif.telefono}</span>
-                                <span className="sm:hidden">WhatsApp</span>
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => abrirDialogoTelefono(bonif)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => abrirDialogoTelefono(bonif)}
-                              className="text-xs"
-                            >
-                              <Phone className="h-4 w-4 mr-1" />
-                              Agregar teléfono
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
-                        <div>
-                          <p className="text-muted-foreground text-[10px] md:text-xs">Días</p>
-                          <p className="font-semibold text-sm md:text-base">{bonif.dias_live_mes}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground text-[10px] md:text-xs">Horas</p>
-                          <p className="font-semibold text-sm md:text-base">{bonif.horas_live_mes?.toFixed(1)}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground text-[10px] md:text-xs">Diam</p>
-                          <p className="font-semibold text-accent text-sm md:text-base">{bonif.diam_live_mes?.toLocaleString()}</p>
-                        </div>
-                      </div>
+                  {/* Header con nombre y badges */}
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                      <h3 className="text-base md:text-lg font-semibold truncate">{bonif.nombre}</h3>
+                      <div className={`w-3 h-3 rounded-full ${prob.color} flex-shrink-0`} title={`Probabilidad: ${prob.label}`} />
+                      {bonif.es_prioridad_300k && (
+                        <Badge variant="destructive" className="text-[10px] md:text-xs">Prioridad 300K</Badge>
+                      )}
+                      {bonif.cerca_de_objetivo && (
+                        <Badge variant="default" className="text-[10px] md:text-xs">Cerca!</Badge>
+                      )}
                     </div>
                   </div>
 
-                  {/* Progreso */}
-                  <div className="mb-3 md:mb-4">
-                    <div className="flex justify-between text-xs md:text-sm mb-2">
+                  {/* Métricas principales */}
+                  <div className="grid grid-cols-3 gap-2 md:gap-4 mb-3">
+                    <div className="p-2 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground text-[10px] md:text-xs mb-1">Días</p>
+                      <p className="font-semibold text-sm md:text-base">{bonif.dias_live_mes}</p>
+                    </div>
+                    <div className="p-2 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground text-[10px] md:text-xs mb-1">Horas</p>
+                      <p className="font-semibold text-sm md:text-base">{bonif.horas_live_mes?.toFixed(1)}</p>
+                    </div>
+                    <div className="p-2 rounded-lg bg-muted/30">
+                      <p className="text-muted-foreground text-[10px] md:text-xs mb-1">Diam</p>
+                      <p className="font-semibold text-accent text-sm md:text-base">{bonif.diam_live_mes?.toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {/* Botones de acción */}
+                  <div className="flex gap-2 mb-3 flex-wrap">
+                    {bonif.telefono ? (
+                      <>
+                        <Button
+                          size="sm"
+                          onClick={() => abrirWhatsApp(bonif)}
+                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          WhatsApp
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirDialogoTelefono(bonif)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => abrirDialogoTelefono(bonif)}
+                        className="flex-1 sm:flex-none"
+                      >
+                        <Phone className="h-4 w-4 mr-2" />
+                        Agregar teléfono
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Progreso hacia objetivo */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-xs mb-2">
                       <span className="text-muted-foreground truncate mr-2">
                         {bonif.proximo_objetivo_valor || "Completado"}
                       </span>
@@ -491,30 +491,31 @@ export const PanelPredictivoCreadores = () => {
                         {progresoGrad.toFixed(0)}%
                       </span>
                     </div>
-                    <Progress value={progresoGrad} className="h-1.5 md:h-2" />
+                    <Progress value={progresoGrad} className="h-2" />
                   </div>
 
-                  {/* Requerimientos */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 text-xs md:text-sm">
-                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">Diam/Día</p>
-                      <p className="font-semibold text-xs md:text-sm">{bonif.req_diam_por_dia?.toLocaleString() || 0}</p>
+                  {/* Requerimientos diarios */}
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className="p-2 rounded-lg bg-muted/20">
+                      <p className="text-muted-foreground mb-1 text-[10px]">💎 Diam/Día</p>
+                      <p className="font-semibold text-xs">{bonif.req_diam_por_dia?.toLocaleString() || 0}</p>
                     </div>
-                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">H/Día</p>
-                      <p className="font-semibold text-xs md:text-sm">{bonif.req_horas_por_dia?.toFixed(1) || 0}</p>
+                    <div className="p-2 rounded-lg bg-muted/20">
+                      <p className="text-muted-foreground mb-1 text-[10px]">⏱️ H/Día</p>
+                      <p className="font-semibold text-xs">{bonif.req_horas_por_dia?.toFixed(1) || 0}</p>
                     </div>
-                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">Días Rest.</p>
-                      <p className="font-semibold text-xs md:text-sm">{bonif.dias_restantes}</p>
+                    <div className="p-2 rounded-lg bg-muted/20">
+                      <p className="text-muted-foreground mb-1 text-[10px]">📅 Días Rest.</p>
+                      <p className="font-semibold text-xs">{bonif.dias_restantes}</p>
                     </div>
-                    <div className="p-2 md:p-3 rounded-lg bg-muted/30">
-                      <p className="text-muted-foreground mb-1 text-[10px] md:text-xs">Probabilidad</p>
-                      <p className="font-semibold flex items-center gap-1 text-xs md:text-sm">
+                    <div className="p-2 rounded-lg bg-muted/20">
+                      <p className="text-muted-foreground mb-1 text-[10px]">📊 Probabilidad</p>
+                      <p className={`font-semibold text-xs ${
+                        prob.color === "bg-green-500" ? "text-green-500" :
+                        prob.color === "bg-yellow-500" ? "text-yellow-500" :
+                        "text-red-500"
+                      }`}>
                         {prob.label}
-                        {prob.label === "Alta" && <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-green-500" />}
-                        {prob.label === "Media" && <AlertCircle className="h-3 w-3 md:h-4 md:w-4 text-yellow-500" />}
-                        {prob.label === "Baja" && <TrendingDown className="h-3 w-3 md:h-4 md:w-4 text-red-500" />}
                       </p>
                     </div>
                   </div>
