@@ -114,9 +114,9 @@ export function waLink(e164: string, message: string) {
   return `https://wa.me/${e164}?text=${encodeURIComponent(message)}`;
 }
 export function buildWaMessage(c: any) {
-  const nombre = c?.usuario || "";
-  const dias   = c?.dias ?? 0;
-  const horas  = c?.horas ?? 0;
+  const nombre = c?.nombre || c?.tiktok_username || "";
+  const dias   = c?.dias_live ?? c?.dias ?? 0;
+  const horas  = c?.horas_live ?? c?.horas ?? 0;
   const diam   = c?.diamantes ?? 0;
   return `Hola ${nombre}, soy tu manager de Soullatino.
 Métricas al momento:
