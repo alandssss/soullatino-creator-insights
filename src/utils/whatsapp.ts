@@ -105,21 +105,18 @@ export function normalizePhoneE164(raw: string, def = "MX"): string | null {
   const digits = raw.replace(/\D/g, "");
   if (!digits) return null;
   if (raw.trim().startsWith("+")) return digits.replace(/\D/g,"");
-  const cc: Record<string, string> = {MX:"52",CO:"57",VE:"58"};
-  const code = cc[def] || "52";
-  if (digits.length === 10) return code + digits;
+  const cc = ({MX:"52",CO:"57",VE:"58"} as any)[def] || "52";
+  if (digits.length === 10) return cc + digits;
   if (digits.length >= 11) return digits;
   return null;
 }
-
 export function waLink(e164: string, message: string) {
   return `https://wa.me/${e164}?text=${encodeURIComponent(message)}`;
 }
-
 export function buildWaMessage(c: any) {
-  const nombre = c?.tiktok_username || c?.nombre || "";
-  const dias   = c?.dias_live ?? 0;
-  const horas  = c?.horas_live ?? 0;
+  const nombre = c?.usuario || "";
+  const dias   = c?.dias ?? 0;
+  const horas  = c?.horas ?? 0;
   const diam   = c?.diamantes ?? 0;
   return `Hola ${nombre}, soy tu manager de Soullatino.
 Métricas al momento:

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import WhatsappButton from "@/components/WhatsappButton";
+import { buildWaMessage } from "@/utils/whatsapp";
 import { 
   Drawer,
   DrawerContent,
@@ -441,14 +442,9 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
               <div className="col-span-2 pt-2 grid grid-cols-3 gap-3">
                 {/* Botón WhatsApp nuevo */}
                 <WhatsappButton
-                  phone={creator.telefono}
-                  country="MX"
-                  message={`Hola ${creator.tiktok_username || creator.nombre || ""}, soy tu manager de Soullatino. 
-Te comparto tus métricas: 
-• Días en Live: ${creator.dias_live || 0} 
-• Horas en Live: ${creator.horas_live || 0} 
-• Diamantes: ${(creator.diamantes || 0).toLocaleString()} 💎
-¿Listo para el plan de hoy?`}
+                  phone={creator?.telefono}
+                  country={(creator as any)?.country || "MX"}
+                  message={buildWaMessage(creator)}
                   className="col-span-3"
                 />
                 

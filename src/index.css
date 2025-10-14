@@ -395,8 +395,8 @@ All colors MUST be HSL.
   }
 
   .btn-neo {
-    background: hsl(var(--accent));
-    color: hsl(var(--accent-foreground));
+    background: #B7FF3A;
+    color: #0B0B0F;
     font-weight: 700;
     padding: 0.7rem 1rem;
     border-radius: 14px;
