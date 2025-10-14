@@ -7,16 +7,22 @@ import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => (
+  <>
+    <Toaster />
+    <Sonner />
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/*" element={<AppLayout />} />
+    </Routes>
+  </>
+);
+
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/*" element={<AppLayout />} />
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </QueryClientProvider>
   );
