@@ -359,21 +359,33 @@ export const PanelPredictivoCreadores = () => {
             return (
               <Card key={bonif.id} className="bg-card/50 hover:bg-card/80 transition-all">
                 <CardContent className="p-3 md:p-6">
-                  <div className="flex flex-col sm:flex-row items-start gap-3 md:gap-4 mb-3 md:mb-4">
+                  <div className="flex flex-col gap-3 md:gap-4 mb-3 md:mb-4">
                     <div className="flex-1 w-full">
-                      <div className="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
-                        <h3 className="text-base md:text-lg font-semibold truncate">{bonif.nombre}</h3>
-                        {bonif.telefono && (
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            📱 {bonif.telefono}
-                          </span>
-                        )}
-                        <div className={`w-3 h-3 rounded-full ${prob.color} flex-shrink-0`} title={`Probabilidad: ${prob.label}`} />
-                        {bonif.es_prioridad_300k && (
-                          <Badge variant="destructive" className="text-[10px] md:text-xs">Prioridad 300K</Badge>
-                        )}
-                        {bonif.cerca_de_objetivo && (
-                          <Badge variant="default" className="text-[10px] md:text-xs">Cerca!</Badge>
+                      <div className="flex items-start justify-between gap-2 mb-2 w-full">
+                        <div className="flex items-center gap-2 md:gap-3 flex-wrap flex-1 min-w-0">
+                          <h3 className="text-base md:text-lg font-semibold truncate">{bonif.nombre}</h3>
+                          <div className={`w-3 h-3 rounded-full ${prob.color} flex-shrink-0`} title={`Probabilidad: ${prob.label}`} />
+                          {bonif.es_prioridad_300k && (
+                            <Badge variant="destructive" className="text-[10px] md:text-xs">Prioridad 300K</Badge>
+                          )}
+                          {bonif.cerca_de_objetivo && (
+                            <Badge variant="default" className="text-[10px] md:text-xs">Cerca!</Badge>
+                          )}
+                        </div>
+                        {bonif.telefono ? (
+                          <Button
+                            size="sm"
+                            onClick={() => abrirWhatsApp(bonif)}
+                            className="bg-green-600 hover:bg-green-700 text-white flex-shrink-0"
+                          >
+                            <MessageCircle className="h-4 w-4 mr-2" />
+                            <span className="hidden sm:inline">{bonif.telefono}</span>
+                            <span className="sm:hidden">WhatsApp</span>
+                          </Button>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] md:text-xs flex-shrink-0 text-muted-foreground">
+                            Sin teléfono
+                          </Badge>
                         )}
                       </div>
                       <div className="grid grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm">
@@ -391,17 +403,6 @@ export const PanelPredictivoCreadores = () => {
                         </div>
                       </div>
                     </div>
-                    {bonif.telefono && (
-                      <Button
-                        size="sm"
-                        variant="success"
-                        onClick={() => abrirWhatsApp(bonif)}
-                        className="w-full sm:w-auto text-xs"
-                      >
-                        <MessageCircle className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                        WhatsApp
-                      </Button>
-                    )}
                   </div>
 
                   {/* Progreso */}
