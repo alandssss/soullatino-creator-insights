@@ -225,9 +225,9 @@ export const PanelPredictivoCreadores = () => {
         <CardHeader className="p-4 md:p-6">
           <div className="flex flex-col gap-4">
             <div>
-              <CardTitle className="text-xl md:text-2xl flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5 md:h-6 md:w-6 text-primary flex-shrink-0" />
-                <span className="text-base md:text-2xl">Panel Predictivo</span>
+                <span className="text-lg md:text-2xl font-semibold">Panel Predictivo</span>
               </CardTitle>
               <p className="text-xs md:text-sm text-muted-foreground mt-1">
                 Análisis del mes actual

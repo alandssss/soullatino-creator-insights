@@ -24,7 +24,7 @@ serve(async (req) => {
 
     // Ejecutar función de cálculo
     const { error: calcError } = await supabase.rpc('calcular_bonificaciones_mes', {
-      mes_referencia: mesRef
+      p_mes_referencia: mesRef
     });
 
     if (calcError) {
