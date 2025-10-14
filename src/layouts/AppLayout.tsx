@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogOut, Building2, Menu } from "lucide-react";
@@ -14,23 +15,42 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
 
 const AppLayout = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    checkUserRole();
+  }, []);
+
+  const checkUserRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single();
+
+    setUserRole(roleData?.role || null);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
   };
 
+  const isAdmin = userRole === 'admin';
+
   const navLinks = [
-    { to: "/dashboard/pending", label: "Dashboard" },
-    { to: "/creators", label: "Creadores" },
-    { to: "/supervision", label: "Supervisión" },
-    { to: "/reclutamiento", label: "Reclutamiento" },
-  ];
+    { to: "/dashboard/pending", label: "Dashboard", adminOnly: false },
+    { to: "/creators", label: "Administración", adminOnly: true },
+    { to: "/supervision", label: "Supervisión", adminOnly: false },
+    { to: "/reclutamiento", label: "Reclutamiento", adminOnly: false },
+  ].filter(link => !link.adminOnly || isAdmin);
 
   return (
     <div className="min-h-screen">
