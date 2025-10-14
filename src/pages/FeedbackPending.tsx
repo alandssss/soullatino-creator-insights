@@ -178,111 +178,135 @@ const FeedbackPending = () => {
           ) : (
             <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
               {/* Vista previa - Primeros 3 creadores */}
-              <div className="space-y-4">
+              <div className="grid gap-4">
                 {filteredCreators.slice(0, 3).map((creator, index) => (
-                  <div
+                  <Card
                     key={creator.id}
-                    className="flex items-center justify-between p-4 rounded-lg neo-card-sm hover:neo-card-pressed cursor-pointer transition-all"
+                    className="neo-card hover:neo-card-pressed cursor-pointer transition-all overflow-hidden"
                     onClick={() => {
                       setSelectedCreator(creator);
                       setDialogOpen(true);
                     }}
                   >
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold">
-                        {index + 1}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-display font-semibold text-foreground">{creator.nombre}</h3>
-                          {creator.telefono && (
-                            <a
-                              href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '').length === 10 ? '52' : ''}${creator.telefono.replace(/[^0-9]/g, '')}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="text-green-500 hover:text-green-600 transition-colors"
-                              title="Abrir WhatsApp"
-                            >
-                              <MessageCircle className="h-4 w-4" />
-                            </a>
-                          )}
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between gap-4">
+                        {/* Número de prioridad */}
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full neo-card-sm bg-gradient-to-br from-primary/20 to-accent/20 flex-shrink-0">
+                          <span className="text-lg font-bold text-primary">{index + 1}</span>
                         </div>
-                        <p className="text-sm text-muted-foreground font-display">{creator.categoria || "Sin categoría"}</p>
-                        {creator.lastFeedbackDate ? (
-                          <div className="flex items-center gap-2 mt-1">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">
-                              Último feedback: hace {creator.daysSinceLastFeedback} días
-                            </span>
-                          </div>
-                        ) : (
-                          <Badge variant="destructive" className="mt-1 text-xs">
-                            Sin feedback registrado
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-display font-bold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
-                      <p className="text-sm text-muted-foreground font-display">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Resto de creadores - Colapsables */}
-              {filteredCreators.length > 3 && (
-                <CollapsibleContent className="mt-4 space-y-4">
-                  {filteredCreators.slice(3).map((creator, index) => (
-                    <div
-                      key={creator.id}
-                      className="flex items-center justify-between p-4 rounded-lg neo-card-sm hover:neo-card-pressed cursor-pointer transition-all animate-fade-in"
-                      onClick={() => {
-                        setSelectedCreator(creator);
-                        setDialogOpen(true);
-                      }}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent text-primary-foreground font-bold">
-                          {index + 4}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-foreground">{creator.nombre}</h3>
+                        
+                        {/* Info del creador */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold text-foreground truncate">{creator.nombre}</h3>
                             {creator.telefono && (
                               <a
                                 href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '').length === 10 ? '52' : ''}${creator.telefono.replace(/[^0-9]/g, '')}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="text-green-500 hover:text-green-600 transition-colors"
+                                className="text-green-500 hover:text-green-600 transition-colors flex-shrink-0"
                                 title="Abrir WhatsApp"
                               >
                                 <MessageCircle className="h-4 w-4" />
                               </a>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">{creator.categoria || "Sin categoría"}</p>
+                          
+                          <p className="text-sm text-muted-foreground mb-2">{creator.categoria || "Sin categoría"}</p>
+                          
                           {creator.lastFeedbackDate ? (
-                            <div className="flex items-center gap-2 mt-1">
-                              <Clock className="h-3 w-3 text-muted-foreground" />
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
                               <span className="text-xs text-muted-foreground">
-                                Último feedback: hace {creator.daysSinceLastFeedback} días
+                                Hace {creator.daysSinceLastFeedback} días
                               </span>
                             </div>
                           ) : (
-                            <Badge variant="destructive" className="mt-1 text-xs">
-                              Sin feedback registrado
+                            <Badge variant="destructive" className="text-xs">
+                              Sin feedback
                             </Badge>
                           )}
                         </div>
+                        
+                        {/* Estadísticas */}
+                        <div className="text-right flex-shrink-0">
+                          <div className="neo-card-sm px-3 py-2 rounded-lg">
+                            <p className="font-bold text-accent text-lg">{(creator.diamantes || 0).toLocaleString()}</p>
+                            <p className="text-xs text-muted-foreground">💎 diamantes</p>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">Meta: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-accent">{(creator.diamantes || 0).toLocaleString()} 💎</p>
-                        <p className="text-sm text-muted-foreground">Hito: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
-                      </div>
-                    </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Resto de creadores - Colapsables */}
+              {filteredCreators.length > 3 && (
+                <CollapsibleContent className="mt-4 grid gap-4">
+                  {filteredCreators.slice(3).map((creator, index) => (
+                    <Card
+                      key={creator.id}
+                      className="neo-card hover:neo-card-pressed cursor-pointer transition-all overflow-hidden animate-fade-in"
+                      onClick={() => {
+                        setSelectedCreator(creator);
+                        setDialogOpen(true);
+                      }}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between gap-4">
+                          {/* Número de prioridad */}
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full neo-card-sm bg-gradient-to-br from-primary/20 to-accent/20 flex-shrink-0">
+                            <span className="text-lg font-bold text-primary">{index + 4}</span>
+                          </div>
+                          
+                          {/* Info del creador */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-foreground truncate">{creator.nombre}</h3>
+                              {creator.telefono && (
+                                <a
+                                  href={`https://wa.me/${creator.telefono.replace(/[^0-9]/g, '').length === 10 ? '52' : ''}${creator.telefono.replace(/[^0-9]/g, '')}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-green-500 hover:text-green-600 transition-colors flex-shrink-0"
+                                  title="Abrir WhatsApp"
+                                >
+                                  <MessageCircle className="h-4 w-4" />
+                                </a>
+                              )}
+                            </div>
+                            
+                            <p className="text-sm text-muted-foreground mb-2">{creator.categoria || "Sin categoría"}</p>
+                            
+                            {creator.lastFeedbackDate ? (
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                <span className="text-xs text-muted-foreground">
+                                  Hace {creator.daysSinceLastFeedback} días
+                                </span>
+                              </div>
+                            ) : (
+                              <Badge variant="destructive" className="text-xs">
+                                Sin feedback
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          {/* Estadísticas */}
+                          <div className="text-right flex-shrink-0">
+                            <div className="neo-card-sm px-3 py-2 rounded-lg">
+                              <p className="font-bold text-accent text-lg">{(creator.diamantes || 0).toLocaleString()}</p>
+                              <p className="text-xs text-muted-foreground">💎 diamantes</p>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">Meta: {((creator.hito_diamantes || 0) / 1000).toFixed(0)}K</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </CollapsibleContent>
               )}
