@@ -7,7 +7,7 @@ import DashboardOverview from "@/pages/DashboardOverview";
 import Reclutamiento from "@/pages/Reclutamiento";
 import SupervisionLive from "@/pages/SupervisionLive";
 import NotFound from "@/pages/NotFound";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-optimized.webp";
 
 const AppLayout = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const AppLayout = () => {
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-3">
-              <img src={logo} alt="Soullatino" className="h-10 w-10 object-contain" />
+              <img src={logo} alt="Soullatino" className="h-10 w-10 object-contain" width="40" height="40" loading="eager" />
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Soullatino Analytics
               </h1>
