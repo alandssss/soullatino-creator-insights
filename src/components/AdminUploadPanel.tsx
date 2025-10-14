@@ -254,17 +254,20 @@ export const AdminUploadPanel = () => {
   const seedDemoData = async () => {
     setSeeding(true);
     try {
-      // Crear datos demo para octubre 2025
-      const { data, error } = await supabase.rpc('seed_demo_live_data', {
-        p_mes_inicio: '2025-10-01',
-        p_cantidad_creadores: 15
+      // Crear datos demo para octubre 2025 usando la edge function
+      const { data, error } = await supabase.functions.invoke('generate-demo-live-data', {
+        body: {
+          mes_inicio: '2025-10-01',
+          cantidad_creadores: 15
+        }
       });
       
       if (error) throw error;
       
+      const resultado = data?.resultado?.[0];
       toast({
         title: "✅ Datos demo creados",
-        description: `${data[0].registros_creados} registros para ${data[0].creadores_procesados} creadores`,
+        description: `${resultado?.registros_creados || 0} registros creados para ${resultado?.creadores_procesados || 0} creadores`,
       });
 
       // Recalcular bonificaciones automáticamente
