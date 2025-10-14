@@ -84,7 +84,7 @@ const CreatorsList = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 w-full overflow-x-hidden">
       {userRole === "admin" && (
         <>
           <UserManagement />

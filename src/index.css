@@ -337,6 +337,15 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans antialiased;
     background: linear-gradient(180deg, hsl(222 20% 8%) 0%, hsl(222 20% 5%) 100%);
     min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    width: 100%;
+  }
+
+  html {
+    overflow-x: hidden;
+    width: 100%;
   }
 
   /* Neomorphic utility classes con tema oscuro */
