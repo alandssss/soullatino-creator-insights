@@ -363,6 +363,11 @@ export const PanelPredictivoCreadores = () => {
                     <div className="flex-1 w-full">
                       <div className="flex items-center gap-2 md:gap-3 mb-2 flex-wrap">
                         <h3 className="text-base md:text-lg font-semibold truncate">{bonif.nombre}</h3>
+                        {bonif.telefono && (
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            📱 {bonif.telefono}
+                          </span>
+                        )}
                         <div className={`w-3 h-3 rounded-full ${prob.color} flex-shrink-0`} title={`Probabilidad: ${prob.label}`} />
                         {bonif.es_prioridad_300k && (
                           <Badge variant="destructive" className="text-[10px] md:text-xs">Prioridad 300K</Badge>
