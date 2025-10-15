@@ -130,6 +130,42 @@ const FeedbackPending = () => {
     <div className="space-y-6">
       <WorkTimeTracker userEmail={user?.email} />
       
+      {/* Hitos de la Agencia */}
+      <Card className="neo-card border-border/30">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            🎯 Hitos de la Agencia
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="neo-card-sm p-4 rounded-lg border-l-4 border-green-500/50">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">🥉</span>
+                <h3 className="font-semibold text-sm">Bronce</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">12 días / 40 horas</p>
+            </div>
+            
+            <div className="neo-card-sm p-4 rounded-lg border-l-4 border-blue-500/50">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">🥈</span>
+                <h3 className="font-semibold text-sm">Plata</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">20 días / 60 horas</p>
+            </div>
+            
+            <div className="neo-card-sm p-4 rounded-lg border-l-4 border-yellow-500/50">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">🥇</span>
+                <h3 className="font-semibold text-sm">Oro</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">22 días / 80 horas</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
       <LowActivityPanel />
       
       <Card className="neo-card">
