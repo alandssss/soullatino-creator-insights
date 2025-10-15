@@ -1,183 +1,275 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// deno-lint-ignore-file no-explicit-any
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const FRONTEND_ORIGIN = Deno.env.get("FRONTEND_ORIGIN") ?? "https://gestion.soullatino.mx";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const TZ = "America/Chihuahua";
+
+const cors = {
+  "Access-Control-Allow-Origin": FRONTEND_ORIGIN,
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST,OPTIONS",
 };
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+function nowInTZ(tz: string) {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+  });
+  const parts = fmt.formatToParts(new Date());
+  const y = parts.find(p => p.type === "year")!.value;
+  const m = parts.find(p => p.type === "month")!.value;
+  const d = parts.find(p => p.type === "day")!.value;
+  return new Date(`${y}-${m}-${d}T00:00:00`);
+}
+
+function firstDayOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function lastDayOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+function addDays(date: Date, days: number) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function dateToISO(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
+
+type Hito = { d: number; h: number; key: string };
+const HITOS: Hito[] = [
+  { d: 12, h: 40, key: "12d_40h" },
+  { d: 20, h: 60, key: "20d_60h" },
+  { d: 22, h: 80, key: "22d_80h" },
+];
+const GRADS = [50_000, 100_000, 300_000, 500_000, 1_000_000];
+
+type LiveMes = {
+  dias_live_mes: number;
+  horas_live_mes: number;
+  diam_live_mes: number;
+};
+
+function hitoActivo(dias: number, horas: number): Hito {
+  for (const h of HITOS) {
+    if (dias < h.d || horas < h.h) return h;
   }
+  return HITOS[HITOS.length - 1];
+}
 
+function proximaGraduacion(diam: number): number | null {
+  for (const g of GRADS) if (diam < g) return g;
+  return null;
+}
+
+function ceilDiv(a: number, b: number) {
+  if (b <= 0) return null;
+  return Math.ceil(a / b);
+}
+
+function semaforo(ritmoActual: number, ritmoReq: number | null): "verde"|"amarillo"|"rojo" {
+  if (ritmoReq === null || !isFinite(ritmoReq) || ritmoReq <= 0) return "verde";
+  if (ritmoActual >= ritmoReq) return "verde";
+  if (ritmoActual >= 0.7 * ritmoReq) return "amarillo";
+  return "rojo";
+}
+
+function msgCreador(params: {
+  nombre: string | null;
+  hito: Hito;
+  dias_live_mes: number; horas_live_mes: number;
+  faltan_dias: number; faltan_horas: number;
+  gradTarget: number | null; faltanDiam: number | null;
+  reqDiamDia: number | null;
+  diasRestantes: number;
+  prioridad300k: boolean;
+  bonoExtraUSD: number; diasExtra: number;
+}) {
+  const n = params.nombre ?? "creador";
+  const hitoLine = `🎯 Hito activo: ${params.hito.d} días / ${params.hito.h} horas.\nLlevas ${params.dias_live_mes}d y ${params.horas_live_mes.toFixed(1)}h; faltan ${params.faltan_dias}d y ${params.faltan_horas.toFixed(1)}h.`;
+  const gradLine = params.gradTarget
+    ? (params.faltanDiam! <= 0
+        ? `💎 Meta de ${params.gradTarget.toLocaleString()} diamantes ✔️`
+        : `💎 Para ${params.gradTarget.toLocaleString()} faltan ${params.faltanDiam!.toLocaleString()} (≈ ${params.reqDiamDia ?? "—"}/día, quedan ${params.diasRestantes}).`)
+    : `💎 Ya superaste 1M este mes.`;
+  const priLine = params.prioridad300k ? `\n🔵 Prioridad por ser nuevo: apuntemos a 300K este mes.` : ``;
+  const bonoLine = params.diasExtra > 0 ? `\n💵 Bono constancia: ${params.diasExtra} días >22 ⇒ +$${params.bonoExtraUSD}.` : ``;
+
+  return `🔥 ${n}, buen avance: sigamos con el hito.\n${hitoLine}\n${gradLine}${priLine}${bonoLine}\n\n✅ Hoy: 2h en vivo + marcar día válido, 10 PKO × 5 min, checklist de luz/audio/normas. ¡Tú puedes! 💪`;
+}
+
+function msgManager(params: {
+  nombre: string | null; fechaCorte: string;
+  hito: Hito; dias_live_mes: number; horas_live_mes: number;
+  faltan_dias: number; faltan_horas: number;
+  gradTarget: number | null; diam: number;
+  faltanDiam: number | null; reqDiamDia: number | null; diasRestantes: number;
+  estado: "verde"|"amarillo"|"rojo";
+  prioridad300k: boolean; bonoExtraUSD: number; diasExtra: number;
+}) {
+  const head = `${params.nombre ?? "Creador"} — corte ${params.fechaCorte}`;
+  const hitoLine = `Hito ${params.hito.d}/${params.hito.h}: ${params.dias_live_mes}d / ${params.horas_live_mes.toFixed(1)}h; faltan ${params.faltan_dias}d / ${params.faltan_horas.toFixed(1)}h.`;
+  const gradLine = params.gradTarget
+    ? `Grad ${params.gradTarget.toLocaleString()}: lleva ${params.diam.toLocaleString()} → faltan ${params.faltanDiam!.toLocaleString()} (req ${params.reqDiamDia ?? "—"}/día, ${params.diasRestantes} días).`
+    : `Sin próxima grad (≥1M).`;
+  const pri = params.prioridad300k ? "Prioridad <90d: 300K." : "";
+  const bono = params.diasExtra > 0 ? `Bono: ${params.diasExtra}d >22 ⇒ $${params.bonoExtraUSD}.` : "";
+  return `${head}\n${hitoLine}\n${gradLine}\nEstado: ${params.estado}. ${pri} ${bono}\nPlan: 2h hoy, 10 PKO, supervisión luz/audio/normas, registrar en supervision_live_logs.`;
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: cors });
+  }
   try {
-    // Extract and verify JWT token
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('[generate-creator-advice] No authorization header');
-      return new Response(
-        JSON.stringify({ error: 'No autorizado. Token requerido.' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const auth = req.headers.get("Authorization") ?? "";
+    if (!auth) return new Response(JSON.stringify({ error: "missing auth" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
 
-    // Create authenticated client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const token = authHeader.replace('Bearer ', '');
-    
-    const supabaseAuth = createClient(supabaseUrl, supabaseServiceKey, {
-      global: { headers: { Authorization: authHeader } }
+    const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: auth } },
     });
 
-    // Get current user
-    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser(token);
-    if (userError || !user) {
-      console.error('[generate-creator-advice] Invalid token:', userError);
-      return new Response(
-        JSON.stringify({ error: 'Token inválido' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Check if user has admin or manager role
-    const { data: hasAdminRole } = await supabaseAuth
-      .rpc('has_role', { _user_id: user.id, _role: 'admin' });
-    
-    const { data: hasManagerRole } = await supabaseAuth
-      .rpc('has_role', { _user_id: user.id, _role: 'manager' });
-
-    if (!hasAdminRole && !hasManagerRole) {
-      console.error('[generate-creator-advice] User lacks required role');
-      return new Response(
-        JSON.stringify({ error: 'No autorizado. Se requiere rol de admin o manager.' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('[generate-creator-advice] User authorized:', user.email);
-
-    const { creatorData } = await req.json();
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    
-    if (!GEMINI_API_KEY) {
-      console.error('[generate-creator-advice] GEMINI_API_KEY not configured');
-      throw new Error("GEMINI_API_KEY is not configured");
-    }
-
-    console.log('[generate-creator-advice] Processing for creator:', creatorData.nombre);
-
-    const systemPrompt = `Eres un asesor de TikTok LIVE. 
-
-ADVERTENCIA CRÍTICA: Si no sigues EXACTAMENTE el formato especificado, tu respuesta será RECHAZADA.
-
-FORMATO OBLIGATORIO (COPIA EXACTAMENTE ESTA ESTRUCTURA - SIN MARKDOWN):
-
-🎯 Tu hito: [número] diamantes este mes
-
-📍 Dónde estás:
-- Llevas [número] diamantes ([porcentaje]% del objetivo)
-- [✅/➖/❌] [Te faltan X diamantes / Ya superaste tu meta]
-
-💪 Acción de HOY:
-[UNA SOLA frase. Máximo 40 palabras]
-
-REGLAS ABSOLUTAS - NO NEGOCIABLES:
-1. NO uses markdown (sin **, sin _, sin #)
-2. NO escribas párrafos introductorios
-3. USA SOLO los 3 bloques con emojis
-4. Máximo 100 palabras TOTAL
-5. La acción debe tener NÚMEROS concretos
-6. Símbolos: ✅ si ≥100%, ➖ si 70-99%, ❌ si <70%
-
-EJEMPLO CORRECTO:
-🎯 Tu hito: 100,000 diamantes este mes
-
-📍 Dónde estás:
-- Llevas 45,000 diamantes (45% del objetivo)
-- ❌ Te faltan 55,000 diamantes
-
-💪 Acción de HOY:
-Haz 2 batallas PKO hoy para sumar 15,000 diamantes y llegar al 60% de tu meta.
-
-RESPONDE SOLO CON EL FORMATO. SIN MARKDOWN.`;
-
-    const today = new Date();
-    const currentDay = today.getDate();
-    const currentMonth = today.getMonth() + 1;
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const daysRemainingInMonth = lastDayOfMonth - currentDay;
-
-    const userPrompt = `FECHA ACTUAL: Día ${currentDay} de ${lastDayOfMonth} del mes ${currentMonth}
-DÍAS RESTANTES DEL MES: ${daysRemainingInMonth}
-
-CREADOR: ${creatorData.nombre}
-
-🎯 HITO ASIGNADO: ${creatorData.hito_diamantes || 50000} diamantes
-
-PROGRESO DEL MES ACTUAL:
-- Diamantes del mes: ${creatorData.diamantes || 0}
-- Días en LIVE del mes: ${creatorData.dias_live || 0}
-- Horas en LIVE del mes: ${creatorData.horas_live || 0}
-
-INSTRUCCIONES:
-1. Compara los diamantes actuales (${creatorData.diamantes || 0}) con el hito asignado (${creatorData.hito_diamantes || 50000})
-2. Calcula el porcentaje de avance: (diamantes actuales / hito) × 100
-3. Calcula cuántos diamantes faltan para alcanzar el hito
-4. Determina si ya alcanzó (✅), está cerca (➖), o está lejos (❌) del objetivo
-5. Sugiere acciones concretas basadas en días y horas en LIVE
-6. Genera la retroalimentación en el formato estructurado obligatorio
-
-Sé específico con números, realista y motivador.`;
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `${systemPrompt}\n\n${userPrompt}`
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 600
-        }
-      }),
-    });
-
-    if (!response.ok) {
-      console.error("[Server] Gemini API error:", response.status);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limits exceeded, please try again later." }), 
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+    const { data: canReadRoles, error: roleErr } = await userClient.rpc("has_role", { _user_id: (await userClient.auth.getUser()).data.user?.id, _role: "manager" as any });
+    if (roleErr || !canReadRoles) {
+      const { data: canReadViewer } = await userClient.rpc("has_role", { _user_id: (await userClient.auth.getUser()).data.user?.id, _role: "viewer" as any });
+      if (!canReadViewer) {
+        return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
       }
-      
-      return new Response(
-        JSON.stringify({ error: "Failed to generate advice" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
     }
 
-    const data = await response.json();
-    const advice = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No se pudo generar consejo';
+    const { creator_id } = await req.json();
+    if (!creator_id) {
+      return new Response(JSON.stringify({ error: "creator_id requerido" }), { status: 400, headers: { ...cors, "Content-Type": "application/json" } });
+    }
 
-    console.log('[generate-creator-advice] Successfully generated advice');
+    const hoyTZ = nowInTZ(TZ);
+    const inicioMes = firstDayOfMonth(hoyTZ);
+    const finMes = lastDayOfMonth(hoyTZ);
+    const ayer = addDays(hoyTZ, -1);
+    const diasRestantes = Math.max(0, (finMes.getTime() - hoyTZ.getTime()) / (1000 * 60 * 60 * 24) + 1) | 0;
 
-    return new Response(JSON.stringify({ advice }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const { data: creatorRow, error: creatorErr } = await userClient
+      .from("creators")
+      .select("id, nombre, tiktok_username, telefono, dias_en_agencia")
+      .eq("id", creator_id)
+      .single();
+
+    if (creatorErr || !creatorRow) {
+      return new Response(JSON.stringify({ error: "creator_not_found" }), { status: 404, headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    const { data: liveData, error: liveErr } = await userClient
+      .from("creator_live_daily")
+      .select("fecha, horas, diamantes")
+      .eq("creator_id", creator_id)
+      .gte("fecha", dateToISO(inicioMes))
+      .lte("fecha", dateToISO(ayer));
+
+    if (liveErr) {
+      return new Response(JSON.stringify({ error: "live_query_error" }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    let agg: LiveMes = { dias_live_mes: 0, horas_live_mes: 0, diam_live_mes: 0 };
+    if (liveData && liveData.length) {
+      const diasValidos = new Set<string>();
+      let horas = 0, diam = 0;
+      for (const r of liveData) {
+        const h = Number(r.horas ?? 0);
+        const d = Number(r.diamantes ?? 0);
+        horas += h;
+        diam += d;
+        if (h > 0) diasValidos.add(String(r.fecha));
+      }
+      agg = { dias_live_mes: diasValidos.size, horas_live_mes: horas, diam_live_mes: diam };
+    }
+
+    const sinDatos = agg.dias_live_mes === 0 && agg.horas_live_mes === 0 && agg.diam_live_mes === 0;
+    const hito = hitoActivo(agg.dias_live_mes, agg.horas_live_mes);
+    const faltan_dias = Math.max(0, hito.d - agg.dias_live_mes);
+    const faltan_horas = Math.max(0, hito.h - agg.horas_live_mes);
+
+    const esNuevo = Number(creatorRow.dias_en_agencia ?? 9999) < 90;
+    const gradTargetRaw = esNuevo && agg.diam_live_mes < 300_000 ? 300_000 : proximaGraduacion(agg.diam_live_mes);
+    const faltanDiam = gradTargetRaw ? Math.max(0, gradTargetRaw - agg.diam_live_mes) : null;
+    const reqDiamDia = faltanDiam !== null ? ceilDiv(faltanDiam, diasRestantes) : null;
+
+    const diasTranscurridos = Math.max(1, (hoyTZ.getDate() - 1));
+    const ritmoActual = agg.diam_live_mes / diasTranscurridos;
+    const estado = semaforo(ritmoActual, reqDiamDia);
+
+    const diasExtra = Math.max(0, agg.dias_live_mes - 22);
+    const bonoExtraUSD = diasExtra * 3;
+
+    const para_creador = msgCreador({
+      nombre: creatorRow.nombre ?? creatorRow.tiktok_username ?? null,
+      hito,
+      dias_live_mes: agg.dias_live_mes,
+      horas_live_mes: agg.horas_live_mes,
+      faltan_dias,
+      faltan_horas,
+      gradTarget: gradTargetRaw,
+      faltanDiam,
+      reqDiamDia,
+      diasRestantes,
+      prioridad300k: Boolean(esNuevo && gradTargetRaw === 300_000),
+      bonoExtraUSD, diasExtra,
     });
-  } catch (error) {
-    console.error("[generate-creator-advice] Error:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Internal server error" }), 
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+
+    const para_manager = msgManager({
+      nombre: creatorRow.nombre ?? creatorRow.tiktok_username ?? null,
+      fechaCorte: dateToISO(ayer),
+      hito,
+      dias_live_mes: agg.dias_live_mes,
+      horas_live_mes: agg.horas_live_mes,
+      faltan_dias,
+      faltan_horas,
+      gradTarget: gradTargetRaw,
+      diam: agg.diam_live_mes,
+      faltanDiam,
+      reqDiamDia,
+      diasRestantes,
+      estado,
+      prioridad300k: Boolean(esNuevo && gradTargetRaw === 300_000),
+      bonoExtraUSD, diasExtra,
+    });
+
+    const noEnviarAlCreador = sinDatos;
+
+    const payload = {
+      creator_id,
+      estado,
+      hito_actual: hito.key,
+      dias_logrados: agg.dias_live_mes,
+      dias_objetivo: hito.d,
+      horas_logradas: Number(agg.horas_live_mes.toFixed(2)),
+      horas_objetivo: hito.h,
+      faltan_dias,
+      faltan_horas: Number(faltan_horas.toFixed(2)),
+      diamantes_actuales: agg.diam_live_mes,
+      objetivo_graduacion: gradTargetRaw,
+      faltan_diamantes: faltanDiam,
+      requeridos_por_dia_diamantes: reqDiamDia,
+      dias_restantes_mes: diasRestantes,
+      bono: { dias_extra: diasExtra, usd: bonoExtraUSD },
+      prioridad_nuevo_300k: Boolean(esNuevo && gradTargetRaw === 300_000),
+      para_creador,
+      para_manager,
+      no_enviar_al_creador: noEnviarAlCreador,
+      advice: para_creador,
+    };
+
+    return new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    console.error(e);
+    return new Response(JSON.stringify({ error: "internal_error" }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
   }
 });
