@@ -44,24 +44,21 @@ export const WorkTimeTracker = ({ userEmail }: WorkTimeTrackerProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center">
-          <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2 font-mono">
+          <div className="text-2xl sm:text-3xl font-bold text-foreground mb-1 font-mono">
             {formatTime}
           </div>
-          <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
-            <Target className="h-4 w-4" />
-            <span>Meta hoy: {dailyGoalHours}h de apoyo</span>
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            Se reinicia a las 23:59
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+            <Target className="h-3.5 w-3.5" />
+            <span>Meta: {dailyGoalHours}h diarias</span>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-xs text-muted-foreground">
             <span>Progreso</span>
             <span>{progress.toFixed(1)}%</span>
           </div>
-          <Progress value={progress} className="h-3" />
+          <Progress value={progress} className="h-2" />
         </div>
 
         {progress >= 100 && (

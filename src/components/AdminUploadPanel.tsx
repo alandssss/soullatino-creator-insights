@@ -439,31 +439,7 @@ export const AdminUploadPanel = () => {
           <p>• Los creadores existentes se actualizarán automáticamente</p>
         </div>
 
-        {/* Botón temporal para crear datos demo */}
-        <div className="pt-4 border-t border-border/50">
-          <p className="text-sm font-medium mb-2">🧪 Datos de Prueba (Temporal)</p>
-          <Button
-            onClick={seedDemoData}
-            disabled={seeding}
-            variant="secondary"
-            className="w-full"
-          >
-            {seeding ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creando datos demo...
-              </>
-            ) : (
-              <>
-                <Database className="h-4 w-4 mr-2" />
-                Generar Datos Demo (Oct 2025)
-              </>
-            )}
-          </Button>
-          <p className="text-xs text-muted-foreground mt-2">
-            Crea datos de ejemplo para 15 creadores con actividad realista de octubre 2025
-          </p>
-        </div>
+        {/* Panel eliminado - datos demo no necesarios */}
 
         {/* Importar teléfonos */}
         <div className="pt-4 border-t border-border/50">

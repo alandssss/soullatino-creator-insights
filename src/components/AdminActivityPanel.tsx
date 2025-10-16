@@ -79,12 +79,12 @@ export const AdminActivityPanel = () => {
   return (
     <Card className="bg-gradient-to-br from-card to-card/50 border-border/50">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+              <CardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-primary" />
-          Actividad en Tiempo Real
+          Actividad de Mensajes WhatsApp
           {activities.length > 0 && (
             <span className="ml-auto text-sm font-normal text-muted-foreground">
-              {activities.length} interacciones
+              {activities.length} interacciones recientes
             </span>
           )}
         </CardTitle>
@@ -92,7 +92,7 @@ export const AdminActivityPanel = () => {
       <CardContent>
         {activities.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No hay actividad reciente
+            No hay mensajes enviados recientemente
           </div>
         ) : (
           <div className="space-y-3 max-h-[500px] overflow-y-auto">
