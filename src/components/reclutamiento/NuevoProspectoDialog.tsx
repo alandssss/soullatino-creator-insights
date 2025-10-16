@@ -100,7 +100,7 @@ export const NuevoProspectoDialog = ({ open, onOpenChange, onSuccess }: NuevoPro
       if (error instanceof z.ZodError) {
         toast({
           title: "Error de validación",
-          description: error.issues[0].message,
+          description: error.errors[0].message,
           variant: "destructive",
         });
       } else {

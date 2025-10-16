@@ -46,7 +46,7 @@ export const openWhatsApp = async ({
     messageSchema.parse(message);
   } catch (validationError) {
     if (validationError instanceof z.ZodError) {
-      throw new Error(validationError.issues[0].message);
+      throw new Error(validationError.errors[0].message);
     }
     throw validationError;
   }
