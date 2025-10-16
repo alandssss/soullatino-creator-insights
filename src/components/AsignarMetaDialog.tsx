@@ -26,8 +26,8 @@ interface AsignarMetaDialogProps {
 const metaSchema = z.object({
   metrica_tipo: z.string().min(1, "Selecciona una métrica"),
   valor_objetivo: z.number().min(1, "El valor debe ser mayor a 0"),
-  fecha_finalizacion: z.date({
-    required_error: "Selecciona una fecha de finalización",
+  fecha_finalizacion: z.date().refine(val => val !== undefined, {
+    message: "Selecciona una fecha de finalización"
   }),
   descripcion: z.string().optional(),
   notas: z.string().optional(),
@@ -102,7 +102,7 @@ export const AsignarMetaDialog = ({
       if (error instanceof z.ZodError) {
         toast({
           title: "Error de validación",
-          description: error.errors[0].message,
+          description: error.issues[0].message,
           variant: "destructive",
         });
       } else {

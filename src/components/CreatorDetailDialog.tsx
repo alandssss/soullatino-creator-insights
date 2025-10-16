@@ -200,7 +200,7 @@ export const CreatorDetailDialog = ({ creator, open, onOpenChange }: CreatorDeta
       if (error instanceof z.ZodError) {
         toast({
           title: "Error de validación",
-          description: error.errors[0].message,
+          description: error.issues[0].message,
           variant: "destructive",
         });
       } else {
