@@ -1,13 +1,12 @@
 project_id = "rgypfqxiqeymltbinkvs"
 
-[functions.generate-demo-live-data]
-verify_jwt = false
+# Edge Functions con JWT habilitado (PRODUCCIÓN)
+# Todas las funciones críticas ahora requieren autenticación
+[functions.calculate-bonificaciones]
+verify_jwt = true
 
 [functions.calculate-all-bonificaciones]
-verify_jwt = false
-
-[functions.calculate-bonificaciones]
-verify_jwt = false
+verify_jwt = true
 
 [functions.process-creator-analytics]
 verify_jwt = true
@@ -16,4 +15,9 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.manage-user]
+verify_jwt = true
+
+# Funciones de utilidad/debug - SOLO PARA DESARROLLO
+# IMPORTANTE: Deshabilitar en producción si no se necesita
+[functions.generate-demo-live-data]
 verify_jwt = true

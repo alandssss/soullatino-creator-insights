@@ -247,6 +247,13 @@ export type Database = {
             foreignKeyName: "creator_bonificaciones_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "creator_bonificaciones_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -293,6 +300,13 @@ export type Database = {
           snapshot_date?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "creator_daily_stats_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
           {
             foreignKeyName: "creator_daily_stats_creator_id_fkey"
             columns: ["creator_id"]
@@ -353,6 +367,13 @@ export type Database = {
             foreignKeyName: "creator_feedback_impact_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "creator_feedback_impact_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -391,6 +412,13 @@ export type Database = {
             foreignKeyName: "creator_interactions_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "creator_interactions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -422,6 +450,13 @@ export type Database = {
           id?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "creator_live_daily_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
           {
             foreignKeyName: "creator_live_daily_creator_id_fkey"
             columns: ["creator_id"]
@@ -488,6 +523,13 @@ export type Database = {
             foreignKeyName: "creator_metas_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "creator_metas_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -538,6 +580,13 @@ export type Database = {
             foreignKeyName: "creator_metrics_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "creator_metrics_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -578,6 +627,13 @@ export type Database = {
           titulo?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "creator_recommendations_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
           {
             foreignKeyName: "creator_recommendations_creator_id_fkey"
             columns: ["creator_id"]
@@ -854,6 +910,13 @@ export type Database = {
             foreignKeyName: "supervision_live_logs_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "supervision_live_logs_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -936,6 +999,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_personal_messages_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: true
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
           {
             foreignKeyName: "user_personal_messages_creator_id_fkey"
             columns: ["creator_id"]
@@ -1023,6 +1093,13 @@ export type Database = {
             foreignKeyName: "whatsapp_activity_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "whatsapp_activity_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
             referencedRelation: "creators"
             referencedColumns: ["id"]
           },
@@ -1030,6 +1107,18 @@ export type Database = {
       }
     }
     Views: {
+      creator_tiers: {
+        Row: {
+          creator_id: string | null
+          diam_live_mes: number | null
+          dias_live_mes: number | null
+          horas_live_mes: number | null
+          nombre: string | null
+          status: string | null
+          tier: string | null
+        }
+        Relationships: []
+      }
       supervision_live_summary: {
         Row: {
           cnt_audio_claro: number | null
@@ -1047,6 +1136,13 @@ export type Database = {
           score_promedio: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "supervision_live_logs_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
           {
             foreignKeyName: "supervision_live_logs_creator_id_fkey"
             columns: ["creator_id"]
@@ -1072,6 +1168,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      refresh_creator_tiers: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       seed_demo_live_data: {
         Args: { p_cantidad_creadores?: number; p_mes_inicio?: string }
