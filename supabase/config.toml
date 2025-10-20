@@ -1,23 +1,38 @@
 project_id = "rgypfqxiqeymltbinkvs"
 
-# Edge Functions con JWT habilitado (PRODUCCIÓN)
-# Todas las funciones críticas ahora requieren autenticación
+# ===========================================
+# CONFIGURACIÓN DE EDGE FUNCTIONS - PRODUCCIÓN
+# ===========================================
+# IMPORTANTE: Todas las funciones críticas requieren autenticación (verify_jwt = true)
+# Solo deshabilitar JWT para endpoints públicos que validen su propia seguridad
+
+# Funciones de cálculo de bonificaciones - REQUIEREN AUTENTICACIÓN
 [functions.calculate-bonificaciones]
 verify_jwt = true
 
 [functions.calculate-all-bonificaciones]
 verify_jwt = true
 
+[functions.calculate-bonificaciones-predictivo]
+verify_jwt = true
+
+# Procesamiento de analíticas de creadores
 [functions.process-creator-analytics]
 verify_jwt = true
 
+# Generación de consejos AI
 [functions.generate-creator-advice]
 verify_jwt = true
 
+# Gestión de usuarios - ADMIN ONLY
 [functions.manage-user]
 verify_jwt = true
 
-# Funciones de utilidad/debug - SOLO PARA DESARROLLO
-# IMPORTANTE: Deshabilitar en producción si no se necesita
+# Quick logging de supervisión
+[functions.supervision-quicklog]
+verify_jwt = true
+
+# Función de generación de datos demo - SOLO DESARROLLO
+# ⚠️ ADVERTENCIA: Deshabilitar completamente en producción o mantener con JWT
 [functions.generate-demo-live-data]
 verify_jwt = true
