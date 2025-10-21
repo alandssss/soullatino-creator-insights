@@ -259,6 +259,45 @@ export type Database = {
           },
         ]
       }
+      creator_contact_log: {
+        Row: {
+          action: string
+          channel: string
+          created_at: string | null
+          creator_id: string
+          creator_username: string | null
+          id: number
+          ip: string | null
+          notes: string | null
+          phone_e164: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          channel: string
+          created_at?: string | null
+          creator_id: string
+          creator_username?: string | null
+          id?: number
+          ip?: string | null
+          notes?: string | null
+          phone_e164?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          channel?: string
+          created_at?: string | null
+          creator_id?: string
+          creator_username?: string | null
+          id?: number
+          ip?: string | null
+          notes?: string | null
+          phone_e164?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       creator_daily_stats: {
         Row: {
           created_at: string
@@ -1107,6 +1146,38 @@ export type Database = {
       }
     }
     Views: {
+      creator_riesgos_mes: {
+        Row: {
+          creator_id: string | null
+          creator_username: string | null
+          diamantes_actuales: number | null
+          dias_actuales: number | null
+          dias_restantes: number | null
+          faltan_dias: number | null
+          faltan_horas: number | null
+          horas_actuales: number | null
+          horas_min_dia_sugeridas: number | null
+          phone_e164: string | null
+          prioridad_riesgo: number | null
+          proximo_objetivo: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_live_daily_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "creator_live_daily_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_tiers: {
         Row: {
           creator_id: string | null
@@ -1168,6 +1239,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      refresh_creator_riesgos_mes: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       refresh_creator_tiers: {
         Args: Record<PropertyKey, never>

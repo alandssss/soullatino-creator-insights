@@ -8,6 +8,7 @@ import DashboardOverview from "@/pages/DashboardOverview";
 import Reclutamiento from "@/pages/Reclutamiento";
 import SupervisionLive from "@/pages/SupervisionLive";
 import CreatorsList from "@/pages/CreatorsList";
+import AlertasSugerenciasPage from "@/pages/AlertasSugerencias";
 import NotFound from "@/pages/NotFound";
 import logo from "@/assets/logo-optimized.webp";
 import {
@@ -47,6 +48,7 @@ const AppLayout = () => {
 
   const navLinks = [
     { to: "/dashboard/pending", label: "Dashboard", adminOnly: false },
+    { to: "/alertas", label: "Alertas", adminOnly: false },
     { to: "/creators", label: "Administración", adminOnly: true },
     { to: "/supervision", label: "Supervisión", adminOnly: false },
     { to: "/reclutamiento", label: "Reclutamiento", adminOnly: false },
@@ -146,6 +148,7 @@ const AppLayout = () => {
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard/pending" replace />} />
             <Route path="/dashboard/*" element={<DashboardOverview />} />
+            <Route path="/alertas" element={<AlertasSugerenciasPage />} />
             <Route path="/creators" element={<CreatorsList />} />
             <Route path="/reclutamiento" element={<Reclutamiento />} />
             <Route path="/supervision" element={<SupervisionLive />} />

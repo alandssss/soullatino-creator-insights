@@ -25,3 +25,19 @@ verify_jwt = true
 # IMPORTANTE: Desactivar o eliminar en producción final
 [functions.generate-demo-live-data]
 verify_jwt = true
+
+# ==============================================
+# FUNCIONES DEL MÓDULO ALERTAS Y SUGERENCIAS
+# ==============================================
+
+[functions.upload-excel-recommendations]
+verify_jwt = true
+
+[functions.get-recommendations-today]
+verify_jwt = true
+
+[functions.register-contact]
+verify_jwt = true
+
+[functions.cron-daily-recompute]
+verify_jwt = true
