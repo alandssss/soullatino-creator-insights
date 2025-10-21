@@ -20,9 +20,9 @@ interface MilestonePanelProps {
 
 interface BonificacionData {
   creator_id: string;
-  hito_12_40: boolean;
-  hito_20_60: boolean;
-  hito_22_80: boolean;
+  hito_12d_40h: boolean;
+  hito_20d_60h: boolean;
+  hito_22d_80h: boolean;
   dias_live_mes: number;
   horas_live_mes: number;
   diam_live_mes: number;
@@ -67,11 +67,11 @@ export function MilestonePanel({ creators }: MilestonePanelProps) {
     return bonificaciones.filter(bonif => {
       switch (milestone) {
         case "bronze":
-          return bonif.hito_12_40;
+          return bonif.hito_12d_40h;
         case "silver":
-          return bonif.hito_20_60;
+          return bonif.hito_20d_60h;
         case "gold":
-          return bonif.hito_22_80;
+          return bonif.hito_22d_80h;
         default:
           return false;
       }
