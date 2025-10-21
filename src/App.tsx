@@ -22,12 +22,12 @@ function App() {
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <TooltipProvider>
           <BrowserRouter>
-            <Toaster />
-            <Sonner />
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/*" element={<AppLayout />} />
             </Routes>
+            <Toaster />
+            <Sonner />
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
