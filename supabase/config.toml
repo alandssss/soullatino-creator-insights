@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.cron-daily-recompute]
 verify_jwt = true
+
+[functions.send-batalla]
+verify_jwt = true

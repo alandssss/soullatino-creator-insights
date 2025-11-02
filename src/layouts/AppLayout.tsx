@@ -9,6 +9,7 @@ import Reclutamiento from "@/pages/Reclutamiento";
 import SupervisionLive from "@/pages/SupervisionLive";
 import CreatorsList from "@/pages/CreatorsList";
 import AlertasSugerenciasPage from "@/pages/AlertasSugerencias";
+import Batallas from "@/pages/Batallas";
 import NotFound from "@/pages/NotFound";
 import logo from "@/assets/logo-optimized.webp";
 import {
@@ -52,6 +53,7 @@ const AppLayout = () => {
     { to: "/creators", label: "Administración", adminOnly: true },
     { to: "/supervision", label: "Supervisión", adminOnly: false },
     { to: "/reclutamiento", label: "Reclutamiento", adminOnly: false },
+    { to: "/batallas", label: "Batallas", adminOnly: false },
   ].filter(link => !link.adminOnly || isAdmin);
 
   return (
@@ -152,6 +154,7 @@ const AppLayout = () => {
             <Route path="/creators" element={<CreatorsList />} />
             <Route path="/reclutamiento" element={<Reclutamiento />} />
             <Route path="/supervision" element={<SupervisionLive />} />
+            <Route path="/batallas" element={<Batallas />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

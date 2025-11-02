@@ -58,6 +58,66 @@ export type Database = {
           },
         ]
       }
+      batallas: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          estado: string | null
+          fecha: string
+          guantes: boolean | null
+          hora: string
+          id: string
+          notificacion_enviada: boolean | null
+          oponente: string
+          reto: string | null
+          tipo: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          estado?: string | null
+          fecha: string
+          guantes?: boolean | null
+          hora: string
+          id?: string
+          notificacion_enviada?: boolean | null
+          oponente: string
+          reto?: string | null
+          tipo?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          estado?: string | null
+          fecha?: string
+          guantes?: boolean | null
+          hora?: string
+          id?: string
+          notificacion_enviada?: boolean | null
+          oponente?: string
+          reto?: string | null
+          tipo?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batallas_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_tiers"
+            referencedColumns: ["creator_id"]
+          },
+          {
+            foreignKeyName: "batallas_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       creator_bonificaciones: {
         Row: {
           bono_dias_extra_usd: number | null
@@ -775,6 +835,50 @@ export type Database = {
         }
         Relationships: []
       }
+      logs_whatsapp: {
+        Row: {
+          batalla_id: string | null
+          created_at: string | null
+          error_message: string | null
+          id: number
+          mensaje_enviado: string
+          respuesta: Json | null
+          telefono: string
+          twilio_message_sid: string | null
+          twilio_status: string | null
+        }
+        Insert: {
+          batalla_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: number
+          mensaje_enviado: string
+          respuesta?: Json | null
+          telefono: string
+          twilio_message_sid?: string | null
+          twilio_status?: string | null
+        }
+        Update: {
+          batalla_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: number
+          mensaje_enviado?: string
+          respuesta?: Json | null
+          telefono?: string
+          twilio_message_sid?: string | null
+          twilio_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "logs_whatsapp_batalla_id_fkey"
+            columns: ["batalla_id"]
+            isOneToOne: false
+            referencedRelation: "batallas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       managers: {
         Row: {
           activo: boolean | null
@@ -1229,10 +1333,9 @@ export type Database = {
         Args: { p_mes_referencia: string }
         Returns: undefined
       }
-      get_user_role: {
-        Args: Record<PropertyKey, never> | { p_user_id: string }
-        Returns: string
-      }
+      get_user_role:
+        | { Args: never; Returns: string }
+        | { Args: { p_user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1240,14 +1343,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      refresh_creator_riesgos_mes: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      refresh_creator_tiers: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      refresh_creator_riesgos_mes: { Args: never; Returns: undefined }
+      refresh_creator_tiers: { Args: never; Returns: undefined }
       seed_demo_live_data: {
         Args: { p_cantidad_creadores?: number; p_mes_inicio?: string }
         Returns: {
@@ -1267,10 +1364,7 @@ export type Database = {
         }
         Returns: number
       }
-      supervision_score_to_risk: {
-        Args: { _score: number }
-        Returns: string
-      }
+      supervision_score_to_risk: { Args: { _score: number }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "manager" | "viewer" | "reclutador" | "supervisor"
