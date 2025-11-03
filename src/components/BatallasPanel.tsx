@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Loader2, Plus, Send, Sword, Calendar, Clock, Users } from "lucide-react";
+import { Loader2, Plus, Send, Sword, Calendar, Clock, Users, CheckCheck, Check, X } from "lucide-react";
 
 interface Batalla {
   id: string;
@@ -30,6 +30,12 @@ interface Batalla {
     nombre: string;
     telefono: string | null;
   };
+  logs_whatsapp?: Array<{
+    ultimo_estado: string | null;
+    delivered_at: string | null;
+    read_at: string | null;
+    failed_at: string | null;
+  }>;
 }
 
 export default function BatallasPanel() {
@@ -60,7 +66,7 @@ export default function BatallasPanel() {
     },
   });
 
-  // Obtener batallas
+  // Obtener batallas con estado de WhatsApp
   const { data: batallas, isLoading } = useQuery({
     queryKey: ['batallas'],
     queryFn: async () => {
@@ -68,7 +74,8 @@ export default function BatallasPanel() {
         .from('batallas')
         .select(`
           *,
-          creator:creators(nombre, telefono)
+          creator:creators(nombre, telefono),
+          logs_whatsapp(ultimo_estado, delivered_at, read_at, failed_at)
         `)
         .order('fecha', { ascending: false })
         .order('hora', { ascending: false });
@@ -133,6 +140,53 @@ export default function BatallasPanel() {
       cancelada: 'destructive',
     } as const;
     return <Badge variant={variants[estado as keyof typeof variants] || 'default'}>{estado}</Badge>;
+  };
+
+  const getWhatsAppStatusBadge = (batalla: Batalla) => {
+    if (!batalla.notificacion_enviada || !batalla.logs_whatsapp || batalla.logs_whatsapp.length === 0) {
+      return null;
+    }
+
+    const log = batalla.logs_whatsapp[0];
+    const estado = log.ultimo_estado;
+
+    if (log.read_at) {
+      return (
+        <Badge variant="default" className="gap-1">
+          <CheckCheck className="h-3 w-3" />
+          Leído
+        </Badge>
+      );
+    }
+
+    if (log.delivered_at) {
+      return (
+        <Badge variant="secondary" className="gap-1">
+          <Check className="h-3 w-3" />
+          Entregado
+        </Badge>
+      );
+    }
+
+    if (log.failed_at) {
+      return (
+        <Badge variant="destructive" className="gap-1">
+          <X className="h-3 w-3" />
+          Fallido
+        </Badge>
+      );
+    }
+
+    if (estado === 'sent' || estado === 'queued') {
+      return (
+        <Badge variant="outline" className="gap-1">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Enviando
+        </Badge>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -265,7 +319,10 @@ export default function BatallasPanel() {
                     <CardTitle className="text-lg">{batalla.creator.nombre}</CardTitle>
                     <CardDescription>vs {batalla.oponente}</CardDescription>
                   </div>
-                  {getEstadoBadge(batalla.estado)}
+                  <div className="flex flex-col gap-2">
+                    {getEstadoBadge(batalla.estado)}
+                    {getWhatsAppStatusBadge(batalla)}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">

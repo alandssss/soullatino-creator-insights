@@ -839,35 +839,59 @@ export type Database = {
         Row: {
           batalla_id: string | null
           created_at: string | null
+          delivered_at: string | null
+          delivery_status: string | null
+          error_code: string | null
           error_message: string | null
+          failed_at: string | null
           id: number
           mensaje_enviado: string
+          read_at: string | null
           respuesta: Json | null
+          status_updates: Json | null
           telefono: string
           twilio_message_sid: string | null
           twilio_status: string | null
+          ultima_actualizacion: string | null
+          ultimo_estado: string | null
         }
         Insert: {
           batalla_id?: string | null
           created_at?: string | null
+          delivered_at?: string | null
+          delivery_status?: string | null
+          error_code?: string | null
           error_message?: string | null
+          failed_at?: string | null
           id?: number
           mensaje_enviado: string
+          read_at?: string | null
           respuesta?: Json | null
+          status_updates?: Json | null
           telefono: string
           twilio_message_sid?: string | null
           twilio_status?: string | null
+          ultima_actualizacion?: string | null
+          ultimo_estado?: string | null
         }
         Update: {
           batalla_id?: string | null
           created_at?: string | null
+          delivered_at?: string | null
+          delivery_status?: string | null
+          error_code?: string | null
           error_message?: string | null
+          failed_at?: string | null
           id?: number
           mensaje_enviado?: string
+          read_at?: string | null
           respuesta?: Json | null
+          status_updates?: Json | null
           telefono?: string
           twilio_message_sid?: string | null
           twilio_status?: string | null
+          ultima_actualizacion?: string | null
+          ultimo_estado?: string | null
         }
         Relationships: [
           {

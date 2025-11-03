@@ -44,3 +44,6 @@ verify_jwt = true
 
 [functions.send-batalla]
 verify_jwt = true
+
+[functions.whatsapp-webhook]
+verify_jwt = false

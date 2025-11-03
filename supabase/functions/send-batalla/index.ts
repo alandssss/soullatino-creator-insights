@@ -150,6 +150,7 @@ Conéctate 10 min antes y si no puedes, avísanos 💬
     // Enviar mensaje vía Twilio API
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
     const twilioAuth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    const webhookUrl = `${supabaseUrl}/functions/v1/whatsapp-webhook`;
 
     const twilioResponse = await fetch(twilioUrl, {
       method: 'POST',
@@ -161,6 +162,7 @@ Conéctate 10 min antes y si no puedes, avísanos 💬
         From: twilioWhatsappNumber,
         To: `whatsapp:${telefonoE164}`,
         Body: mensaje,
+        StatusCallback: webhookUrl,
       }),
     });
 
