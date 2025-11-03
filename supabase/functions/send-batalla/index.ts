@@ -5,6 +5,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+function formatFechaYYYYMMDD(fecha: string | Date): string {
+  if (fecha instanceof Date) {
+    return fecha.toLocaleDateString("es-MX", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+  const [y, m, d] = fecha.toString().split("-");
+  const date = new Date(Number(y), Number(m) - 1, Number(d));
+  return date.toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 interface BatallaData {
   id: string;
   fecha: string;
@@ -110,24 +127,19 @@ Deno.serve(async (req) => {
     }
     const telefonoE164 = '+' + telefono;
 
-    // Formatear fecha (DD/MM/YYYY)
-    const fechaObj = new Date(batallaData.fecha + 'T00:00:00');
-    const fechaFormateada = fechaObj.toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+    // Formatear fecha y hora
+    const fechaFmt = formatFechaYYYYMMDD(batallaData.fecha);
+    const horaFmt = batallaData.hora.substring(0, 5);
 
-    // Construir mensaje
+    // Construir mensaje más humano
     const mensaje = `Hola ${batallaData.creator.nombre} 👋
 Te acaba de llegar una *nueva batalla* en Soullatino ⚔️
 
-📅 *Fecha:* ${fechaFormateada}
-🕒 *Hora:* ${batallaData.hora}
+📅 *Fecha:* ${fechaFmt}
+🕒 *Hora:* ${horaFmt}
 🆚 *Vs:* ${batallaData.oponente}
 🧤 *Guantes:* ${batallaData.guantes ? 'Sí' : 'No'}
-🎯 *Reto:* ${batallaData.reto || 'No especificado'}
-⚡ *Tipo:* ${batallaData.tipo}
+${batallaData.reto ? `🎯 *Reto:* ${batallaData.reto}\n` : ''}⚡ *Tipo:* ${batallaData.tipo}
 
 Conéctate 10 min antes y si no puedes, avísanos 💬
 — Agencia Soullatino`;
