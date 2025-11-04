@@ -5,10 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import FeedbackPending from "./FeedbackPending";
 import FeedbackHistory from "./FeedbackHistory";
 
-const PATH_TO_TAB = {
-  "/dashboard/pending": "pending",
-  "/dashboard/history": "history",
-};
+  const PATH_TO_TAB = {
+    "/feedback/pending": "pending",
+    "/feedback/history": "history",
+  };
 
 const DashboardOverview = () => {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const DashboardOverview = () => {
   };
 
   const handleTabChange = (value: string) => {
-    navigate(`/dashboard/${value}`);
+    navigate(`/feedback/${value}`);
   };
 
   return (
