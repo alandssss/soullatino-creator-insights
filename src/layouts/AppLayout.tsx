@@ -1,17 +1,8 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Outlet, useNavigate, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Building2, Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate, NavLink } from "react-router-dom";
-import Dashboard from "@/pages/Dashboard";
-import DashboardOverview from "@/pages/DashboardOverview";
-import Reclutamiento from "@/pages/Reclutamiento";
-import SupervisionLive from "@/pages/SupervisionLive";
-import CreatorsList from "@/pages/CreatorsList";
-import AlertasSugerenciasPage from "@/pages/AlertasSugerencias";
-import Batallas from "@/pages/Batallas";
-import NotFound from "@/pages/NotFound";
 import logo from "@/assets/logo-optimized.webp";
 import {
   Sheet,
@@ -149,17 +140,7 @@ const AppLayout = () => {
 
       <main className="flex-1 w-full overflow-x-hidden">
         <div className="container mx-auto px-3 md:px-6 py-4 md:py-6 max-w-full">
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/feedback/*" element={<DashboardOverview />} />
-          <Route path="/alertas" element={<AlertasSugerenciasPage />} />
-          <Route path="/creators" element={<CreatorsList />} />
-          <Route path="/reclutamiento" element={<Reclutamiento />} />
-          <Route path="/supervision" element={<SupervisionLive />} />
-          <Route path="/batallas" element={<Batallas />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <Outlet />
         </div>
       </main>
     </div>
